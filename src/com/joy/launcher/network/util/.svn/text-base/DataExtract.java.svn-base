@@ -1,0 +1,770 @@
+package com.joy.launcher.network.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.pm.ActivityInfo;
+
+import com.data.domain.ActivityBean;
+import com.data.domain.FriendInfoBean;
+import com.data.domain.GiftBean;
+import com.data.domain.LevelConfigBean;
+import com.data.domain.MapBean;
+import com.data.domain.OakConfigBean;
+import com.data.domain.PictureConfigBean;
+import com.data.domain.PropsConfigBean;
+import com.data.domain.RandomTaskConfigBean;
+import com.data.domain.RecsourceBean;
+import com.data.domain.ResourceConfigBean;
+import com.data.domain.ShopInfoBean;
+import com.data.domain.TaskInfoBean;
+import com.data.domain.UserInfoBean;
+import com.data.domain.UserResourcesBean;
+import com.data.domain.VisitInfoBean;
+import com.data.domain.WareHouseItemsBean;
+import com.util.Debug;
+
+public class DataExtract {
+
+	/**
+	 * 解析访问好友返回数据
+	 * 
+	 * @param @param data
+	 * @param @return
+	 * @return FriendInfoBean
+	 */
+	public static FriendInfoBean extFriendData(String data) {
+		// 数据格式
+		// 用户ID,用户名称,经验值,级别,是否在线标识,金币,彩虹石数,区域|资源唯一ID,对应图片ID,添加时间,横向坐标,纵向坐标;资源唯一ID,对应图片ID,添加时间,横向坐标,纵向坐标
+		FriendInfoBean friendInfoBean = null;
+		if (data != null) {
+			try {
+				friendInfoBean = new FriendInfoBean();
+				String[] temp = data.split("\\|");
+				String[] userInfo = temp[0].split(","); // 用户信息
+
+				// 用户信息
+				UserInfoBean usBeans = new UserInfoBean();
+				usBeans.setUserid(userInfo[0]);// 用户ID
+				usBeans.setUsername(userInfo[1]);
+				usBeans.setExperencevalue(userInfo[2]);
+				usBeans.setLevel(userInfo[3]);
+				usBeans.setOnline(userInfo[4]);
+				usBeans.setMoney(userInfo[5]);
+				usBeans.setRainbowstone(userInfo[6]);
+				usBeans.setArear(userInfo[7]);
+				friendInfoBean.setUsBeans(usBeans);
+				
+				
+				List<RecsourceBean> recsourceList = new ArrayList<RecsourceBean>();
+				//如果资源列表不为空，则组装资源列表
+				if(temp.length >= 2) {
+					String[] resourceList = temp[1].split(";"); // 资源列表
+					RecsourceBean recsourceBean = null; // 资源实体
+					for (int i = 0; i < resourceList.length; i++) {
+						recsourceBean = new RecsourceBean();
+						String[] recsourceInfo = resourceList[i].split(",");
+						recsourceBean.setResourceSEQ(recsourceInfo[0]);
+						recsourceBean.setPictureid(recsourceInfo[1]);
+						recsourceBean.setAddTime(recsourceInfo[2]);
+						recsourceBean.setX(Integer.valueOf(recsourceInfo[3]));
+						recsourceBean.setY(Integer.valueOf(recsourceInfo[4]));
+						recsourceList.add(recsourceBean);
+					}
+					friendInfoBean.setRebBeans(recsourceList);
+				}
+			} catch (Exception e) {
+				Debug.println("DataExtract-extFriendData error:" + e);
+			}
+		}
+		return friendInfoBean;
+	}
+	
+	/**
+	 * 解析搜索好友返回数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<UserInfoBean>
+	 */
+	public static List<UserInfoBean> extSearchFriendData(String data) {
+		// 返回数据格式
+		// 玩家手机号码，昵称,是否在线,玩家所在地区,性别,等级|玩家手机号码,昵称,是否在线,玩家所在地区,性别,等级.....
+		List<UserInfoBean> userInfoBeans = new ArrayList<UserInfoBean>();
+		UserInfoBean userInfoBean = null;
+		try {
+			String[] users = data.split("\\|");
+			for (int i = 0; i < users.length; i++) {
+				userInfoBean = new UserInfoBean();
+				String[] userInfo = users[i].split(",");
+				userInfoBean.setUserid(userInfo[0]);
+				userInfoBean.setUsername(userInfo[1]);
+				userInfoBean.setOnline(userInfo[2]);
+				userInfoBean.setArear(userInfo[3]);
+				userInfoBean.setSex(userInfo[4]);
+				userInfoBean.setLevel(userInfo[5]);
+				userInfoBeans.add(userInfoBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extSearchFriendData error:" + e);
+		}
+		
+		return userInfoBeans;
+	}
+	
+	/**
+	 * 解析获取商店资源数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<ResourceConfigBean>
+	 */
+	public static List<ResourceConfigBean> extShopInfoData(String data) {
+		System.out.println("shopinfo:" + data);
+		// 返回数据格式
+		// 资源ID,资源名称,对应图片ID,所需金币,所需级别,需要彩虹石|资源ID,资源名称,对应图片ID,所需金币,所需级别,需要彩虹石….
+		List<ResourceConfigBean> resourceConfigBeans = new ArrayList<ResourceConfigBean>();
+		ResourceConfigBean resourceConfigBean = null;
+		try {
+			String[] resourceConfigs = data.split("\\|");
+			for (int i = 0; i < resourceConfigs.length; i++) {
+				resourceConfigBean = new ResourceConfigBean();
+				String[] resourceConfigInfo = resourceConfigs[i].split(",");
+				resourceConfigBean.setResourceid(resourceConfigInfo[0]);
+				resourceConfigBean.setName(resourceConfigInfo[1]);
+				resourceConfigBean.setPictureid(resourceConfigInfo[2]);
+				resourceConfigBean.setMoney(resourceConfigInfo[3]);
+				resourceConfigBean.setLevel(resourceConfigInfo[4]);
+				resourceConfigBean.setRainbowstone(resourceConfigInfo[5]);
+				resourceConfigBeans.add(resourceConfigBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extShopInfoData error:" + e);
+		}
+		
+		return resourceConfigBeans;
+	}
+	
+	/**
+	 * 解析获取好友列表数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<UserInfoBean>
+	 */
+	public static List<UserInfoBean> extFriendListData(String data) {
+		//返回数据格式如下：
+		//朋友ID,朋友昵称,是否在线,性别,等级|朋友ID,朋友昵称,是否在线,性别,等级.....
+		List<UserInfoBean> userInfoBeans = new ArrayList<UserInfoBean>();
+		UserInfoBean userInfoBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				String[] userinfo = temp[i].split(",");
+				userInfoBean = new UserInfoBean();
+				userInfoBean.setUserid(userinfo[0]);
+				userInfoBean.setUsername(userinfo[1]);
+				userInfoBean.setOnline(userinfo[2]);
+				userInfoBean.setSex(userinfo[3]);
+				userInfoBean.setLevel(userinfo[4]);
+				userInfoBeans.add(userInfoBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extFriendListData error:" + e);
+		}
+		return userInfoBeans;
+	}
+	
+	/**
+	 * 解析好友请求信息
+	 * @param @param data
+	 * @param @return 
+	 * @return List<UserInfoBean>
+	 */
+	public static List<UserInfoBean> extFriendRequestInfo(String data) {
+		List<UserInfoBean> list = new ArrayList<UserInfoBean>();
+		UserInfoBean userInfoBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				String[] info = temp[i].split(",");
+				userInfoBean = new UserInfoBean();
+				userInfoBean.setUserid(info[0]);
+				userInfoBean.setUsername(info[1]);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extFriendRequestInfo error:" + e);
+		}
+		return list;
+	}
+	
+	/**
+	 * 解析获取仓库资源数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<WareHouseItemsBean>
+	 */
+	public static List<WareHouseItemsBean> extWareHouseInfoData(String data) {
+		//返回数据格式：
+		//用户ID,物品ID,数量|用户ID,物品ID,数量...
+		List<WareHouseItemsBean> wareHouseItemsBeans = new ArrayList<WareHouseItemsBean>();
+		WareHouseItemsBean wareHouseItemsBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				String[] wareHouseItemsInfo = temp[i].split(",");
+				wareHouseItemsBean = new WareHouseItemsBean();
+				wareHouseItemsBean.setUserid(wareHouseItemsInfo[0]);
+				wareHouseItemsBean.setResourceid(wareHouseItemsInfo[1]);
+				wareHouseItemsBean.setCounts(wareHouseItemsInfo[2]);
+				wareHouseItemsBean.setType(wareHouseItemsInfo[3]);
+				wareHouseItemsBeans.add(wareHouseItemsBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extWareHouseInfoData error:" + e);
+		}
+		return wareHouseItemsBeans;
+	}
+	
+	/**
+	 * 解析获取级别对应信息数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<LevelConfigBean>
+	 */
+	public static List<LevelConfigBean> extLevelValuesInfoData(String data) {
+		//返回格式如：
+		//级别,需要经验值|级别,需要经验值...
+		List<LevelConfigBean> levelConfigBeans = new ArrayList<LevelConfigBean>();
+		LevelConfigBean levelConfigBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				levelConfigBean = new LevelConfigBean();
+				String[] levelConfigInfo = temp[i].split(",");
+				levelConfigBean.setLevel(levelConfigInfo[0]);
+				levelConfigBean.setExperiencevalue(levelConfigInfo[1]);
+				levelConfigBeans.add(levelConfigBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extWareHouseInfoData error:" + e);
+		}
+		return levelConfigBeans;
+	}
+	
+	/**
+	 * 解析获取橡树经验对应级别信息数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<LevelConfigBean>
+	 */
+	public static List<OakConfigBean> extOAKLevelValuesData(String data) {
+		//返回格式如：
+		//级别,需要经验值，奖励金币，奖励彩虹石|级别,需要经验值，奖励金币，奖励彩虹石...
+		List<OakConfigBean> oakConfigBeans = new ArrayList<OakConfigBean>();
+		OakConfigBean oakConfigBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				oakConfigBean = new OakConfigBean();
+				String[] oakConfigInfo = temp[i].split(",");
+				oakConfigBean.setLevel(oakConfigInfo[0]);
+				oakConfigBean.setExperiencevalue(oakConfigInfo[1]);
+				oakConfigBean.setMoney(oakConfigInfo[2]);
+				oakConfigBean.setRainbowstone(oakConfigInfo[3]);
+				oakConfigBeans.add(oakConfigBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extOAKLevelValuesData error:" + e);
+		}
+		return oakConfigBeans;
+	}
+	
+	/**
+	 * 解析获取随机任务列表数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<RandomTaskConfigBean>
+	 */
+	public static List<RandomTaskConfigBean> extRandomTaskListData(String data) {
+		//返回数据格式：
+		//任务ID,任务名称,奖励经验值,奖励金币,奖励彩虹石,所需级别，任务条件ID|任务ID,任务名称,奖励经验值,奖励金币,奖励彩虹石,所需级别，任务条件ID...
+		List<RandomTaskConfigBean> randomTaskConfigBeans = new ArrayList<RandomTaskConfigBean>();
+		RandomTaskConfigBean randomTaskConfigBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				randomTaskConfigBean = new RandomTaskConfigBean();
+				String[] randomTaskConfigInfo = temp[i].split(",");
+				randomTaskConfigBean.setTaskid(randomTaskConfigInfo[0]);
+				randomTaskConfigBean.setTaskname(randomTaskConfigInfo[1]);
+				randomTaskConfigBean.setTaskvalues(randomTaskConfigInfo[2]);
+				randomTaskConfigBean.setTaskmoney(randomTaskConfigInfo[3]);
+				randomTaskConfigBean.setRainbowstone(randomTaskConfigInfo[4]);
+				randomTaskConfigBean.setLevel(randomTaskConfigInfo[5]);
+				randomTaskConfigBean.setTaskcontentid(randomTaskConfigInfo[6]);
+				randomTaskConfigBeans.add(randomTaskConfigBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extRandomTaskListData error:" + e);
+		}
+		return randomTaskConfigBeans;
+	}
+	
+	/**
+	 * 解析获取道具列表数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<PropsInfoBean>
+	 */
+	public static List<PropsConfigBean> extPropsListData(String data) {
+		//返回数据格式
+		//道具ID,增益时间,增产比例,道具名称,道具类型,状态,使用范围,彩虹石,道具说明,图片ID|道具ID,增益时间,增产比例,道具名称,道具类型,状态,使用范围,彩虹石,道具说明,图片ID.....
+		List<PropsConfigBean> propsInfoBeans = new ArrayList<PropsConfigBean>();
+		PropsConfigBean propsInfoBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				String[] propsInfoInfo = temp[i].split(",");
+				propsInfoBean = new PropsConfigBean();
+				propsInfoBean.setPropsid(propsInfoInfo[0]);
+				propsInfoBean.setGaintime(propsInfoInfo[1]);
+				propsInfoBean.setProportion(propsInfoInfo[2]);
+				propsInfoBean.setPropsname(propsInfoInfo[3]);
+				propsInfoBean.setPropstype(propsInfoInfo[4]);
+				propsInfoBean.setPstatus(propsInfoInfo[5]);
+				propsInfoBean.setScope(propsInfoInfo[6]);
+				propsInfoBean.setRainbowstone(propsInfoInfo[7]);
+				propsInfoBean.setDescribe(propsInfoInfo[8]);
+				propsInfoBean.setPictureid(propsInfoInfo[9]);
+				propsInfoBeans.add(propsInfoBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extPropsListData error:" + e);
+		}
+		return propsInfoBeans;
+	}
+	
+	/**
+	 * 解析获取道具列表数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<GiftBean>
+	 */
+	public static List<GiftBean> extGiftListData(String data) {
+		List<GiftBean> list = new ArrayList<GiftBean>();
+		GiftBean giftBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				giftBean = new GiftBean();
+				String[] giftInfo = temp[i].split(",");
+				giftBean.setGsn(giftInfo[0]);
+				giftBean.setGname(giftInfo[1]);
+				giftBean.setPropsid(giftInfo[2]);
+				giftBean.setPropsconut(giftInfo[3]);
+				giftBean.setMoney(giftInfo[4]);
+				giftBean.setNextgsn(giftInfo[5]);
+				giftBean.setLevel(giftInfo[6]);
+				giftBean.setDescribe(giftInfo[7]);
+				giftBean.setLock(giftInfo[8]);
+				giftBean.setPictureid(giftInfo[9]);
+				list.add(giftBean);
+			}
+			
+		} catch (Exception e) {
+			Debug.println("DataExtract-extGiftListData error:" + e);
+		}
+		return list;
+	}
+	
+	/**
+	 * 解析获取用户资源列表数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<RecsourceBean>
+	 */
+	public static List<UserResourcesBean> extRecsourceInfoListData(String data) {
+		//数据格式如：
+		//用户ID,资源ID,资源标识,添加时间，X坐标，Y坐标，状态，计时器，是否翻转，增产比例,土地ID|用户ID,资源ID,资源标识,添加时间，X坐标，Y坐标，状态，计时器，是否翻转，增产比例，土地ID…
+		List<UserResourcesBean> recsourceBeans = new ArrayList<UserResourcesBean>();
+		UserResourcesBean userResourcesBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				userResourcesBean = new UserResourcesBean();
+				String[] ri = temp[i].split(",");
+				userResourcesBean.setUserid(ri[0]);
+				userResourcesBean.setResourceid(ri[1]);
+				userResourcesBean.setResourceseq(ri[2]);
+				userResourcesBean.setAddtime(ri[3]);
+				userResourcesBean.setX(ri[4]);
+				userResourcesBean.setY(ri[5]);
+				userResourcesBean.setResourcestatus(ri[6]);
+				userResourcesBean.setRestarttime(ri[7]);
+				userResourcesBean.setOverturn(ri[8]);
+				userResourcesBean.setProportion(ri[9]);
+				userResourcesBean.setMapItemId(ri[10]);
+				recsourceBeans.add(userResourcesBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extRecsourceInfoData error:" + e);
+		}
+		return recsourceBeans;
+	}
+	
+	/**
+	 * 解析获取用户资源数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<RecsourceBean>
+	 */
+	public static UserResourcesBean extRecsourceInfoData(String data) {
+		//数据格式如：
+		//用户ID,资源ID,资源标识,添加时间，X坐标，Y坐标，状态，计时器，是否翻转，增产比例,土地ID
+		UserResourcesBean userResourcesBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			userResourcesBean = new UserResourcesBean();
+			userResourcesBean.setUserid(temp[0]);
+			userResourcesBean.setResourceid(temp[1]);
+			userResourcesBean.setResourceseq(temp[2]);
+			userResourcesBean.setAddtime(temp[3]);
+			userResourcesBean.setX(temp[4]);
+			userResourcesBean.setY(temp[5]);
+			userResourcesBean.setResourcestatus(temp[6]);
+			userResourcesBean.setRestarttime(temp[7]);
+			userResourcesBean.setOverturn(temp[8]);
+			userResourcesBean.setProportion(temp[9]);
+			userResourcesBean.setMapItemId(temp[10]);
+		} catch (Exception e) {
+			Debug.println("DataExtract-extRecsourceInfoData error:" + e);
+		}
+		return userResourcesBean;
+	}
+	
+	/**
+	 * 解析获取用户状态数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<UserInfoBean>
+	 */
+	public static List<UserInfoBean> extUserInfoData(String data) {
+		//返回数据格式：
+		//用户名称, 经验值, 级别, 性别,金币数量, 彩虹石数量, 橡树经验, 橡树等级, 所在地区,用户ID,最后登录时间,是否在线,访问次数,被访问次数|用户名称, 经验值, 级别, 性别,金币数量, 彩虹石数量, 橡树经验, 橡树等级, 所在地区,用户ID,最后登录时间,是否在线,访问次数,被访问次数...
+		List<UserInfoBean> userInfoBeans = new ArrayList<UserInfoBean>();
+		UserInfoBean userInfoBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				userInfoBean = new UserInfoBean();
+				String[] userInfo = temp[i].split(",");
+				userInfoBean.setUsername(userInfo[0]);
+				userInfoBean.setExperencevalue(userInfo[1]);
+				userInfoBean.setLevel(userInfo[2]);
+				userInfoBean.setSex(userInfo[3]);
+				userInfoBean.setMoney(userInfo[4]);
+				userInfoBean.setRainbowstone(userInfo[5]);
+				userInfoBean.setOakvalue(userInfo[6]);
+				userInfoBean.setOaklevel(userInfo[7]);
+				userInfoBean.setArear(userInfo[8]);
+				userInfoBean.setUserid(userInfo[9]);
+				userInfoBean.setLastontime(userInfo[10]);
+				userInfoBean.setOnline(userInfo[11]);
+				userInfoBean.setVisitshis(userInfo[12]);
+				userInfoBean.setVisitedhis(userInfo[13]);
+				userInfoBeans.add(userInfoBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extRecsourceInfoData error:" + e);
+		}
+		return userInfoBeans;
+	}
+	
+	/**
+	 * 解析下发级别任务数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<TaskInfoBean>
+	 */
+	public static List<TaskInfoBean> extlevelTaskData(String data) {
+		//返回数据格式：
+		//任务ID,任务名称,任务奖励经验,任务奖励金币,任务奖励彩虹石,任务类型,种类,数量,前置任务ID,任务触发条件|任务ID,任务名称,任务奖励经验,任务奖励金币,任务奖励彩虹石,任务类型,种类,数量,前置任务ID,任务触发条件
+		List<TaskInfoBean> taskInfoBeans = new ArrayList<TaskInfoBean>();
+		TaskInfoBean taskInfoBean = null;
+		try {
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				taskInfoBean = new TaskInfoBean();
+				String[] taskInfo = temp[i].split(",");
+				taskInfoBean.setTaskid(taskInfo[0]);
+				taskInfoBean.setTaskname(taskInfo[1]);
+				taskInfoBean.setTaskvalues(taskInfo[2]);
+				taskInfoBean.setTaskmoney(taskInfo[3]);
+				taskInfoBean.setRainbowstone(taskInfo[4]);
+				taskInfoBean.setTaskcontenttype(taskInfo[5]);
+				taskInfoBean.setKind(taskInfo[6]);
+				taskInfoBean.setNumber(taskInfo[7]);
+				taskInfoBean.setNexttaskid(taskInfo[8]);
+				taskInfoBean.setCondition(taskInfo[9]);
+				taskInfoBeans.add(taskInfoBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extlevelTaskData error:" + e);
+		}
+		return taskInfoBeans;
+	}
+	
+	/**
+	 * 解析用户未完成任务列表数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<TaskInfoBean>
+	 */
+	public static List<TaskInfoBean> extUnfinishedTaskListData(String data) {
+		//解析数据格式如：
+		//任务ID，任务名称，奖励经验，奖励金币，奖励彩虹石,奖励道具,描述信息，触发条件，任务类型，种类，数量，完成进度,对象ID,用户ID|任务ID，任务名称，奖励经验，奖励金币，奖励彩虹石,奖励道具,描述信息，触发条件，任务类型，种类，数量，完成进度,对象ID,用户ID
+		List<TaskInfoBean> ut = new ArrayList<TaskInfoBean>();
+		try {
+			String[] temp = data.split("\\|");
+			TaskInfoBean taskInfoBean = null;
+			for (int i = 0; i < temp.length; i++) {
+				taskInfoBean = new TaskInfoBean();
+				String[] taskInfo = temp[i].split(",");
+				taskInfoBean.setTaskid(taskInfo[0]);
+				taskInfoBean.setTaskname(taskInfo[1]);
+				taskInfoBean.setTaskvalues(taskInfo[2]);
+				taskInfoBean.setTaskmoney(taskInfo[3]);
+				taskInfoBean.setRainbowstone(taskInfo[4]);
+				taskInfoBean.setPropsinfo(taskInfo[5]);
+				taskInfoBean.setDescribe(taskInfo[6]);
+				taskInfoBean.setCondition(taskInfo[7]);
+				taskInfoBean.setTaskcontenttype(taskInfo[8]);
+				taskInfoBean.setKind(taskInfo[9]);
+				taskInfoBean.setNumber(taskInfo[10]);
+				taskInfoBean.setProgress(taskInfo[11]);
+				taskInfoBean.setObjid(taskInfo[12]);
+				taskInfoBean.setUserId(taskInfo[13]);
+				taskInfoBean.setStact(taskInfo[14]);
+				taskInfoBean.setReceivetime(taskInfo[15]);
+				System.out.println(taskInfoBean.toString());
+				ut.add(taskInfoBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extUnfinishedTaskListData error:" + e);
+		}
+		return ut;
+	}
+	
+	/**
+	 * 解析获取任务配置表信息及任务条件配置信息两表数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<TaskInfoBean>
+	 */
+	public static List<TaskInfoBean> extTaskInfoListData(String data) {
+		List<TaskInfoBean> ut = new ArrayList<TaskInfoBean>();
+		try {
+			String[] temp = data.split("\\|");
+			TaskInfoBean taskInfoBean = null;
+			for (int i = 0; i < temp.length; i++) {
+				taskInfoBean = new TaskInfoBean();
+				String[] taskInfo = temp[i].split(",");
+				taskInfoBean.setTaskid(taskInfo[0]);
+				taskInfoBean.setTaskname(taskInfo[1]);
+				taskInfoBean.setLevel(taskInfo[2]);
+				taskInfoBean.setTaskvalues(taskInfo[3]);
+				taskInfoBean.setTaskmoney(taskInfo[4]);
+				taskInfoBean.setRainbowstone(taskInfo[5]);
+				taskInfoBean.setPropsinfo(taskInfo[6]);
+				taskInfoBean.setTaskcontentid(taskInfo[7]);
+				taskInfoBean.setNexttaskid(taskInfo[8]);
+				taskInfoBean.setCondition(taskInfo[9]);
+				taskInfoBean.setDescribe(taskInfo[10]);
+				taskInfoBean.setTaskcontenttype(taskInfo[11]);
+				taskInfoBean.setKind(taskInfo[12]);
+				taskInfoBean.setObjid(taskInfo[13]);
+				taskInfoBean.setNumber(taskInfo[14]);
+				System.out.println(taskInfoBean.toString());
+				ut.add(taskInfoBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extUnfinishedTaskListData error:" + e);
+		}
+		return ut;
+	}
+	
+	/**
+	 * 解析获取资源对应图片信息数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<ResourceConfigBean>
+	 */
+	public static List<ResourceConfigBean> extRecsourcePictuer(String data) {
+		List<ResourceConfigBean> resourceConfigBeans = new ArrayList<ResourceConfigBean>();
+		try {
+			String[] temp = data.split("\\|");
+			ResourceConfigBean resourceConfigBean = null;
+			for (int i = 0; i < temp.length; i++) {
+				resourceConfigBean = new ResourceConfigBean();
+				String[] resourceConfigInfo = temp[i].split(",");
+				resourceConfigBean.setResourceid(resourceConfigInfo[0]);
+				resourceConfigBean.setResourcetype(resourceConfigInfo[1]);
+				resourceConfigBean.setName(resourceConfigInfo[2]);
+				resourceConfigBean.setPictureid(resourceConfigInfo[3]);
+				resourceConfigBean.setExperienceValue(resourceConfigInfo[4]);
+				resourceConfigBean.setLevel(resourceConfigInfo[5]);
+				resourceConfigBean.setMoney(resourceConfigInfo[6]);
+				resourceConfigBean.setCycle(resourceConfigInfo[7]);
+				resourceConfigBean.setBuildmoney(resourceConfigInfo[8]);
+				resourceConfigBean.setRainbowstone(resourceConfigInfo[9]);
+				resourceConfigBean.setBuildstine(resourceConfigInfo[10]);
+				resourceConfigBean.setResourcestatus(resourceConfigInfo[11]);
+				resourceConfigBean.setResourcedescribe(resourceConfigInfo[12]);
+				resourceConfigBeans.add(resourceConfigBean);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			Debug.println("DataExtract-extRecsourcePictuer error:" + e);
+		}
+		return resourceConfigBeans;
+	}
+	
+	/**
+	 * 解析获取图片配置表接口数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<PictureConfigBean>
+	 */
+	public static List<PictureConfigBean> extPicturConfigData(String data) {
+		List<PictureConfigBean> pictureConfigBeans = new ArrayList<PictureConfigBean>();
+		try {
+			String[] temp = data.split("\\|");
+			PictureConfigBean pictureConfigBean = null;
+			for (int i = 0; i < temp.length; i++) {
+				pictureConfigBean = new PictureConfigBean();
+				String[] pictureConfigInfo = temp[i].split(",");
+				pictureConfigBean.setId(pictureConfigInfo[0]);
+				pictureConfigBean.setName(pictureConfigInfo[1]);
+				pictureConfigBeans.add(pictureConfigBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extPicturConfigData error:" + e);
+		}
+		return pictureConfigBeans;
+	}
+	
+	/**
+	 * 解析获取用户地图数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<MapBean>
+	 */
+	public static List<MapBean> extUserMapInfo(String data) {
+		//返回数据:
+		//地址ID，土地类型，状态，等级，X，Y，图片ID，解锁所需金币，资源标识,用户ID,下一开发土地ID|地址ID，土地类型，状态，等级，X，Y，图片ID，解锁所需金币，资源标识,用户ID,下一开发土地ID...
+		List<MapBean> mapBeans = new ArrayList<MapBean>();
+		try {
+			String[] temp = data.split("\\|");
+			MapBean mapBean = null;
+			for (int i = 0; i < temp.length; i++) {
+				mapBean = new MapBean();
+				String[] mapInfo = temp[i].split(",");
+				mapBean.setMsn(mapInfo[0]);
+				mapBean.setItemId(mapInfo[1]);
+				mapBean.setItemType(mapInfo[2]);
+				mapBean.setStatus(mapInfo[3]);
+				mapBean.setLevel(mapInfo[4]);
+				mapBean.setX(mapInfo[5]);
+				mapBean.setY(mapInfo[6]);
+				mapBean.setPictureid(mapInfo[7]);
+				mapBean.setNeedmoney(mapInfo[8]);
+				mapBean.setResourceseq(mapInfo[9]);
+				mapBean.setUserId(mapInfo[10]);
+				mapBean.setLinkitemid(mapInfo[11]);
+				mapBeans.add(mapBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extUserMapInfo error:" + e);
+		}
+		return mapBeans;
+	}
+	
+	/**
+	 * 解析获取单块地图信息
+	 * @param @param data
+	 * @param @return 
+	 * @return MapBean
+	 */
+	public static MapBean extUserMapBean(String data) {
+		MapBean mapBean = null;
+		try {
+			String[] mapInfo = data.split("\\|");
+			mapBean = new MapBean();
+			mapBean.setItemId(mapInfo[0]);
+			mapBean.setItemType(mapInfo[1]);
+			mapBean.setStatus(mapInfo[2]);
+			mapBean.setLevel(mapInfo[3]);
+			mapBean.setX(mapInfo[4]);
+			mapBean.setY(mapInfo[5]);
+			mapBean.setPictureid(mapInfo[6]);
+			mapBean.setNeedmoney(mapInfo[7]);
+			mapBean.setResourceseq(mapInfo[8]);
+			mapBean.setUserId(mapInfo[9]);
+		} catch (Exception e) {
+			Debug.println("DataExtract-extUserMapBean error:" + e);
+		}
+		return mapBean;
+	}
+	
+	/**
+	 * 解析获取用户好友访问日志数据
+	 * @param @param data
+	 * @param @return 
+	 * @return List<VisitInfoBean>
+	 */
+	public static List<VisitInfoBean> extVisitInfoData(String data) {
+		//返回数据
+		//用户ID，好友ID，好友昵称|
+		List<VisitInfoBean> visitInfoBeans = new ArrayList<VisitInfoBean>();
+		try {
+			VisitInfoBean visitInfoBean = null;
+			String[] temp = data.split("\\|");
+			for (int i = 0; i < temp.length; i++) {
+				visitInfoBean = new VisitInfoBean();
+				String[] visitInfo = temp[i].split(",");
+				visitInfoBean.setUserId(visitInfo[0]);
+				visitInfoBean.setFriendId(visitInfo[1]);
+				visitInfoBean.setFriendName(visitInfo[2]);
+				visitInfoBeans.add(visitInfoBean);
+			}
+		} catch (Exception e) {
+			Debug.println("DataExtract-extVisitInfoData error:" + e);
+		}
+		return visitInfoBeans;
+	}
+	
+	/**
+	 * 解析获取日常活动信息
+	 * @param @param data
+	 * @param @return 
+	 * @return ActivityBean
+	 */
+	public static ActivityBean extDayActivityData(String data) {
+		ActivityBean activityBean = null;
+		try {
+			activityBean = new ActivityBean();
+			String[] temp = data.split("\\|");
+			activityBean.setActivityId(temp[0]);
+			activityBean.setActivityName(temp[1]);
+			activityBean.setGainBuildExp(temp[2]);
+			activityBean.setGainPlantExp(temp[3]);
+			activityBean.setGainBuildMoneyscale(temp[4]);
+			activityBean.setGainPlantMoneyscale(temp[5]);
+			activityBean.setPaddscale(temp[6]);
+			activityBean.setBaddscale(temp[7]);
+			activityBean.setDescribe(temp[8]);
+			activityBean.setPictureid(temp[9]);
+		} catch (Exception e) {
+			Debug.println("DataExtract-extDayActivityData error:" + e);
+		}
+		return activityBean;
+	}
+}

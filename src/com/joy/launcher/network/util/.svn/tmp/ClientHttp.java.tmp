@@ -1,0 +1,158 @@
+package com.joy.launcher.network.util;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLEncoder;
+
+import org.apache.http.HttpConnection;
+import org.apache.http.HttpHost;
+import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import com.common.Initialization;
+import com.event.DataEvent;
+import com.event.DataEventManager;
+import com.ingame.MainActivity;
+import com.systemPlatform.AndroidSystem;
+import com.util.Debug;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+/**
+ * 
+ * <p>  
+ * Title: ClientHttp.java 
+ * </p>  
+ * <p>  
+ * Description: Http 方式连接后台服务器
+ * </p> 
+ * @author liuqf    
+ * @version 1.0  
+ * @created 2011-11-21 下午05:51:12
+ */
+public class ClientHttp implements ClientInterface {
+	
+//	private static final String uri = "http://180.186.33.238:8080/MyRainbowNation/servlet/Gateway";
+//	private static final String cmwap_uri = "http://10.0.0.172:80/MyRainbowNation/servlet/Gateway";
+//	private static final String xOnlineHost = "180.186.33.238:8080";
+	
+	private static final String uri = "http://192.168.1.126:8080/MyRainbowNation/servlet/Gateway";
+	private static final String cmwap_uri = "http://10.0.0.172:80/MyRainbowNation/servlet/Gateway";
+	private static final String xOnlineHost = "192.168.1.126:8080";
+	private static final String networkType = Initialization.networkType; //用户当前网络连接类型
+
+	public String request(String parameter) throws Exception {
+		String data = post(parameter);
+		Debug.println("返回数据:" + data);
+		return data;
+	}
+
+	public static String post(String parameter) throws Exception {
+		URL postUrl;
+//		if("UNKNOWN".equals(networkType)){
+//			DataEventManager.addDataEvent(DataEvent.NETWORK_EXCEPTION, "网络异常，请稍候...");
+//			DataEventManager.addDataEvent(DataEvent.TIP, "网络异常，请检查您的网络设置...");
+//			throw new Exception("未知的网络连接");
+//		}
+		
+		if("CMWAP".equals(networkType)) {
+			postUrl = new URL(cmwap_uri);
+		}else {
+			postUrl = new URL(uri);
+		}
+		
+		StringBuffer sb = null;
+		try {
+			// 打开连接
+			HttpURLConnection connection;
+			if("CMWAP".equals(networkType)) {
+				connection = (HttpURLConnection) postUrl.openConnection();
+				connection.setRequestProperty("X-Online-Host", xOnlineHost);
+			}else {
+				connection = (HttpURLConnection)postUrl.openConnection();
+			}
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			connection.setRequestMethod("POST");
+			// Post 请求不能使用缓存
+			connection.setUseCaches(false);
+			connection.setInstanceFollowRedirects(true);
+			connection.setConnectTimeout(10000);//连接超时
+			connection.setReadTimeout(10000);//读取数据超时
+			connection.connect();
+			DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+			System.out.println("-------------------------------------------------------------------------------------------------");
+			System.out.println(parameter);
+			System.out.println("-------------------------------------------------------------------------------------------------");
+			String content = "d=" + URLEncoder.encode(parameter, "UTF-8");
+			
+			out.writeBytes(content);
+			out.flush();
+			out.close(); // flush and close
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			sb = new StringBuffer();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line);
+			}
+			reader.close();
+			connection.disconnect();
+		} catch (Exception e) {
+			DataEventManager.addDataEvent(DataEvent.NETWORK_EXCEPTION, "网络异常，请稍候...");
+			DataEventManager.addDataEvent(DataEvent.TIP, "网络异常，请检查您的网络设置...");
+			e.printStackTrace();
+		}
+		return new String(sb.toString().getBytes(),"UTF-8");
+	}
+
+	public static String get(String parameter) throws Exception {
+		URL url = new URL(uri + "?" + parameter);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		conn.setConnectTimeout(5 * 1000);
+		InputStream inStream = conn.getInputStream();// 通过输入流获取html数据
+		byte[] data = readInputStream(inStream);// 得到html的二进制数据
+		return new String(data, "gb2312");
+	}
+
+	/**
+	 * 从输入流中获取数据
+	 * 
+	 * @param inStream
+	 *            输入流
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] readInputStream(InputStream inStream) throws Exception {
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int len = 0;
+		while ((len = inStream.read(buffer)) != -1) {
+			outStream.write(buffer, 0, len);
+		}
+		inStream.close();
+		return outStream.toByteArray();
+	}
+
+	@Override
+	public void shutdownNetwork() {
+		
+	}
+
+	@Override
+	public boolean isOK() {
+		return true;
+	}
+}

@@ -1,0 +1,25 @@
+package com.joy.launcher.network.util;
+
+import com.common.Initialization;
+
+public class MsgHandle {
+	private static MsgHandle msgHandle;
+	
+	private MsgHandle(){};
+	
+	public synchronized MsgHandle getInstance() {
+		if(msgHandle == null) {
+			msgHandle = new MsgHandle();
+		}
+		return msgHandle;
+	}
+	
+	/**
+	 * 添加好友请求
+	 * @param @param requestInfo 
+	 * @return void
+	 */
+	public static void sendForFriendRequest(String requestInfo) {
+		Initialization.friendRequestInfoList = DataExtract.extFriendRequestInfo(requestInfo);
+	}
+}

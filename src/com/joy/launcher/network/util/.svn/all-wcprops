@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/projects/!svn/ver/1734/MyRainbowCountry/src/com/network/util
+END
+ClientInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/projects/!svn/ver/1649/MyRainbowCountry/src/com/network/util/ClientInterface.java
+END
+MsgHandle.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/projects/!svn/ver/1559/MyRainbowCountry/src/com/network/util/MsgHandle.java
+END
+DataExtract.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/projects/!svn/ver/1665/MyRainbowCountry/src/com/network/util/DataExtract.java
+END
+ClientSocket.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/projects/!svn/ver/1665/MyRainbowCountry/src/com/network/util/ClientSocket.java
+END
+ClientHttp.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/projects/!svn/ver/1734/MyRainbowCountry/src/com/network/util/ClientHttp.java
+END

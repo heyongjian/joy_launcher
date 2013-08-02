@@ -1,0 +1,516 @@
+package com.joy.launcher.network.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import com.data.domain.ActivityBean;
+import com.data.domain.FriendInfoBean;
+import com.data.domain.GiftBean;
+import com.data.domain.LevelConfigBean;
+import com.data.domain.MapBean;
+import com.data.domain.OakConfigBean;
+import com.data.domain.PictureConfigBean;
+import com.data.domain.PropsConfigBean;
+import com.data.domain.RandomTaskConfigBean;
+import com.data.domain.RecsourceBean;
+import com.data.domain.ResourceConfigBean;
+import com.data.domain.ShopInfoBean;
+import com.data.domain.TaskInfoBean;
+import com.data.domain.UserInfoBean;
+import com.data.domain.UserResourcesBean;
+import com.data.domain.VisitInfoBean;
+import com.data.domain.WareHouseItemsBean;
+
+/**
+ * 
+ * <p>  
+ * Title: ServiceInterface.java 
+ * </p>  
+ * <p>  
+ * Description: 网络通信接口
+ * </p> 
+ * @author liuqf    
+ * @version 1.0  
+ * @created 2011-10-20 上午10:03:00
+ */
+public interface ServiceInterface {
+	
+	/**
+	 *  登录成功返回 TRUE, 不成功返回 FALSE, 帐号不存在返回 NO
+	 * @param @param account
+	 * @param @param userPwd
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return String
+	 */
+	public String login (String account,String userPwd) throws Exception;
+	
+	/**
+	 * 访问好友
+	 * @param @param friendID
+	 * @param @return 
+	 * @return String
+	 * @throws Exception 
+	 */
+	public FriendInfoBean visitFriend(String account) throws Exception;
+	
+	/**
+	 * 判断是否有新版本
+	 * @param @param version
+	 * @param @return 
+	 * @return String
+	 */
+	public String haveNewVersion(String version) throws Exception;
+	
+	/**
+	 * 更改玩家信息 修改等级，经验，金币，彩虹石，资料，橡树信息等
+	 * @param @param userInfoBean
+	 * @param @return 
+	 * @return boolean
+	 */
+	public boolean submitData(UserInfoBean userInfoBean) throws Exception;
+	
+	/**
+	 * 设置用户昵称
+	 * @param @param account
+	 * @param @param Name
+	 * @param @return 
+	 * @return boolean
+	 */
+	public boolean updateUserName(String account,String Name) throws Exception;
+	
+	/**
+	 * 邀请好友玩游戏
+	 * @param @param sendUserID
+	 * @param @param receiveUserID
+	 * @param @return 
+	 * @return boolean
+	 */
+	public boolean invitedFriend(String sendUserID,String receiveUserID) throws Exception;
+	
+	/**
+	 * 搜索玩家
+	 * param @param account 用户ID，不可为空
+	 * @param @param account 帐号，可为空
+	 * @param @param name  昵称，可为空
+	 * @param @param onLine Y 在线; N 离线; 可为空
+	 * @param @param arear 地区，可为空
+	 * @param @param arear 性别，可为空
+	 * @param @return 
+	 * @return String
+	 */
+	public List<UserInfoBean> searchFriend(String userid,String account,String name,String onLine,String arear,String sex) throws Exception;
+	
+	/**
+	 * 获取商店资源
+	 * @param @param type 商店类型，默认为TYPE1
+	 * @param @return 
+	 * @return String
+	 */
+	public List<ResourceConfigBean> getShopInfo(String type) throws Exception;
+	
+	/**
+	 * 获取好友列表
+	 * @param @param account
+	 * @param @return 
+	 * @return String
+	 */
+	public List<UserInfoBean> getFriendList(String account) throws Exception;
+	
+	/**
+	 * 添加游戏资源  用于种植植物、添加建筑等操作
+	 * @param @param userResourcesBean
+	 * @param @param mapItemId  地图ID
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return boolean
+	 */
+	public boolean addRecsource(UserResourcesBean userResourcesBean,String mapItemId) throws Exception;
+	
+	/**
+	 * 删除用户资源
+	 * @param @param account
+	 * @param @param mapItemId
+	 * @param @return 
+	 * @return boolean
+	 */
+	public boolean deleteRecsorce(String account, String mapItemId) throws Exception;
+	
+	/**
+	 * 修改用户地图状态
+	 * @param @param userid
+	 * @param @param x
+	 * @param @param y
+	 * @param @param status
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return boolean
+	 */
+	public boolean updateUserMapStatus(String userid,String mapItemId,String status,String recsourceSEQ) throws Exception;
+	
+	/**
+	 * 修改资源图标
+	 * @param @param account  用户帐号
+	 * @param @param recsourceSEQ  资源唯一标识
+	 * @param @param recsourceID  需要修改的资源ID(新的资源)
+	 * @param @return 
+	 * @return boolean
+	 */
+	public boolean updateState(String account,String recsourceSEQ,String recsourceID) throws Exception;
+	
+	/**
+	 * 修改用户资源
+	 * @param @param userResourcesBean
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return boolean
+	 */
+	public boolean updateUserRecsource(UserResourcesBean userResourcesBean) throws Exception;
+	
+	/**
+	 * 获取用户仓库物品
+	 * @param @param account   用户帐号
+	 * @param @param type  物品类型  1 道具  2 礼包
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return List<WareHouseItemsBean>
+	 */
+	public List<WareHouseItemsBean> getWareHouseInfo(String account,String type) throws Exception;
+	
+	/**
+	 * 上传仓库物品
+	 * @param @param account
+	 * @param @param recsourceID
+	 * @param @param counts
+	 * @param @return 
+	 * @return boolean
+	 */
+	public boolean upWareHouseInfo(WareHouseItemsBean wareHouseItemsBean) throws Exception;
+	
+	/**
+	 * 获取人物经验级别对应信息
+	 * @param @return 
+	 * @return List<LevelConfigBean>  (按升序排序)
+	 */
+	public List<LevelConfigBean> getLevelValuesInfo() throws Exception;
+	
+	/**
+	 * 获取橡树经验级别对应信息
+	 * @param @return 
+	 * @return List<OakConfigBean>  (按升序排序)
+	 */
+	public List<OakConfigBean> getOAKLevelValuesInfo() throws Exception;
+	
+	/**
+	 * 获取随机任务列表
+	 * @param @param level
+	 * @param @return 
+	 * @return List<RandomTaskConfigBean>
+	 */
+	public List<RandomTaskConfigBean> getRandomTaskList(String level) throws Exception;
+	
+	/**
+	 * 获取任务配置列表
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return List<TaskInfoBean>
+	 */
+	public List<TaskInfoBean> getTaskInfoList() throws Exception;
+	
+	/**
+	 * 获取下一个任务
+	 * @param @param userid
+	 * @param @param level
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return boolean
+	 */
+	public boolean getNextTask(String userid,String level) throws Exception;
+	
+	/**
+	 * 获取道具列表
+	 * @param @return 
+	 * @return String
+	 */
+	public List<PropsConfigBean> getPropsList() throws Exception;
+	
+	/**
+	 * 获取用户资源列表
+	 * @param @param account
+	 * @param @param Flag
+	 * @param @return 
+	 * @return String
+	 */
+	public List<UserResourcesBean> getRecsourceInfo(String account) throws Exception;
+	
+	/**
+	 * 获取用户资源列表
+	 * @param @param account
+	 * @param @param Flag
+	 * @param @return 
+	 * @return String
+	 */
+	public List<UserResourcesBean> getRecsourceInfoForNet(String account) throws Exception;
+	
+	/**
+	 * 根据用户ID 资源标识 获取用户资源信息 本地
+	 * @param @param account
+	 * @param @param resourceseq
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return UserResourcesBean
+	 */
+	public UserResourcesBean getRecsourceInfo(String account,String resourceseq) throws Exception;
+	
+	/**
+	 * 根据用户ID 资源标识 获取用户资源信息 网络
+	 * @param @param account
+	 * @param @param resourceseq
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return UserResourcesBean
+	 */
+	public UserResourcesBean getRecsourceInfoForNet(String account,String resourceseq) throws Exception;
+	
+	/**
+	 * 获取用户信息
+	 * @param @param account
+	 * @param @param flag
+	 * @param @return 
+	 * @return String
+	 */
+	public List<UserInfoBean> getUserInfo(String account) throws Exception;
+	
+	/**
+	 * 通过网络获取用户信息
+	 * @param @param account
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return List<UserInfoBean>
+	 */
+	public List<UserInfoBean> getUserInfoForNet(String account) throws Exception;
+	
+	/**
+	 * 获取添加好友申请信息
+	 * @param @param account
+	 * @param @return 
+	 * @return String   发起邀请者账号，发起邀请者昵称|发起邀请者账号，发起邀请者昵称
+	 */
+	public String getRequestInfo(String account) throws Exception;
+	
+	/**
+	 * 通过好友请求
+	 * @param @param account  玩家帐号
+	 * @param @param sendPhone  发起申请者帐号
+	 * @param @return 
+	 * @return String
+	 * @throws Exception 
+	 */
+	public boolean acceptRequest(String account,String sendPhone) throws Exception;
+	
+	/**
+	 * 拒绝好友申请
+	 * @param @param account   玩家帐号
+	 * @param @param sendPhone  被拒者帐号
+	 * @param @return 
+	 * @return boolean
+	 */
+	public boolean refuseRequest(String account,String sendPhone) throws Exception;
+	
+	/**
+	 * 下发级别任务
+	 * @param @param level
+	 * @param @return 
+	 * @return List<TaskInfoBean>
+	 */
+	public List<TaskInfoBean> getLevelTask(String level) throws Exception;
+	
+	/**
+	 * 注册帐号
+	 * @param @param userInfoBean
+	 * @param @return 
+	 * @return  失败:FALSE;成功:服务端生成的用户ID;
+	 */
+	public String registration(UserInfoBean userInfoBean) throws Exception;
+	
+	/**
+	 * 完成任务
+	 * @param @param account  玩家帐号
+	 * @param @param taskID   任务ID
+	 * @param @param isOK     1 表示完成，0 表示未完成
+	 * @param @return 
+	 * @return boolean    成功返回 true;  失败返回 false
+	 */
+	public boolean completeTask(String account,String taskID) throws Exception;
+	
+	/**
+	 * 拒绝任务
+	 * @param @param account 玩家帐号
+	 * @param @param taskID  任务ID
+	 * @param @return 
+	 * @return boolean  成功返回 true; 失败返回 false
+	 */
+	public boolean refuseTask(String account,String taskID) throws Exception;
+	
+	/**
+	 * 获取未完成任务列表(本地)
+	 * @param @param account  玩家帐号
+	 * @param @return
+	 * @return List<String>  返回以任务ID组装成的List集合
+	 */
+	public List<TaskInfoBean> getUnfinishedTaskList(String account) throws Exception;
+	
+	/**
+	 * 获取未完成任务列表(网络)
+	 * @param @param account  玩家帐号
+	 * @param @return
+	 * @return List<String>  返回以任务ID组装成的List集合
+	 */
+	public List<TaskInfoBean> getUnfinishedTaskListForNet(String account) throws Exception;
+	
+	/**
+	 * 修改用户未完成任务进度
+	 * @param @param userId  用户ID
+	 * @param @param taskId  任务ID
+	 * @param @param addNum  进度增加数目
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return boolean
+	 */
+	public boolean updateTaskProgress(String userId,String taskId,String addNum) throws Exception;
+	
+	/**
+	 * 获取资源配置信息
+	 * @param @return 
+	 * @return List<ResourceConfigBean>
+	 */
+	public List<ResourceConfigBean> getRecsourcePictuer() throws Exception;
+	
+	/**
+	 * 获取图片配置表
+	 * @param @return 
+	 * @return List<PictureConfigBean>
+	 */
+	public List<PictureConfigBean> getPictuerConfig() throws Exception;
+
+	/**
+	 * 同步数据方法，控制中心调用该方法将本地未同步到服务器的进行同步
+	 * @param  
+	 * @return void
+	 */
+	public void dataSync() throws Exception;
+	
+	/**
+	 * 初始化用户地图
+	 * @param @param account
+	 * @param @throws Exception 
+	 * @return void
+	 */
+	public boolean initMap(String account) throws Exception;
+	
+	/**
+	 * 获取用户地图
+	 * @param @param account
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return List<MapBean>
+	 */
+	public List<MapBean> getUserMapInfo(String account) throws Exception;
+	
+	/**
+	 * 通过网络获取用户地图
+	 * @param @param account
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return List<MapBean>
+	 */
+	public List<MapBean> getUserMapInfoForNet(String account) throws Exception;
+	
+	/**
+	 * 根据用户ID及地图ID获取用户地图表中土地信息 本地方法
+	 * @param @param account   用户帐号
+	 * @param @param mapItemId 地图无素ID
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return MapBean
+	 */
+	public MapBean getUserMapBean(String account,String mapItemId) throws Exception;
+	
+	/**
+	 * 根据用户ID及地图ID获取用户地图表中土地信息  网络方法
+	 * @param @param account   用户帐号
+	 * @param @param mapItemId 地图无素ID
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return MapBean
+	 */
+	public MapBean getUserMapBeanForNet(String account,String mapItemId) throws Exception;
+	/**
+	 * 查询用户橡树信息
+	 * @param @param userId
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return String
+	 */
+	public MapBean getUserOakInfo(String userId) throws Exception;
+	
+	/**
+	 * 获取礼包信息
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return List<PropsConfigBean>
+	 */
+	public List<GiftBean> getGiftList() throws Exception;
+	
+	/**
+	 * 根据类型获取访问记录
+	 * @param @param account
+	 * @param @param date   格式：YYYY-mm-dd
+	 * @param @param visitType  1浇橡树，2 收获植物，3 收获建筑，4 打蜜蜂，5 放热气球
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return List<VisitInfoBean>
+	 */
+	public List<VisitInfoBean> getVisitInfo(String account,String date,String visitType) throws Exception;
+	
+	/**
+	 * 添加好友访问日志记录
+	 * @param @param userId
+	 * @param @param friendId
+	 * @param @param visitType  1浇橡树，2 收获植物，3 收获建筑，4 打蜜蜂，5 放热气球
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return boolean
+	 */
+	public boolean addVisitsHis(String userId,String friendId,String visitType) throws Exception;
+	
+	/**
+	 * 根据用户ID，好友ID，访问类型查询当天访问次数
+	 * @param @param userId
+	 * @param @param friendId
+	 * @param @param visitType 1浇橡树，2 收获植物，3 收获建筑，4 打蜜蜂，5 放热气球
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return int
+	 */
+	public int getVisitHisByType(String userId,String friendId,String visitType) throws Exception;
+	
+	/**
+	 * 获取每日活动信息
+	 * @param @return
+	 * @param @throws Exception 
+	 * @return ActivityBean
+	 */
+	public ActivityBean getDayActivityInfo() throws Exception;
+	
+	/**
+	 * 网络是否已连接OK
+	 * @param @return 
+	 * @return boolean
+	 */
+	public boolean netWorkIsOK();
+	/**
+	 * 释放网络资源
+	 */
+	public void shutdownNetwork();
+}

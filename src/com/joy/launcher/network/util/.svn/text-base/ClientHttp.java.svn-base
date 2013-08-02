@@ -1,0 +1,119 @@
+package com.joy.launcher.network.util;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+
+import com.common.ExceptionQuit;
+import com.common.Initialization;
+import com.event.DataEvent;
+import com.event.DataEventManager;
+import com.util.Debug;
+
+/**
+ * 
+ * <p>
+ * Title: ClientHttp.java
+ * </p>
+ * <p>
+ * Description: Http 方式连接后台服务器
+ * </p>
+ * 
+ * @author liuqf
+ * @version 1.0
+ * @created 2011-11-21 下午05:51:12
+ */
+public class ClientHttp implements ClientInterface {
+
+	private static final String uri ="http://gameapp1.fivesky.com.cn/servlet/Gateway";
+	private static final String cmwap_uri ="http://10.0.0.172:80/servlet/Gateway";
+	private static final String xOnlineHost = "gameapp1.fivesky.com.cn";
+
+//	private static final String uri = "http://192.168.1.126:8080/MyRainbowNation/servlet/Gateway";
+//	private static final String cmwap_uri = "http://10.0.0.172:80/MyRainbowNation/servlet/Gateway";
+//	private static final String xOnlineHost = "192.168.1.126:8080";
+	private static final String networkType = Initialization.networkType; // 用户当前网络连接类型
+	private static final int httpTimeOut = 30000; //超时时间
+	
+	@Override
+	public String request(String parameter) throws Exception {
+		String data = post(parameter);
+		Debug.println("返回数据:" + data);
+		return data;
+	}
+
+	public static String post(String parameter) throws Exception {
+		URL postUrl;
+//		if ("UNKNOWN".equals(networkType)) {
+//			ExceptionQuit.quit("网络异常", new String[]{"系统有检测到网络连接，请检测您的网络设置！"});
+//			throw new Exception("未知的网络连接");
+//		}
+
+		if ("CMWAP".equals(networkType)) {
+			postUrl = new URL(cmwap_uri);
+		} else {
+			postUrl = new URL(uri);
+		}
+
+		StringBuffer sb = null;
+		try {
+			// 打开连接
+			HttpURLConnection connection = null;;
+			if ("CMWAP".equals(networkType)) {
+				connection = (HttpURLConnection) postUrl.openConnection();
+				connection.setRequestProperty("X-Online-Host", xOnlineHost);
+			} else {
+				connection = (HttpURLConnection) postUrl.openConnection();
+			}
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			connection.setRequestMethod("POST");
+			// Post 请求不能使用缓存
+			connection.setUseCaches(false);
+			connection.setInstanceFollowRedirects(true);
+//			connection.setRequestProperty("Connection", "Keep-Alive");
+			connection.setConnectTimeout(httpTimeOut);// 连接超时
+			connection.setReadTimeout(httpTimeOut);// 读取数据超时
+			try {
+				connection.connect();
+			} catch (Exception e) {
+				throw e;
+			}
+			DataOutputStream out = new DataOutputStream(connection
+					.getOutputStream());
+			Debug.println("-------------------------------------------------------------------------------------------------");
+			Debug.println(parameter);
+			Debug.println("-------------------------------------------------------------------------------------------------");
+			String content = "d=" + URLEncoder.encode(parameter, "UTF-8");
+			out.writeBytes(content);
+			out.flush();
+			out.close(); // flush and close
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			sb = new StringBuffer();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line);
+			}
+			reader.close();
+			connection.disconnect();
+		}catch (Exception e) {
+			DataEventManager.addDataEvent(DataEvent.NETWORK_EXCEPTION,"网络异常，请检查您的网络设置...");
+			throw e;
+		}
+		return new String(sb.toString().getBytes(), "UTF-8");
+	}
+
+	@Override
+	public void shutdownNetwork() {
+		
+	}
+
+	@Override
+	public boolean isOK() {
+		return true;
+	}
+}

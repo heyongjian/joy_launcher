@@ -1,0 +1,330 @@
+package com.joy.launcher.network.util;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.BindException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
+import java.security.Timestamp;
+
+import junit.framework.Test;
+
+import android.accounts.NetworkErrorException;
+import android.util.Log;
+
+import com.common.Initialization;
+import com.event.DataEvent;
+import com.event.DataEventManager;
+import com.util.DataManager;
+import com.util.Debug;
+
+/**
+ * 
+ * <p>
+ * Title: ClientSocket.java
+ * </p>
+ * <p>
+ * Description: Socket 通信客户端工具类
+ * </p>
+ * 
+ * @author liuqf
+ * @version 1.0
+ * @created 2011-10-22 上午09:33:26
+ */
+public class ClientSocket extends Thread implements ClientInterface {
+	public String host = "192.168.1.126";// 连接服务器的IP
+//	public String host = "211.138.238.200";// 连接服务器的IP
+//	public String host = "10.0.0.172";// 连接服务器的IP
+	public Integer port = 8003;// 连接服务器的端口
+//	public Integer port = 80;// 连接服务器的端口
+	
+	public Socket socket = null;// 套节字对象
+	private Integer sotimeout = 1000 * 30;// 超时时间，以毫秒为单位
+	private boolean isRuning = true; // 是否退出监测
+	private String errors; //异常信息
+	private int oldNetWorkStatus = 1; //前一网络状态
+	
+	private OutputStream output = null;
+	private BufferedInputStream input = null;
+	
+	private InetAddress address = InetAddress.getByName(host);
+	private SocketAddress sockadd = new InetSocketAddress(address,port);
+	
+	private static final int NETWORK_STATUS_OK = 1;
+	private static final int NETWORK_STATUS_ERROR = 2;
+	
+	private static final String networkType = Initialization.networkType; //用户网络连接方式
+
+	// ------------------------------------------------------------------------------
+
+	public ClientSocket() throws Exception {
+		init();
+	}
+
+	public ClientSocket(String host, Integer port) throws Exception {
+		setIp(host);
+		setPort(port);
+		init();
+	}
+
+	/**
+	 * 初始化socket对象
+	 */
+	public synchronized void  init() throws Exception {
+		try {
+			socket = new Socket(host,port);
+			socket.setKeepAlive(true);
+			socket.setSoTimeout(sotimeout);
+			this.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+			DataEventManager.addDataEvent(DataEvent.NETWORK_EXCEPTION, "网络异常，请稍候...");
+			DataEventManager.addDataEvent(DataEvent.TIP, "网络异常，请检查您的网络设置...");
+			throw e;
+		}
+	}
+	
+	/**
+	 * 网络是否连接OK
+	 * @param @return 
+	 * @return boolean
+	 */
+	public boolean isOK() {
+		return !socket.isClosed() && socket.isConnected();
+	}
+	
+	/**
+	 * 重连方法
+	 * @param  
+	 * @return void
+	 */
+	private synchronized void reConnection() {
+		try {
+			
+			if(socket != null) {
+				socket.close();
+			}
+			socket = new Socket();
+			socket.connect(sockadd, sotimeout);
+			
+			socket.setKeepAlive(true);
+			socket.setSoTimeout(sotimeout);
+			
+			//重连后调用登录方法
+			if(Initialization.ACCOUNT != null && !Initialization.ACCOUNT.equals("") && isOK()) {
+				String s = request(new StringBuilder().append("LogIn|").append(Initialization.ACCOUNT).append("&").toString());
+				System.out.println("重新连接后登录结果:" + s);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 请求服务器，并返回字符串结果
+	 * 
+	 * @param @param message
+	 * @param @return
+	 * @return String
+	 */
+	public synchronized String request(String message) throws Exception {
+		//参数编码
+		try {
+			message = new String(message.getBytes(),"UTF-8"); //126
+//			message = new String(message.getBytes("GBK"));//68
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+		String data = null;
+//		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try {
+			output = socket.getOutputStream();
+			output.flush();
+			
+//			StringBuffer headBuffer = new StringBuffer();
+//			headBuffer.append("POST http://211.138.238.200:8003 HTTP/1.0\r\n"); 
+//	        headBuffer.append("Connection: Keep-Alive\r\n");
+//	        headBuffer.append("accept:*/*\r\n"); 
+//	        headBuffer.append("Content-type: application/x-www-form-urlencoded\r\n"); 
+//	        headBuffer.append("Content-length: "+ (message.toString().getBytes().length) + "\r\n"); 
+//	        headBuffer.append("\r\n");
+//	        output.write(headBuffer.toString().getBytes());
+	        
+			input = new BufferedInputStream(socket.getInputStream());
+			output.write(message.getBytes());
+			output.flush();
+
+			// 读取服务器端数流长度
+			/******************下面这段代码在手机上不能读取完整数据***********************
+			byte size[] = new byte[8];
+			input.read(size, 0, 8);
+			int inputSize = Integer.parseInt(new String(size));
+			Debug.println("inputStram size:" + inputSize);
+			
+			int buffLen = Integer.valueOf(new String(size));
+			byte temp[] = new byte[buffLen];
+			int len = 0;
+			int count = 0;
+			while (count < inputSize) {
+				len = input.read(temp);
+				os.write(temp, 0, len);
+				count += buffLen;
+			}
+			data = new String(os.toByteArray());
+			System.out.println(data.substring(data.length() - 100,data.length()));
+			*/
+			
+			//网络状态通知
+			if(isOK()) {
+				sendMsgForView(NETWORK_STATUS_OK); //网络正常
+			}
+			
+			// 读取服务器端数流长度
+			int inputSize = 0;
+			try {
+				byte size[] = new byte[8];
+				input.read(size, 0, 8);
+				inputSize = Integer.parseInt(new String(size));
+				System.out.println(inputSize);
+			} catch (Exception e) {
+				errors = e.toString();
+				sendMsgForView(NETWORK_STATUS_ERROR); //发送消息到前台
+				throw new NetworkErrorException("网络异常...");
+			}
+			
+			byte[] b = new byte[inputSize];
+            for(int i=0;i<inputSize;i++){
+                 b[i] = (byte)input.read();
+           }
+            
+            data = new String(b);
+//    		data = new String(b,"GBK");//200
+		}catch(SocketTimeoutException e){
+			e.printStackTrace();
+			errors = e.toString();
+			sendMsgForView(NETWORK_STATUS_ERROR); //发送消息到前台
+			reConnection();//重连
+			throw e;
+		}catch (Exception e) {
+			Debug.println(this.getClass().getName() + e);
+			errors = e.toString(); 
+			sendMsgForView(NETWORK_STATUS_ERROR); //发送消息到前台
+			reConnection();//重连
+			throw e;
+		}
+		Debug.println("From service data by 【"+ message.split("\\|")[0] + "】: " + data);
+		return data;
+	}
+
+	/**
+	 * 心跳检测（调用服务器获得用户消息方法）
+	 */
+	public void run() {
+		while (isRuning) {
+			String result = null;
+			try {
+				String account = Initialization.ACCOUNT;
+				if(account == null || account.equals("")) {
+					account = "15874087500";
+				}
+				if(account != null && !"".equals(account)) {
+					result = request(new StringBuilder().append("getRequestInfo|").append(account).append("&").toString());
+					MsgHandle.sendForFriendRequest(result);
+				}
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				Thread.sleep(30000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * 向表现层发送网络异常消息
+	 * @param @param status 1 网络正常 2 网络异常 
+	 * @return void
+	 */
+	private void sendMsgForView(int status) {
+		//如果网络有变化
+		if(oldNetWorkStatus != status) {
+			oldNetWorkStatus = status;
+			if(status == 2) {
+				Debug.println("网络从正常--->异常");
+				DataEventManager.addDataEvent(DataEvent.NETWORK_EXCEPTION, "网络异常，请稍候...");
+				DataEventManager.addDataEvent(DataEvent.TIP, "糟糕，您的网络很不给力,请耐心等待...");
+			}else {
+				Debug.println("网络从异常--->正常");
+				DataEventManager.addDataEvent(DataEvent.TIP, new String("网络已恢复正常..."));
+			}
+		}
+	}
+
+	/**
+	 * 关闭网络操作
+	 * 
+	 * @param
+	 * @return void
+	 */
+	public void shutdownNetwork() {
+		this.isRuning = false;
+		try {
+			socket.close();
+			socket = null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 测试
+	 * 
+	 * @param ags
+	 * @throws Exception 
+	 */
+	public static void main(String[] ags) throws Exception {
+		ClientSocket clientSocket = new ClientSocket("http://192.168.1.126",8003);
+		clientSocket.start();
+	}
+
+	// ------------------------------------------------------------------------------
+	public String getHost() {
+		return host;
+	}
+
+	public void setIp(String host) {
+		this.host = host;
+	}
+
+	public Integer getPort() {
+		return port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+	
+	public String getErrors() {
+		return errors;
+	}
+}
