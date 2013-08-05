@@ -28,7 +28,15 @@ import android.os.Handler;
 
 import java.lang.ref.WeakReference;
 
+import com.joy.launcher.cache.BitmapCache;
+import com.joy.launcher.network.impl.Service;
+
 public class LauncherApplication extends Application {
+	
+	public static Service mService;
+	public static Context mContext;
+	public static BitmapCache mBcache ;
+	
     public LauncherModel mModel;
     public IconCache mIconCache;
     private static boolean sIsScreenLarge;
@@ -69,6 +77,15 @@ public class LauncherApplication extends Application {
         ContentResolver resolver = getContentResolver();
         resolver.registerContentObserver(LauncherSettings.Favorites.CONTENT_URI, true,
                 mFavoritesObserver);
+        
+        mContext = this;
+		mBcache = BitmapCache.getInstance();
+		try {
+			mService = Service.getInstance();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**
