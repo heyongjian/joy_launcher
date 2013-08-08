@@ -32,4 +32,9 @@
 
     <color name="workspace_all_apps_and_delete_zone_text_color">#CCFFFFFF</color>
     <color name="workspace_all_apps_and_delete_zone_text_shadow_color">#A0000000</color>
+    <!-- colors added by huangming -->
+    <color name="yellow">#FFFFCC00</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="black">#FF000000</color>
 </resources>
