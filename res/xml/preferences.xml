@@ -15,13 +15,18 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher">
+        xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher"
+        >
     <!-- UI -->
-    <PreferenceCategory android:title="@string/preferences_interface_title">
+    <PreferenceCategory android:title="@string/preferences_interface_title"
+        android:layout="@layout/joy_preference_category">
         <!-- Homescreen -->
         <PreferenceScreen android:key="ui_homescreen"
-            android:title="@string/preferences_interface_homescreen_title">
-            <PreferenceCategory android:title="@string/preferences_interface_homescreen_general_category">
+            android:title="@string/preferences_interface_homescreen_title"
+            android:icon="@drawable/preference_set_homescreen"
+            >
+            <PreferenceCategory android:title="@string/preferences_interface_homescreen_general_category"
+                android:layout="@layout/joy_preference_category">
                 <com.joy.launcher.preference.NumberPickerPreference android:key="ui_homescreen_screens"
                     android:title="@string/preferences_interface_homescreen_general_screens_title"
                     android:summary="@string/preferences_interface_homescreen_general_screens_summary"
@@ -69,13 +74,23 @@
                     android:title="@string/preferences_interface_homescreen_general_hide_icon_labels_title"
                     android:summary="@string/preferences_interface_homescreen_general_hide_icon_labels_summary" />
             </PreferenceCategory>
-            <PreferenceCategory android:title="@string/preferences_interface_homescreen_scrolling_category">
-                <ListPreference android:key="ui_homescreen_scrolling_transition_effect"
-                    android:title="@string/preferences_interface_homescreen_scrolling_transition_effect_title"
-                    android:summary="@string/preferences_interface_homescreen_scrolling_transition_effect_summary"
-                    android:entries="@array/preferences_interface_homescreen_scrolling_transition_effect_entries"
-                    android:entryValues="@array/preferences_interface_homescreen_scrolling_transition_effect_values"
-                    android:defaultValue="@string/config_workspaceDefaultTransitionEffect" />
+            <PreferenceCategory android:title="@string/preferences_interface_homescreen_scrolling_category"
+                android:layout="@layout/joy_preference_category">
+<!--                 <ListPreference android:key="ui_homescreen_scrolling_transition_effect" -->
+<!--                     android:title="@string/preferences_interface_homescreen_scrolling_transition_effect_title" -->
+<!--                     android:summary="@string/preferences_interface_homescreen_scrolling_transition_effect_summary" -->
+<!--                     android:entries="@array/preferences_interface_homescreen_scrolling_transition_effect_entries" -->
+<!--                     android:entryValues="@array/preferences_interface_homescreen_scrolling_transition_effect_values" -->
+<!--                     android:defaultValue="@string/config_workspaceDefaultTransitionEffect" /> -->
+				<com.joy.launcher.preference.mylistpreference.MyListPreference
+				    android:key="ui_homescreen_scrolling_transition_effect"
+				    android:summary="@string/preferences_interface_homescreen_scrolling_transition_effect_summary"
+				    android:title="@string/preferences_interface_homescreen_scrolling_transition_effect_title"
+				    launcher:entries="@array/preferences_interface_homescreen_scrolling_transition_effect_entries"
+				    launcher:entryDrawables="@array/preferences_interface_homescreen_scrolling_transition_effect_drawables"
+				    launcher:entryValues="@array/preferences_interface_homescreen_scrolling_transition_effect_values" >
+				</com.joy.launcher.preference.mylistpreference.MyListPreference>
+
                 <CheckBoxPreference android:key="ui_homescreen_scrolling_fade_adjacent_screens"
                     android:title="@string/preferences_interface_homescreen_scrolling_fade_adjacent_screens_title"
                     android:summary="@string/preferences_interface_homescreen_scrolling_fade_adjacent_screens_summary"
@@ -86,7 +101,8 @@
                     android:defaultValue="true" />
             </PreferenceCategory>
             <PreferenceCategory android:key="ui_homescreen_indicator"
-                android:title="@string/preferences_interface_homescreen_indicator_category">
+                android:title="@string/preferences_interface_homescreen_indicator_category"
+                android:layout="@layout/joy_preference_category">
                 <CheckBoxPreference android:key="ui_homescreen_indicator_enable"
                     android:title="@string/preferences_interface_homescreen_indicator_enable_title"
                     android:summary="@string/preferences_interface_homescreen_indicator_enable_summary"
@@ -105,26 +121,39 @@
 
         <!-- Drawer -->
         <PreferenceScreen android:key="ui_drawer"
-            android:title="@string/preferences_interface_drawer_title">
-            <PreferenceCategory android:title="@string/preferences_interface_drawer_widgets_category">
+            android:title="@string/preferences_interface_drawer_title"
+            android:icon="@drawable/preference_set_drawer">
+            <PreferenceCategory android:title="@string/preferences_interface_drawer_widgets_category"
+                android:layout="@layout/joy_preference_category">
                 <CheckBoxPreference android:key="ui_drawer_widgets_join_apps"
                     android:title="@string/preferences_interface_drawer_widgets_join_apps_title"
                     android:summary="@string/preferences_interface_drawer_widgets_join_apps_summary"
                     android:defaultValue="true" />
             </PreferenceCategory>
-            <PreferenceCategory android:title="@string/preferences_interface_drawer_scrolling_category">
-                <ListPreference android:key="ui_drawer_scrolling_transition_effect"
-                    android:title="@string/preferences_interface_drawer_scrolling_transition_effect_title"
-                    android:summary="@string/preferences_interface_drawer_scrolling_transition_effect_summary"
-                    android:entries="@array/preferences_interface_drawer_scrolling_transition_effect_entries"
-                    android:entryValues="@array/preferences_interface_drawer_scrolling_transition_effect_values"
-                    android:defaultValue="@string/config_drawerDefaultTransitionEffect" />
+            <PreferenceCategory android:title="@string/preferences_interface_drawer_scrolling_category"
+                android:layout="@layout/joy_preference_category">
+<!--                 <ListPreference android:key="ui_drawer_scrolling_transition_effect" -->
+<!--                     android:title="@string/preferences_interface_drawer_scrolling_transition_effect_title" -->
+<!--                     android:summary="@string/preferences_interface_drawer_scrolling_transition_effect_summary" -->
+<!--                     android:entries="@array/preferences_interface_drawer_scrolling_transition_effect_entries" -->
+<!--                     android:entryValues="@array/preferences_interface_drawer_scrolling_transition_effect_values" -->
+<!--                     android:defaultValue="@string/config_drawerDefaultTransitionEffect" /> -->
+				<com.joy.launcher.preference.mylistpreference.MyListPreference
+				    android:key="ui_drawer_scrolling_transition_effect"
+				    android:summary="@string/preferences_interface_drawer_scrolling_transition_effect_summary"
+				    android:title="@string/preferences_interface_drawer_scrolling_transition_effect_title"
+				    launcher:entries="@array/preferences_interface_drawer_scrolling_transition_effect_entries"
+				    launcher:entryDrawables="@array/preferences_interface_homescreen_scrolling_transition_effect_drawables"
+				    launcher:entryValues="@array/preferences_interface_drawer_scrolling_transition_effect_values" >
+				</com.joy.launcher.preference.mylistpreference.MyListPreference>
+
                 <CheckBoxPreference android:key="ui_drawer_scrolling_fade_adjacent_screens"
                     android:title="@string/preferences_interface_drawer_scrolling_fade_adjacent_screens_title"
                     android:summary="@string/preferences_interface_drawer_scrolling_fade_adjacent_screens_summary" />
             </PreferenceCategory>
             <PreferenceCategory android:key="ui_drawer_indicator"
-                android:title="@string/preferences_interface_drawer_indicator_category">
+                android:title="@string/preferences_interface_drawer_indicator_category"
+                android:layout="@layout/joy_preference_category">
                 <CheckBoxPreference android:key="ui_drawer_indicator_enable"
                     android:title="@string/preferences_interface_drawer_indicator_enable_title"
                     android:summary="@string/preferences_interface_drawer_indicator_enable_summary"
@@ -151,17 +180,32 @@
 
         <!-- General -->
         <PreferenceScreen android:key="ui_general"
-            android:title="@string/preferences_interface_general_title">
+            android:title="@string/preferences_interface_general_title"
+            android:icon="@drawable/preference_set_general"
+            >
             <CheckBoxPreference android:key="ui_general_orientation"
                 android:title="@string/preferences_interface_general_orientation_title"
                 android:defaultValue="@bool/config_defaultAutoRotate" />
         </PreferenceScreen>
     </PreferenceCategory>
 
+        <!-- backup & recover -->
+    <PreferenceCategory android:title="@string/preferences_bakcup_recover_title"
+        android:layout="@layout/joy_preference_category">
+        <PreferenceScreen android:key="preferences_bakcup"
+            android:title="@string/preferences_bakcup_title"
+            android:icon="@drawable/preference_backup"/>
+        <PreferenceScreen android:key="preferences_recover"
+            android:title="@string/preferences_recover_title"
+            android:icon="@drawable/preference_recover"/>
+    </PreferenceCategory>
+    
     <!-- Application -->
-    <PreferenceCategory android:title="@string/preferences_application_title">
-        <Preference android:key="application_version"
-            style="?android:preferenceInformationStyle"
-            android:summary="@string/application_copyright" />
+    <PreferenceCategory android:title="@string/preferences_application_title"
+        android:layout="@layout/joy_preference_category">
+        <PreferenceScreen android:key="application_version"
+            android:title="@string/application_name"
+            android:summary="@string/application_copyright"
+            android:icon="@drawable/preference_aboutme"/>
     </PreferenceCategory>
 </PreferenceScreen>

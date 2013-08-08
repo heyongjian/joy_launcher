@@ -32,6 +32,8 @@
 
     <color name="workspace_all_apps_and_delete_zone_text_color">#CCFFFFFF</color>
     <color name="workspace_all_apps_and_delete_zone_text_shadow_color">#A0000000</color>
+    <!-- add by wanghao -->
+    <color name="joy_preference_category_line_color">#FF7AB900</color>
     <!-- colors added by huangming -->
     <color name="yellow">#FFFFCC00</color>
     <color name="white">#FFFFFFFF</color>
