@@ -973,7 +973,7 @@ public class Workspace extends PagedView
             }
         }
         if (keepUpdating) {
-            fastInvalidate();
+            invalidate();
         }
     }
 
@@ -1270,7 +1270,7 @@ public class Workspace extends PagedView
                 if (mFadeInAdjacentScreens && !isSmall()) {
                     float alpha = 1 - Math.abs(scrollProgress);
                     cl.setAlpha(alpha);
-                    cl.fastInvalidate();
+                    cl.invalidate();
                 }
             }
         }
@@ -1290,7 +1290,7 @@ public class Workspace extends PagedView
                     float alpha = 1 - Math.abs(scrollProgress);
                     cl.setAlpha(alpha);
                 }
-                cl.fastInvalidate();
+                cl.invalidate();
             }
         }
         invalidate();
@@ -1315,7 +1315,7 @@ public class Workspace extends PagedView
                     float alpha = 1 - Math.abs(scrollProgress);
                     cl.setAlpha(alpha);
                 }
-                cl.fastInvalidate();
+                cl.invalidate();
             }
         }
     }
@@ -1346,7 +1346,7 @@ public class Workspace extends PagedView
                     float alpha = 1 - Math.abs(scrollProgress);
                     cl.setAlpha(alpha);
                 }
-                cl.fastInvalidate();
+                cl.invalidate();
             }
         }
     }
@@ -1367,7 +1367,7 @@ public class Workspace extends PagedView
                 cl.setPivotY(cl.getMeasuredHeight() * 0.5f);
                 cl.setRotationY(rotation);
                 cl.setAlpha(alpha);
-                cl.fastInvalidate();
+                cl.invalidate();
             }
         }
     }
@@ -1403,7 +1403,7 @@ public class Workspace extends PagedView
                 } else if (cl.getVisibility() != VISIBLE) {
                     cl.setVisibility(VISIBLE);
                 }
-                cl.fastInvalidate();
+                cl.invalidate();
             }
         }
         invalidate();
@@ -1421,7 +1421,7 @@ public class Workspace extends PagedView
                     float rotation = WORKSPACE_ROTATION * scrollProgress;
                     cl.setTranslationX(0.0f);
                     cl.setRotationY(rotation);
-                    cl.fastInvalidate();
+                    cl.invalidate();
                 }
             }
         } else if (mOverScrollX < 0 || mOverScrollX > mMaxScrollX) {
