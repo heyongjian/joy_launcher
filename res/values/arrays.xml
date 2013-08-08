@@ -40,6 +40,17 @@
         <item>CubeOut</item>
         <item>Stack</item>
     </string-array>
+        <integer-array name="preferences_interface_homescreen_scrolling_transition_effect_drawables">
+        <item>@drawable/edit_mode_effect_default</item>
+        <item>@drawable/edit_mode_effect_turn</item>
+        <item>@drawable/edit_mode_effect_cascading</item>
+        <item>@drawable/edit_mode_effect_chord</item>
+        <item>@drawable/edit_mode_effect_cylinder</item>
+        <item>@drawable/edit_mode_effect_tornado</item>
+        <item>@drawable/edit_mode_effect_cubeinside</item>
+        <item>@drawable/edit_mode_effect_cubeoutside</item>
+        <item>@drawable/edit_mode_effect_shutter</item>
+    </integer-array>
     <string-array name="preferences_interface_drawer_scrolling_transition_effect_entries">
         <item>Standard</item>
         <item>Tablet</item>
