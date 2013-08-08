@@ -182,4 +182,12 @@
     <!-- General -->
     <string name="preferences_interface_general_title">常规</string>
     <string name="preferences_interface_general_orientation_title">自动旋转屏幕</string>
+    <!-- menu view added by huangming. -->
+    <string name="menu_edit_screen">编辑屏幕</string>
+    <string name="menu_desktop_settings">桌面设置</string>
+    <string name="menu_mainmenu_edit">主菜单编辑</string>
+    <string name="menu_icon_sort">图标排序</string>
+    <string name="menu_show_apps">显示应用程序</string>
+    <string name="menu_hide_apps">隐藏应用程序</string>
+    <string name="menu_mainmenu_settings">主菜单设置</string>
 </resources>

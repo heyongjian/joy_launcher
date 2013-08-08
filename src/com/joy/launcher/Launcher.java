@@ -185,6 +185,8 @@ public final class Launcher extends Activity
 
     private LayoutInflater mInflater;
 
+    //added by huangming for menu.
+    private MenuFrameLayout menuView;
     private Workspace mWorkspace;
     private View mQsbDivider;
     private View mDockDivider;
@@ -778,6 +780,9 @@ public final class Launcher extends Activity
         final DragController dragController = mDragController;
 
         mDragLayer = (DragLayer) findViewById(R.id.drag_layer);
+        //added by huangming for menu.
+        menuView = (MenuFrameLayout)mDragLayer.findViewById(R.id.menu_view);
+        menuView.setLauncher(this);
         mWorkspace = (Workspace) mDragLayer.findViewById(R.id.workspace);
         mQsbDivider = (ImageView) findViewById(R.id.qsb_divider);
         mDockDivider = (ImageView) findViewById(R.id.dock_divider);
@@ -1082,6 +1087,8 @@ public final class Launcher extends Activity
                 mDragLayer.clearAllResizeFrames();
                 updateRunning();
 
+                //add by huangming for menu.
+                closeMenu();
                 // Reset AllApps to its initial state only if we are not in the middle of
                 // processing a multi-step drop
                 if (mAppsCustomizeTabHost != null && mPendingAddInfo.container == ItemInfo.NO_ID) {
@@ -1440,6 +1447,40 @@ public final class Launcher extends Activity
         }
         return true;
     }
+        
+    //added by huangming for menu.
+    public boolean onMenuOpened(int featureId, Menu menu) {
+		if(menuView != null)
+		{
+			int visible = menuView.getVisibility();
+			if(visible == View.GONE)
+			{
+				menuView.show(true, isAllAppsVisible());
+			}
+			else if(visible == View.VISIBLE)
+			{
+				menuView.dismiss(true);
+			}
+			
+		}
+
+		return false;
+	}
+    
+    private void closeMenu()
+	{
+		if(menuView != null)
+		{
+			menuView.dismiss(false);
+		}
+	}
+    
+    void startWallpaper(Intent intent)
+    {
+    	startActivityForResult(intent, REQUEST_PICK_WALLPAPER);
+    }
+    
+    
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -1694,7 +1735,12 @@ public final class Launcher extends Activity
 
     @Override
     public void onBackPressed() {
-        if (mState == State.APPS_CUSTOMIZE) {
+    	if(menuView != null && menuView.getVisibility() != View.GONE)
+    	{
+    		
+    		menuView.dismiss(true);
+    	}
+        else if (mState == State.APPS_CUSTOMIZE) {
             showWorkspace(true);
         } else if (mWorkspace.getOpenFolder() != null) {
             Folder openFolder = mWorkspace.getOpenFolder();

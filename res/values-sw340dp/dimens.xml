@@ -17,4 +17,7 @@
 <resources>
     <!-- Drag padding to add to the bottom of drop targets -->
     <dimen name="drop_target_drag_padding">20dp</dimen>
+    <!-- menu view added by huangming-->
+    <dimen name="menu_item_icon_size">35dip</dimen>
+    <dimen name="menu_item_text_size">20sp</dimen>
 </resources>

@@ -345,5 +345,14 @@ s -->
     <!-- General -->
     <string name="preferences_interface_general_title">General</string>
     <string name="preferences_interface_general_orientation_title">Auto-rotate screen</string>
+    
+    <!-- menu view added by huangming. -->
+    <string name="menu_edit_screen">Edit screen</string>
+    <string name="menu_desktop_settings">Desktop settings</string>
+    <string name="menu_mainmenu_edit">Main menu edit</string>
+    <string name="menu_icon_sort">Icon sort</string>
+    <string name="menu_show_apps">Show applications</string>
+    <string name="menu_hide_apps">Hide applications</string>
+    <string name="menu_mainmenu_settings">Main menu settings</string>
 
 </resources>
