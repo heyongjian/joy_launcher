@@ -157,4 +157,10 @@
         <attr name="pickerTitle1" format="string" />
         <attr name="pickerTitle2" format="string" />
     </declare-styleable>
+    <!-- add by wanghao -->
+    <declare-styleable name="MyListPrefrence">
+        <attr name="entries" format="string" />
+        <attr name="entryValues" format="string" />
+        <attr name="entryDrawables" format="string" />
+        </declare-styleable>
 </resources>
