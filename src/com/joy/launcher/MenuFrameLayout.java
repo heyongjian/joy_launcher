@@ -3,8 +3,6 @@ package com.joy.launcher;
 
 import java.util.ArrayList;
 
-import com.joy.launcher.preference.Preferences;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -12,11 +10,8 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.provider.Settings;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,11 +23,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
-import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.joy.launcher.preference.Preferences;
 
 public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 
@@ -172,8 +167,12 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	        itemInfo = new MenuItemInfo();
 	        itemInfo.textId = R.string.menu_desktop_settings;
 	        itemInfo.iconId = R.drawable.menu_desktop_settings;
-	        //
-	        itemInfo.intent = new Intent();
+	        
+	        //open desktop settings
+	        Intent preferences = new Intent().setClass(launcher, Preferences.class);
+	        preferences.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+	                | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+	        itemInfo.intent = preferences;
 	        itemInfo.selectId = MENU_DESKTOP_SETTINGS;
 	        itemsAll.add(itemInfo);
 	        itemPositions.add(MENU_ITEM_IN_WORKSPACE);
@@ -473,7 +472,7 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 			if(data != null && launcher != null)
 			{
 				launcher.startWallpaper(data);
-			}			
+			}
 			break;
 		case MENU_MANAGE_APPLICATION:
 			if(data != null && launcher != null)
@@ -484,6 +483,10 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 		case MENU_EDIT_SCREEN:
 			break;
 		case MENU_DESKTOP_SETTINGS:
+			if(data != null && launcher != null)
+			{
+				launcher.startActivity(data);
+			}	
 			break;
 		case MENU_MAINMENU_EDIT:
 			break;

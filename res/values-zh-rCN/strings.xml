@@ -182,6 +182,11 @@
     <!-- General -->
     <string name="preferences_interface_general_title">常规</string>
     <string name="preferences_interface_general_orientation_title">自动旋转屏幕</string>
+    
+    <!-- bakcup & recover -->
+    <string name="preferences_bakcup_recover_title">备份与恢复</string>
+    <string name="preferences_bakcup_title">备份</string>
+    <string name="preferences_recover_title">恢复</string>
     <!-- menu view added by huangming. -->
     <string name="menu_edit_screen">编辑屏幕</string>
     <string name="menu_desktop_settings">桌面设置</string>
