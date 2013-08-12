@@ -28,6 +28,8 @@ import org.apache.http.protocol.HttpContext;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import android.util.Log;
+
 import com.joy.launcher.util.Constants;
 import com.joy.launcher.util.Util;
 
@@ -39,8 +41,8 @@ import com.joy.launcher.util.Util;
  */
 public class ClientHttp implements ClientInterface {
 
-	private String TAG = "ClientHttp";
-	
+	private static final String TAG = "ClientHttp";
+	private static final Boolean DEBUG = false;
 	@Override
 	public JSONObject request(Protocal protocal) throws Exception {
 		JSONObject data = post(protocal);
@@ -61,7 +63,7 @@ public class ClientHttp implements ClientInterface {
 		JSONObject json = null;
 		try {
 			InputStream in = getInputStream(protocal);
-			Util.i(TAG, " in : "+in);
+			if(DEBUG) Log.i(TAG, "---post in : "+in);
 			if(in == null){
 				return null;
 			}
@@ -75,10 +77,10 @@ public class ClientHttp implements ClientInterface {
 			in.close();
 			json = (JSONObject)new JSONTokener(buffer.toString()).nextValue();
 //			Log.e("", "URL:" + url + ",获取到服务器数据:" + json);
-			Util.i(TAG, "  str : "+json.toString());
+			if(DEBUG) Log.i(TAG, "---post  str : "+json.toString());
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			Util.i(TAG, "网络异常    -----------》3");
+			if(DEBUG) Log.e(TAG, "---post 网络异常    -----------》3");
 		}
 		return json;
 	}
@@ -88,7 +90,7 @@ public class ClientHttp implements ClientInterface {
 	 */
 	public InputStream getInputStream(Protocal protocal){
 		if(!Util.isNetworkConnected()){
-			Util.i(TAG, "没有打开网络连接！");
+			if(DEBUG) Log.e(TAG, "---getInputStream 没有打开网络连接！");
 			return null;
 		}
 		DefaultHttpClient httpClient = null;
@@ -115,7 +117,7 @@ public class ClientHttp implements ClientInterface {
 			if (protocal.getGetData() != null) {
 				urlStrl += "?" + protocal.getGetData();
 			}
-			Util.i(TAG, "urlStrl： "+urlStrl);
+			if(DEBUG) Log.i(TAG, "---getInputStream urlStrl： "+urlStrl);
 			
 			HttpRequestBase httpRequest = null;
 			// post
@@ -126,13 +128,12 @@ public class ClientHttp implements ClientInterface {
 			} else {
 				httpRequest = new HttpGet(urlStrl);
 			}
-			Util.i(TAG, "网络连接  1");
 			
 			httpRequest.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,
 					protocal.getSoTimeout() > 0 ? protocal.getSoTimeout() : 15000);
 
 			//添加头
-			httpRequest.addHeader("ts", Util.getTS());//–随机数
+			httpRequest.addHeader("ts", Util.getTS(9999));//–随机数
 			httpRequest.addHeader("deviceId", Util.getDeviceID());// –唯一设备号
 			httpRequest.addHeader("Accept-Encoding", "gzip");
 			httpRequest.addHeader("Content-Type", "text/json;charset=UTF-8");
@@ -147,12 +148,12 @@ public class ClientHttp implements ClientInterface {
 					result = handleReponse(httpResponse, false);
 				}
 			}else{
-				Util.i(TAG, "网络异常    -----------》2");
+				if(DEBUG) Log.e(TAG, "---getInputStream 网络异常    -----------》2");
 			}
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			Util.i(TAG, "网络异常    -----------》1");
+			if(DEBUG) Log.e(TAG, "---getInputStream 网络异常    -----------》1");
 		} finally {
 			if (httpClient != null) {
 				httpClient.getConnectionManager().shutdown();
@@ -189,7 +190,8 @@ public class ClientHttp implements ClientInterface {
 		@Override
 		public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
 
-			Util.i(TAG, "requestServiceResource response executionCount: " + executionCount + " exception:"+ exception);
+			if(DEBUG) Log.i(TAG, "---retryRequest requestServiceResource response executionCount: " + 
+					executionCount + " exception:"+ exception);
 			
 			if (executionCount > 3) {
 				// Do not retry if over max retry count
