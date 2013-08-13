@@ -74,7 +74,8 @@ public class JoyFolderIcon extends FolderIcon {
     	int id = R.drawable.game_folder;
     	switch(mInfo.natureType){
     	case ItemInfo.LOCAL:
-    		return null;
+    		id = R.drawable.game_folder;
+    		break;
     	case ItemInfo.ONLINE:
     		id = R.drawable.game_folder;
     		break;

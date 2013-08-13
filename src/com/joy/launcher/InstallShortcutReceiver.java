@@ -87,7 +87,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
         return false;
     }
 
-    private static boolean findEmptyCell(Context context, int[] xy, int screen) {
+    public static boolean findEmptyCell(Context context, int[] xy, int screen) {
         final int xCount = LauncherModel.getCellCountX();
         final int yCount = LauncherModel.getCellCountY();
         boolean[][] occupied = new boolean[xCount][yCount];

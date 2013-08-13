@@ -26,15 +26,15 @@ import android.widget.Toast;
  *
  */
 public class JoyFolder extends Folder{
-	RelativeLayout joyFolderTop;
-	LinearLayout joyFolderButtom;
 	int mJoyFolderTopHeight;
 	int mJoyFolderButtomHeight;
 	int mJoyFolderAppLayoutTitleHeight;
 	int mJoyFolderAppLayoutHeight;
-	
+	RelativeLayout joyFolderTop;
+	LinearLayout joyFolderButtom;
 	JoyFolderGridView gridView;
 	RelativeLayout appLayoutTitle;
+	//容器大小
 	int size = 16;
 	public JoyFolder(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -53,8 +53,7 @@ public class JoyFolder extends Folder{
         mFolderName = (FolderEditText) findViewById(R.id.folder_name);
         mFolderName.setFolder(this);
         mFolderName.setOnFocusChangeListener(this);
-        //------------------------------------
-		//do myselft things
+
 		int measureSpec = MeasureSpec.UNSPECIFIED;
 		joyFolderTop = (RelativeLayout)this.findViewById(R.id.joy_folder_top);
 		joyFolderTop.measure(measureSpec, measureSpec);
@@ -69,6 +68,7 @@ public class JoyFolder extends Folder{
 		
 		appLayoutTitle = (RelativeLayout)findViewById(R.id.app_layout_title);
 		mJoyFolderAppLayoutTitleHeight = appLayoutTitle.getMeasuredHeight();
+		
 		initJoyFolder();
 	}
     public void setTitleIcon(Drawable d){
@@ -120,7 +120,19 @@ public class JoyFolder extends Folder{
 			gridView.requestLayout(); 
 		}
 	}
-
+    protected void setFolderLayoutParams(int left,int top,int width,int height) {
+    	
+    	DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
+    	CellLayout currentPage = mLauncher.getWorkspace().getCurrentDropLayout();
+        if (mMode == PARTIAL_GROW) {
+            lp.width = width;
+            lp.height = height;
+            lp.x = (currentPage.getMeasuredWidth()-width)/2;
+            lp.y = top;
+        } else {
+            mNewSize.set(left, top, left + width, top + height);
+        }
+	}
 	@Override
 	public void getHitRect(Rect outRect) {
 		// TODO Auto-generated method stub
@@ -129,12 +141,11 @@ public class JoyFolder extends Folder{
 	}
 	@Override
     protected void replaceFolderWithFinalItem() {
-    	//joyfolder not do this step
+    	//online folder not do this step
     }
     @Override
     protected int getFolderWidth(){
     	return super.getFolderWidth();
-//    	return mFolderWidth;
     }
     @Override
     protected int getFolderHeight(){
@@ -182,7 +193,6 @@ public class JoyFolder extends Folder{
 					imgButton.setImageResource(R.drawable.joy_onlinefolder_down);
 					tempHeight = mJoyFolderAppLayoutHeight;
 				}
-//				mJoyFolderAppLayoutTitleHeight = 0;
 				DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
 				lp.setHeight(getFolderHeight()-tempHeight);
 			}

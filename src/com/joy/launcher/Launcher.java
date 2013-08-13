@@ -86,6 +86,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -99,6 +100,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Advanceable;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -1656,6 +1658,79 @@ public final class Launcher extends Activity
         startActivityForResult(intent, REQUEST_PICK_WALLPAPER);
     }
 
+    /**
+     * 弹出添加在线文件夹窗口
+     * @param natureType
+     * @return
+     */
+    public void showAddFolderDialog(){
+
+		LayoutInflater inflater = getLayoutInflater();
+		View view = inflater.inflate(R.layout.addfolder_dialog,(ViewGroup) findViewById(R.id.dialog));
+		String string = getResources().getString(R.string.online_folder);
+		final AlertDialog dialog = new AlertDialog.Builder(this).setTitle(string).setView(view).show();
+    	
+    	LinearLayout gameFolder = (LinearLayout)view.findViewById(R.id.game_folder);
+    	gameFolder.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				addJoyFolder(ItemInfo.ONLINE);
+				dialog.dismiss();
+			}
+		});
+    	LinearLayout applicationFolder = (LinearLayout)view.findViewById(R.id.application_folder);
+    	applicationFolder.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				addJoyFolder(ItemInfo.ONLINE_1);
+				dialog.dismiss();
+			}
+		});
+	
+    }
+    /**
+     * 手动添加在线文件夹
+     * @param natureType
+     * @return
+     */
+    FolderIcon addJoyFolder(int natureType) {
+
+    	final int screen = getCurrentWorkspaceScreen();
+
+        int[] mTargetCell = new int[2];
+        if(InstallShortcutReceiver.findEmptyCell(this, mTargetCell, screen)){
+        	
+        	CellLayout layout = mWorkspace.getCurrentDropLayout();
+        	long container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+        	int cellX = mTargetCell[0];
+            int cellY = mTargetCell[1];
+            final FolderInfo folderInfo = new FolderInfo();
+            folderInfo.title = getText(R.string.folder_name);
+            folderInfo.natureType = natureType;
+           
+            LauncherModel.addItemToDatabase(Launcher.this, folderInfo, container, screen, cellX, cellY,
+                    false);
+            sFolders.put(folderInfo.id, folderInfo);
+
+            FolderIcon newFolder =
+                JoyFolderIcon.fromXml(R.layout.joy_folder_icon, this, layout, folderInfo, mIconCache);
+             
+            if (mHideIconLabels) {
+                newFolder.setTextVisible(false);
+            }
+            mWorkspace.addInScreen(newFolder, container, screen, cellX, cellY, 1, 1,
+                    isWorkspaceLocked());
+            return newFolder;
+        }else{
+        	Toast.makeText(this, getString(R.string.out_of_space),
+                    Toast.LENGTH_SHORT).show();
+        }
+        
+        return null;
+    }
+    
     FolderIcon addFolder(CellLayout layout, long container, final int screen, int cellX,
             int cellY) {
         final FolderInfo folderInfo = new FolderInfo();

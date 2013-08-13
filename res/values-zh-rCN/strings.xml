@@ -194,6 +194,8 @@
      <string name="joy_foler_more_app">更多</string>
     <string name="joy_foler_refresh">刷新</string>
     <string name="joy_foler_hot_app">【热门应用】</string>
+     <string name="online_folder">在线文件夹</string>
+	<string name="menu_add_folder">添加</string>
 
     <!-- menu view added by huangming. -->
     <string name="menu_edit_screen">编辑屏幕</string>
