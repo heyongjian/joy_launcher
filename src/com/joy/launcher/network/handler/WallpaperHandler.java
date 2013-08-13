@@ -7,8 +7,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.graphics.Bitmap;
-
-import com.joy.launcher.util.Util;
+import android.util.Log;
 
 /**
  * 解析json数据与壁纸的逻辑处理
@@ -24,15 +23,16 @@ public class WallpaperHandler {
 		String name;//壁纸名称
 		String url;//图片下载链接
 	}
-	
+	private static final String TAG = "WallpaperHandler";
+	private static final Boolean DEBUG = false;
 	String tempjson = "{ \"state\": 1, \"item\": [ { \"id\": 1, \"icon\": \"?op=9001&type=1&id=1\", \"name\":\"xxxx\", \"description\": \"xxxxxx\" }, { \"id\": 2, \"icon\": \"?op=9001&type=1&id=1\", \"name\": \"xxxx\", \"description\": \"xxxxxx\" } ] }";
-	String TAG = "JSON";
+
 	public void getWallpaperType(JSONObject json){
 		try {
 			JSONTokener jsonParser = new JSONTokener(tempjson);//为了测试，根据tempjson生成json对象。
 			JSONObject wallpager = (JSONObject) jsonParser.nextValue();
 			int state = wallpager.getInt("state");
-			Util.i(TAG, "state: "+state);
+			if(DEBUG) Log.i(TAG, "---getWallpaper state: "+state);
 			JSONArray jsonarry = wallpager.getJSONArray("item");
 			int length = jsonarry.length();
 			for(int i=0;i<length;i++){
@@ -41,7 +41,8 @@ public class WallpaperHandler {
 				String icon = item.getString("icon");
 				String name = item.getString("name");
 				String description = item.getString("description");
-				Util.i(TAG, "id: "+id+"  icon: "+icon+"  name: "+name+"  description: "+description);
+				if(DEBUG) Log.i(TAG, "--- getWallpaper id: "+id+"  icon: "+icon+" " +
+						" name: "+name+"  description: "+description);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
