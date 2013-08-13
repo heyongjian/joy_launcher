@@ -734,7 +734,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return null;
     }
 
-    private void setupContentDimensions(int count) {
+    protected void setupContentDimensions(int count) {
         ArrayList<View> list = getItemsInReadingOrder();
 
         int countX = mContent.getCountX();
@@ -767,12 +767,20 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return getItemCount() >= mMaxNumItems;
     }
 
+    protected int getFolderWidth(){
+    	int width = getPaddingLeft() + getPaddingRight() + mContent.getDesiredWidth();
+    	return width;
+    }
+    protected int getFolderHeight(){
+    	 int height = getPaddingTop() + getPaddingBottom() + mContent.getDesiredHeight() + mFolderNameHeight;
+    	return height;
+    }
     private void centerAboutIcon() {
         DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
 
-        int width = getPaddingLeft() + getPaddingRight() + mContent.getDesiredWidth();
-        int height = getPaddingTop() + getPaddingBottom() + mContent.getDesiredHeight()
-                + mFolderNameHeight;
+        int width = getFolderWidth();
+        int height = getFolderHeight();
+
         DragLayer parent = (DragLayer) mLauncher.findViewById(R.id.drag_layer);
 
         parent.getDescendantRectRelativeToSelf(mFolderIcon, mTempRect);
@@ -822,7 +830,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         }
     }
 
-    private void setupContentForNumItems(int count) {
+    protected void setupContentForNumItems(int count) {
         setupContentDimensions(count);
 
         DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
@@ -835,9 +843,11 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     }
 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width = getPaddingLeft() + getPaddingRight() + mContent.getDesiredWidth();
-        int height = getPaddingTop() + getPaddingBottom() + mContent.getDesiredHeight()
-                + mFolderNameHeight;
+//        int width = getPaddingLeft() + getPaddingRight() + mContent.getDesiredWidth();
+//        int height = getPaddingTop() + getPaddingBottom() + mContent.getDesiredHeight()
+//                + mFolderNameHeight;
+    	int width = getFolderWidth();
+    	int height = getFolderHeight();
 
         int contentWidthSpec = MeasureSpec.makeMeasureSpec(mContent.getDesiredWidth(),
                 MeasureSpec.EXACTLY);
@@ -903,7 +913,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         mSuppressFolderDeletion = false;
     }
 
-    private void replaceFolderWithFinalItem() {
+    protected void replaceFolderWithFinalItem() {
         ItemInfo finalItem = null;
 
         if (getItemCount() == 1) {

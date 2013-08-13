@@ -62,7 +62,7 @@ public class LauncherProvider extends ContentProvider {
     private static final String TAG = "Launcher.LauncherProvider";
     private static final boolean LOGD = false;
 
-    private static final String DATABASE_NAME = "launcher.db";
+    private static final String DATABASE_NAME = "joy_launcher.db";
 
     private static final int DATABASE_VERSION = 9;
 
@@ -243,6 +243,7 @@ public class LauncherProvider extends ContentProvider {
                     "title TEXT," +
                     "intent TEXT," +
                     "container INTEGER," +
+                    "natureType INTEGER," +
                     "screen INTEGER," +
                     "cellX INTEGER," +
                     "cellY INTEGER," +
@@ -317,6 +318,7 @@ public class LauncherProvider extends ContentProvider {
             final int iconPackageIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_PACKAGE);
             final int iconResourceIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_RESOURCE);
             final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
+            final int natureTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_TYPE);
             final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
             final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
             final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
@@ -336,6 +338,7 @@ public class LauncherProvider extends ContentProvider {
                 values.put(LauncherSettings.Favorites.ICON_PACKAGE, c.getString(iconPackageIndex));
                 values.put(LauncherSettings.Favorites.ICON_RESOURCE, c.getString(iconResourceIndex));
                 values.put(LauncherSettings.Favorites.CONTAINER, c.getInt(containerIndex));
+                values.put(LauncherSettings.Favorites.NATURE_TYPE, c.getInt(natureTypeIndex));
                 values.put(LauncherSettings.Favorites.ITEM_TYPE, c.getInt(itemTypeIndex));
                 values.put(LauncherSettings.Favorites.APPWIDGET_ID, -1);
                 values.put(LauncherSettings.Favorites.SCREEN, c.getInt(screenIndex));
@@ -730,7 +733,11 @@ public class LauncherProvider extends ContentProvider {
                     if (a.hasValue(R.styleable.Favorite_container)) {
                         container = Long.valueOf(a.getString(R.styleable.Favorite_container));
                     }
-
+                    //默认为本地应用
+                    int natureType = ItemInfo.LOCAL;
+                    if(a.hasValue(R.styleable.Favorite_natureType)){
+                    	natureType = Integer.valueOf(a.getString(R.styleable.Favorite_natureType));
+                    }
                     String screen = a.getString(R.styleable.Favorite_screen);
                     String x = a.getString(R.styleable.Favorite_x);
                     String y = a.getString(R.styleable.Favorite_y);
@@ -745,6 +752,7 @@ public class LauncherProvider extends ContentProvider {
 
                     values.clear();
                     values.put(LauncherSettings.Favorites.CONTAINER, container);
+                    values.put(LauncherSettings.Favorites.NATURE_TYPE, natureType);
                     values.put(LauncherSettings.Favorites.SCREEN, screen);
                     values.put(LauncherSettings.Favorites.CELLX, x);
                     values.put(LauncherSettings.Favorites.CELLY, y);

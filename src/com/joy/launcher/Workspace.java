@@ -3343,8 +3343,14 @@ public class Workspace extends PagedView
                         (ShortcutInfo) info);
                 break;
             case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
-                view = FolderIcon.fromXml(R.layout.folder_icon, mLauncher, cellLayout,
-                        (FolderInfo) info, mIconCache);
+                if (info.natureType == ItemInfo.ONLINE||info.natureType == ItemInfo.ONLINE_1) {
+					view = JoyFolderIcon.fromXml(R.layout.joy_folder_icon,
+							mLauncher, cellLayout, (FolderInfo) info,
+							mIconCache);
+				} else {
+					view = FolderIcon.fromXml(R.layout.folder_icon, mLauncher,
+							cellLayout, (FolderInfo) info, mIconCache);
+				}
                 if (mHideIconLabels) {
                     ((FolderIcon) view).setTextVisible(false);
                 }

@@ -262,6 +262,7 @@ public class LauncherModel extends BroadcastReceiver {
 
         final ContentValues values = new ContentValues();
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
+        values.put(LauncherSettings.Favorites.NATURE_TYPE, item.natureType);
         values.put(LauncherSettings.Favorites.CELLX, item.cellX);
         values.put(LauncherSettings.Favorites.CELLY, item.cellY);
         values.put(LauncherSettings.Favorites.SCREEN, item.screen);
@@ -281,6 +282,7 @@ public class LauncherModel extends BroadcastReceiver {
 
         final ContentValues values = new ContentValues();
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
+        values.put(LauncherSettings.Favorites.NATURE_TYPE, item.natureType);
         values.put(LauncherSettings.Favorites.SPANX, spanX);
         values.put(LauncherSettings.Favorites.SPANY, spanY);
         values.put(LauncherSettings.Favorites.CELLX, cellX);
@@ -325,12 +327,13 @@ public class LauncherModel extends BroadcastReceiver {
         ArrayList<ItemInfo> items = new ArrayList<ItemInfo>();
         final ContentResolver cr = context.getContentResolver();
         Cursor c = cr.query(LauncherSettings.Favorites.CONTENT_URI, new String[] {
-                LauncherSettings.Favorites.ITEM_TYPE, LauncherSettings.Favorites.CONTAINER,
+                LauncherSettings.Favorites.ITEM_TYPE, LauncherSettings.Favorites.CONTAINER,LauncherSettings.Favorites.NATURE_TYPE,
                 LauncherSettings.Favorites.SCREEN, LauncherSettings.Favorites.CELLX, LauncherSettings.Favorites.CELLY,
                 LauncherSettings.Favorites.SPANX, LauncherSettings.Favorites.SPANY }, null, null, null);
 
         final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
         final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
+        final int joytypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_TYPE);
         final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
         final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
         final int cellYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLY);
@@ -345,6 +348,7 @@ public class LauncherModel extends BroadcastReceiver {
                 item.spanX = c.getInt(spanXIndex);
                 item.spanY = c.getInt(spanYIndex);
                 item.container = c.getInt(containerIndex);
+                item.natureType = c.getInt(joytypeIndex);//wanghao
                 item.itemType = c.getInt(itemTypeIndex);
                 item.screen = c.getInt(screenIndex);
 
@@ -374,6 +378,7 @@ public class LauncherModel extends BroadcastReceiver {
                 final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
                 final int titleIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.TITLE);
                 final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
+                final int joytypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_TYPE);
                 final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
                 final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
                 final int cellYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLY);
@@ -388,6 +393,7 @@ public class LauncherModel extends BroadcastReceiver {
                 folderInfo.title = c.getString(titleIndex);
                 folderInfo.id = id;
                 folderInfo.container = c.getInt(containerIndex);
+                folderInfo.natureType = c.getInt(joytypeIndex);
                 folderInfo.screen = c.getInt(screenIndex);
                 folderInfo.cellX = c.getInt(cellXIndex);
                 folderInfo.cellY = c.getInt(cellYIndex);
@@ -998,6 +1004,8 @@ public class LauncherModel extends BroadcastReceiver {
                         LauncherSettings.Favorites.ICON_RESOURCE);
                 final int containerIndex = c.getColumnIndexOrThrow(
                         LauncherSettings.Favorites.CONTAINER);
+                final int joytypeIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.NATURE_TYPE);
                 final int itemTypeIndex = c.getColumnIndexOrThrow(
                         LauncherSettings.Favorites.ITEM_TYPE);
                 final int appWidgetIdIndex = c.getColumnIndexOrThrow(
@@ -1051,6 +1059,7 @@ public class LauncherModel extends BroadcastReceiver {
                                 info.id = c.getLong(idIndex);
                                 container = c.getInt(containerIndex);
                                 info.container = container;
+                                info.natureType = c.getInt(joytypeIndex);
                                 info.screen = c.getInt(screenIndex);
                                 info.cellX = c.getInt(cellXIndex);
                                 info.cellY = c.getInt(cellYIndex);
@@ -1097,6 +1106,7 @@ public class LauncherModel extends BroadcastReceiver {
                             folderInfo.id = id;
                             container = c.getInt(containerIndex);
                             folderInfo.container = container;
+                            folderInfo.natureType = c.getInt(joytypeIndex);//wanghao
                             folderInfo.screen = c.getInt(screenIndex);
                             folderInfo.cellX = c.getInt(cellXIndex);
                             folderInfo.cellY = c.getInt(cellYIndex);
@@ -1139,7 +1149,7 @@ public class LauncherModel extends BroadcastReceiver {
                                 appWidgetInfo.cellY = c.getInt(cellYIndex);
                                 appWidgetInfo.spanX = c.getInt(spanXIndex);
                                 appWidgetInfo.spanY = c.getInt(spanYIndex);
-
+                                appWidgetInfo.natureType = c.getInt(joytypeIndex);
                                 container = c.getInt(containerIndex);
                                 if (container != LauncherSettings.Favorites.CONTAINER_DESKTOP &&
                                     container != LauncherSettings.Favorites.CONTAINER_HOTSEAT) {

@@ -20,6 +20,44 @@
     <!-- Left screen [1] -->
 
     <!-- Middle screen [2] -->
+    <folder
+        launcher:natureType="1"
+        launcher:screen="2"
+        launcher:title="@string/joy_game_folder"
+        launcher:x="0"
+        launcher:y="0" >
+        <favorite
+            launcher:className="com.android.contacts.activities.DialtactsActivity"
+            launcher:packageName="com.android.contacts" />
+        <favorite
+            launcher:className="com.android.contacts.activities.DialtactsActivity"
+            launcher:packageName="com.android.contacts" />
+    </folder>
+    <folder
+        launcher:natureType="2"
+        launcher:screen="2"
+        launcher:title="@string/joy_application_folder"
+        launcher:x="1"
+        launcher:y="0" >
+        <favorite
+            launcher:className="com.android.contacts.activities.DialtactsActivity"
+            launcher:packageName="com.android.contacts" />
+        <favorite
+            launcher:className="com.android.contacts.activities.DialtactsActivity"
+            launcher:packageName="com.android.contacts" />
+    </folder>
+    <folder
+        launcher:natureType="0"
+        launcher:screen="2"
+        launcher:x="2"
+        launcher:y="0" >
+        <favorite
+            launcher:className="com.android.contacts.activities.DialtactsActivity"
+            launcher:packageName="com.android.contacts" />
+        <favorite
+            launcher:className="com.android.contacts.activities.DialtactsActivity"
+            launcher:packageName="com.android.contacts" />
+    </folder>
     <appwidget
         launcher:packageName="com.android.deskclock"
         launcher:className="com.android.alarmclock.AnalogAppWidgetProvider"
