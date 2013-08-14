@@ -46,8 +46,8 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	private final static int MENU_ITEM_IN_ALLAPP = 1;
 	private final static int MENU_ITEM_IN_BOTH = 2;
 	
-	private final static int MENU_ADD_FOLDER = 0;
-	private final static int MENU_WALLPAPER = MENU_ADD_FOLDER+1;
+	private final static int MENU_ADD_TO_DESKTOP = 0;
+	private final static int MENU_WALLPAPER = MENU_ADD_TO_DESKTOP+1;
 	private final static int MENU_MANAGE_APPLICATION = MENU_WALLPAPER + 1;
 	private final static int MENU_EDIT_SCREEN = MENU_MANAGE_APPLICATION + 1;
 	private final static int MENU_DESKTOP_SETTINGS = MENU_EDIT_SCREEN + 1;
@@ -140,7 +140,7 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	        itemInfo.textId = R.string.menu_add_folder;
 	        itemInfo.iconId = R.drawable.menu_add_folder;
 	        itemInfo.intent = null;
-	        itemInfo.selectId = MENU_ADD_FOLDER;
+	        itemInfo.selectId = MENU_ADD_TO_DESKTOP;
 	        itemsAll.add(itemInfo);
 	        itemPositions.add(MENU_ITEM_IN_WORKSPACE);
 			
@@ -478,8 +478,8 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 		Intent data = menuInfo.intent;
 		switch(selectId)
 		{
-		case MENU_ADD_FOLDER:
-			launcher.showAddFolderDialog();
+		case MENU_ADD_TO_DESKTOP:
+			launcher.showAddToDesktop();
 			break;
 		case MENU_WALLPAPER:
 			if(data != null && launcher != null)

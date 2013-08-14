@@ -6,47 +6,47 @@
     android:orientation="vertical" >
 
     <LinearLayout
-        android:id="@+id/game_folder"
+        android:id="@+id/add_online_folder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" 
         android:clickable="true"
-        android:background="@drawable/joy_onlinefolder_button_selector"
+        android:background="@drawable/joy_button_selector"
         android:orientation="horizontal">
 
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/game_folder" />
+            android:src="@drawable/add_list_onlinefolder" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:textSize="18dp"
-            android:text="@string/joy_game_folder" />
+            android:text="@string/add_folder_to_desktop" />
     </LinearLayout>
      <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="1dp" 
         android:background="#ff515864"/>
     <LinearLayout
-        android:id="@+id/application_folder"
+        android:id="@+id/add_app_widget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" 
         android:clickable="true"
-        android:background="@drawable/joy_onlinefolder_button_selector"
+        android:background="@drawable/joy_button_selector"
         android:orientation="horizontal">
 
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/application_folder" />
+            android:src="@drawable/add_list_widget" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:textSize="18dp"
-            android:text="@string/joy_application_folder" />
+            android:text="@string/add_widget_to_desktop" />
     </LinearLayout>
 </LinearLayout>

@@ -358,8 +358,11 @@ s -->
     <string name="joy_foler_refresh">refreshr</string>
     <string name="joy_foler_hot_app">【hot app】</string>
     <string name="menu_add_folder">add</string>
-     <string name="online_folder">online folder</string>
-    
+    <string name="online_folder">online folder</string>
+    <string name="add_to_desktop">add to desktop</string>
+    <string name="add_widget_to_desktop">add widget to desktop</string>
+ 	<string name="add_folder_to_desktop">add online folder to desktop</string>
+ 	
     <!-- menu view added by huangming. -->
     <string name="menu_edit_screen">Edit screen</string>
     <string name="menu_desktop_settings">Desktop settings</string>

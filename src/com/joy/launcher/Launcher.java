@@ -570,6 +570,11 @@ public final class Launcher extends Activity
                 }
             }
         }
+        //add widget by wanghao
+        else if((requestCode == REQUEST_PICK_APPWIDGET||requestCode == REQUEST_CREATE_APPWIDGET)&&resultCode == RESULT_OK){
+        	addAppWidget(requestCode,data);
+        }
+
 
         // Exit spring loaded mode if necessary after cancelling the configuration of a widget
         exitSpringLoadedDragModeDelayed((resultCode != RESULT_CANCELED), delayExitSpringLoadedMode);
@@ -1659,14 +1664,80 @@ public final class Launcher extends Activity
     }
 
     /**
-     * 弹出添加在线文件夹窗口
+     * 通过menu键添加widget ,by wanghao
+     * @param requestCode
+     * @param data
+     */
+    void addAppWidget(int requestCode,Intent data) {
+        int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+        AppWidgetProviderInfo appWidget = mAppWidgetManager.getAppWidgetInfo(appWidgetId);
+        switch (requestCode) {
+		case REQUEST_PICK_APPWIDGET:
+	        if (appWidget.configure != null) {
+	            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
+	            intent.setComponent(appWidget.configure);
+	            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+
+	            startActivityForResultSafely(intent, REQUEST_CREATE_APPWIDGET);
+	        } else {
+	            onActivityResult(REQUEST_CREATE_APPWIDGET, Activity.RESULT_OK, data);
+	        }
+			break;
+		case REQUEST_CREATE_APPWIDGET:
+			completeAddAppWidget(appWidgetId, LauncherSettings.Favorites.CONTAINER_DESKTOP, getCurrentWorkspaceScreen());
+			break;
+		}
+    }
+    /**
+     * 添加到桌面
+     */
+    public void showAddToDesktop(){
+		LayoutInflater inflater = getLayoutInflater();
+		View view = inflater.inflate(R.layout.add_shortcut_dialog,(ViewGroup) findViewById(R.id.dialog));
+		String string = getResources().getString(R.string.add_to_desktop);
+		final AlertDialog dialog = new AlertDialog.Builder(this).setTitle(string).setView(view).show();
+    	
+    	LinearLayout gameFolder = (LinearLayout)view.findViewById(R.id.add_online_folder);
+    	gameFolder.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showAddOnlineFolder();
+				dialog.dismiss();
+			}
+		});
+    	LinearLayout applicationFolder = (LinearLayout)view.findViewById(R.id.add_app_widget);
+    	applicationFolder.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showAddWidget();
+				dialog.dismiss();
+			}
+		});
+    }
+    /**
+     * 添加widget
+     */
+    private void showAddWidget(){
+
+    	int appWidgetId = Launcher.this.mAppWidgetHost.allocateAppWidgetId();
+
+        Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
+
+        pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+
+        startActivityForResult(pickIntent, REQUEST_PICK_APPWIDGET);
+    }
+    /**
+     * 弹出添加在线文件的窗口
      * @param natureType
      * @return
      */
-    public void showAddFolderDialog(){
+    private void showAddOnlineFolder(){
 
 		LayoutInflater inflater = getLayoutInflater();
-		View view = inflater.inflate(R.layout.addfolder_dialog,(ViewGroup) findViewById(R.id.dialog));
+		View view = inflater.inflate(R.layout.add_folder_dialog,(ViewGroup) findViewById(R.id.dialog));
 		String string = getResources().getString(R.string.online_folder);
 		final AlertDialog dialog = new AlertDialog.Builder(this).setTitle(string).setView(view).show();
     	
@@ -1691,7 +1762,7 @@ public final class Launcher extends Activity
 	
     }
     /**
-     * 手动添加在线文件夹
+     * 手动添加在线文件
      * @param natureType
      * @return
      */
@@ -1707,7 +1778,17 @@ public final class Launcher extends Activity
         	int cellX = mTargetCell[0];
             int cellY = mTargetCell[1];
             final FolderInfo folderInfo = new FolderInfo();
-            folderInfo.title = getText(R.string.folder_name);
+            switch (natureType) {
+			case ItemInfo.LOCAL:
+				folderInfo.title = getText(R.string.folder_name);
+				break;
+			case ItemInfo.ONLINE:
+				folderInfo.title = getText(R.string.joy_game_folder);
+				break;
+			case ItemInfo.ONLINE_1:
+				folderInfo.title = getText(R.string.joy_application_folder);
+				break;
+			}
             folderInfo.natureType = natureType;
            
             LauncherModel.addItemToDatabase(Launcher.this, folderInfo, container, screen, cellX, cellY,
