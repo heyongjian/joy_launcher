@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/joy_onlinefolder_button_selector"
+                android:background="@drawable/joy_button_selector"
                 android:clickable="true"
                 android:gravity="center"
                 android:drawableLeft="@drawable/joy_more_app"
@@ -115,7 +115,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:background="@drawable/joy_onlinefolder_button_selector"
+                android:background="@drawable/joy_button_selector"
                 android:gravity="center"
                 android:src="@drawable/joy_onlinefolder_up" />
 
@@ -125,7 +125,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:background="@drawable/joy_onlinefolder_button_selector"
+                android:background="@drawable/joy_button_selector"
                 android:clickable="true"
                 android:drawableLeft="@drawable/joy_foler_refresh"
                 android:text="@string/joy_foler_refresh"
