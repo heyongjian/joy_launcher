@@ -187,6 +187,14 @@
     <string name="preferences_bakcup_recover_title">备份与恢复</string>
     <string name="preferences_bakcup_title">备份</string>
     <string name="preferences_recover_title">恢复</string>
+
+     <!-- online Folder ,add by wanghao -->
+    <string name="joy_game_folder">游戏锦集</string>
+    <string name="joy_application_folder">应用大全</string>
+     <string name="joy_foler_more_app">更多</string>
+    <string name="joy_foler_refresh">刷新</string>
+    <string name="joy_foler_hot_app">【热门应用】</string>
+
     <!-- menu view added by huangming. -->
     <string name="menu_edit_screen">编辑屏幕</string>
     <string name="menu_desktop_settings">桌面设置</string>

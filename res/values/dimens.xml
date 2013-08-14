@@ -133,6 +133,14 @@
     
     <dimen name="mylistprefrence_icon_width">50dp</dimen>
 	<dimen name="mylistprefrence_icon_height">50dp</dimen>
+
+    <!-- online foldler view  ,add by wanghao-->
+    <dimen name="joyfolder_gridview_height">100dp</dimen>
+    <dimen name="joyfolder_gridview_horizontalSpacing">20dp</dimen>
+    <dimen name="joyfolder_layout_title">30dp</dimen>
+    <dimen name="joyfolder_title_icon_size">40dp</dimen>
+
+    <integer name="joyfolder_content_size">16</integer>
     
 <!-- menu view added by huangming-->
     <dimen name="menu_item_icon_size">30dip</dimen>

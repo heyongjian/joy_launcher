@@ -9,6 +9,7 @@ import java.util.Map;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,6 +27,7 @@ import com.joy.launcher.util.Util;
  */
 public class BitmapCache {
 	private static final String TAG = "BitmapCache";
+	private static final Boolean DEBUG = false;
 	private static BitmapCache cache;
 	private Map<String, MySoftRef> hashRefs;
 	private ReferenceQueue<Bitmap> queue;
@@ -63,8 +65,8 @@ public class BitmapCache {
 	}
 	
 	private void setBitmap(View view,Bitmap bm){
-		if(view==null||bm==null){
-			Util.i(TAG, "图片为空！");
+		if(view==null||bm==null){			
+			if(DEBUG) Log.i(TAG, "--- setBitmap 图片为空！");
 		}else if(view instanceof ImageView){
 			ImageView iv = (ImageView)view;
 			iv.setImageBitmap(bm);
@@ -72,7 +74,7 @@ public class BitmapCache {
 			LinearLayout ll = (LinearLayout)view;
 			ll.setBackgroundDrawable(new BitmapDrawable(bm));
 		}else{
-			Util.i(TAG, view+"不是 ImageView|LinearLayout!");
+			if(DEBUG) Log.i(TAG, "---setBitmap " + view + "不是 ImageView|LinearLayout!");
 		}
 	}
 	
@@ -107,7 +109,7 @@ public class BitmapCache {
 			MySoftRef ref = hashRefs.get(key);
 			bm = ref.get();
 			if(bm!=null){
-				Util.i(TAG, "从缓存中获取=>"+key);
+				if(DEBUG) Log.i(TAG, "---getBitmap 从缓存中获取=>"+key);
 				setBitmap(view,bm);
 				if(imageDownLoadCallback!=null){
 					imageDownLoadCallback.imageDownLoaded(bm);
@@ -125,7 +127,7 @@ public class BitmapCache {
 		if(resId!=null){
 			bm = Util.getBitmapById(resId);
 			if(bm!=null){
-				Util.i(TAG, "从Drawable中获取=>"+key);
+				if(DEBUG) Log.i(TAG, "---getBitmap 从Drawable中获取=>"+key);
 				addCacheBitmap(key,bm);
 				setBitmap(view,bm);
 				if(imageDownLoadCallback!=null){
@@ -140,7 +142,7 @@ public class BitmapCache {
 		try {
 			bm = BitmapFactory.decodeStream(new FileInputStream(Constants.DOWNLOAD_IMAGE_DIR + "/" + imageName));
 		}catch(OutOfMemoryError e){
-			Util.i("*_*", "悲剧，加载文件("+Constants.DOWNLOAD_IMAGE_DIR + "/" + imageName+")发生内存泄漏...");
+			if(DEBUG) Log.e(TAG, "---getbitmap悲剧，加载文件("+Constants.DOWNLOAD_IMAGE_DIR + "/" + imageName+")发生内存泄漏...");
 		}catch (Exception e) {
 		}
 		if (bm != null) {
@@ -175,10 +177,9 @@ public class BitmapCache {
 				// TODO Auto-generated method stub
 				bitmap = mService.getBitmapByUrl(key,option);
 				if(bitmap!=null){
-					Util.i(TAG, "从网络中获取=>"+key);
 					addCacheBitmap(key,bitmap);
 				}else{
-					Util.i(TAG, "从网络中获取失败 bitmapCache=>"+key);
+					if(DEBUG) Log.i(TAG, "---getbitmap 从网络中获取失败 bitmapCache=>"+key);
 				}
 			}
 		});

@@ -3180,12 +3180,18 @@ public final class Launcher extends Activity
                             item.cellY, 1, 1, false);
                     break;
                 case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
-                    FolderIcon newFolder = FolderIcon.fromXml(R.layout.folder_icon, this,
-                            (ViewGroup) workspace.getChildAt(workspace.getCurrentPage()),
-                            (FolderInfo) item, mIconCache);
-                    if (!mHideIconLabels) {
-                        newFolder.setTextVisible(false);
-                    }
+                	FolderIcon newFolder = null;
+    				if(item.natureType == ItemInfo.ONLINE||item.natureType == ItemInfo.ONLINE_1){
+    					newFolder = JoyFolderIcon.fromXml(R.layout.joy_folder_icon,
+    							this, (ViewGroup) workspace.getChildAt(workspace
+    									.getCurrentPage()), (FolderInfo) item,
+    							mIconCache);
+    				}else{
+    					newFolder = FolderIcon.fromXml(R.layout.folder_icon,
+    							this, (ViewGroup) workspace.getChildAt(workspace
+    									.getCurrentPage()), (FolderInfo) item,
+    							mIconCache);
+    				}
                     workspace.addInScreen(newFolder, item.container, item.screen, item.cellX,
                             item.cellY, 1, 1, false);
                     break;

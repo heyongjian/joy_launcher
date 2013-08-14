@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2008 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<com.joy.launcher.JoyFolder xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/portal_container_joy_folder_holo"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/joy_folder_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:background="@drawable/joy_onlinefolder_top">
+
+        <ImageView
+            android:id="@+id/joy_foler_icon"
+            android:layout_width="@dimen/joyfolder_title_icon_size"
+            android:layout_height="@dimen/joyfolder_title_icon_size"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:background="@drawable/game_folder" />
+
+        <com.joy.launcher.FolderEditText
+            android:id="@+id/folder_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="#00000000"
+            android:editable="false"
+            android:gravity="left"
+            android:imeOptions="flagNoExtractUi"
+            android:layout_toRightOf="@id/joy_foler_icon"
+            android:paddingBottom="@dimen/folder_name_padding"
+            android:paddingTop="@dimen/folder_name_padding"
+            android:singleLine="true"
+            android:textColor="#ff33b5e5"
+            android:textColorHighlight="#ff333333"
+            android:textSize="18sp" />
+        
+         <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/joy_onlinefolder_button_selector"
+                android:clickable="true"
+                android:gravity="center"
+                android:drawableLeft="@drawable/joy_more_app"
+                android:text="@string/joy_foler_more_app"
+                android:textColor="@android:color/white" />
+    </RelativeLayout>
+
+    <com.joy.launcher.CellLayout
+        android:id="@+id/folder_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:cacheColorHint="#ff333333"
+        android:hapticFeedbackEnabled="false"
+        android:paddingBottom="0dip"
+        android:paddingLeft="0dip"
+        android:paddingRight="0dip"
+        android:paddingTop="0dip"
+        launcher:cellHeight="@dimen/folder_cell_height"
+        launcher:cellWidth="@dimen/folder_cell_width"
+        launcher:heightGap="@dimen/folder_height_gap"
+        launcher:widthGap="@dimen/folder_width_gap" />
+
+    <LinearLayout
+        android:id="@+id/joy_folder_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/background_dark"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/app_layout_title"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/joyfolder_layout_title"
+            android:background="@drawable/joy_onlinefolder_bottom"
+            android:padding="2dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:gravity="center"
+                android:text="@string/joy_foler_hot_app"
+                android:textColor="@android:color/white" />
+
+            <ImageButton
+                android:id="@+id/imgb"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/joy_onlinefolder_button_selector"
+                android:gravity="center"
+                android:src="@drawable/joy_onlinefolder_up" />
+
+            <TextView
+                android:id="@+id/refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/joy_onlinefolder_button_selector"
+                android:clickable="true"
+                android:drawableLeft="@drawable/joy_foler_refresh"
+                android:text="@string/joy_foler_refresh"
+                android:textColor="@android:color/white" />
+        </RelativeLayout>
+
+        <com.joy.launcher.JoyFolderGridView
+            android:id="@+id/gridView1"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/joyfolder_gridview_height"
+            android:horizontalSpacing="@dimen/joyfolder_gridview_horizontalSpacing"
+            android:numColumns="4"
+            android:padding="3dp" >
+        </com.joy.launcher.JoyFolderGridView>
+    </LinearLayout>
+
+</com.joy.launcher.JoyFolder>

@@ -47,7 +47,7 @@ import com.joy.launcher.FolderInfo.FolderListener;
  * An icon that can appear on in the workspace representing an {@link UserFolder}.
  */
 public class FolderIcon extends LinearLayout implements FolderListener {
-    private Launcher mLauncher;
+	protected Launcher mLauncher;
     Folder mFolder;
     FolderInfo mInfo;
     private static boolean sStaticValuesDirty = true;
@@ -55,8 +55,8 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     // The number of icons to display in the
     private static final int NUM_ITEMS_IN_PREVIEW = 3;
     private static final int CONSUMPTION_ANIMATION_DURATION = 100;
-    private static final int DROP_IN_ANIMATION_DURATION = 400;
-    private static final int INITIAL_ITEM_ANIMATION_DURATION = 350;
+    protected static final int DROP_IN_ANIMATION_DURATION = 400;
+    protected static final int INITIAL_ITEM_ANIMATION_DURATION = 350;
 
     // The degree to which the inner ring grows when accepting drop
     private static final float INNER_RING_GROWTH_FACTOR = 0.15f;
@@ -73,8 +73,8 @@ public class FolderIcon extends LinearLayout implements FolderListener {
 
     public static Drawable sSharedFolderLeaveBehind = null;
 
-    private ImageView mPreviewBackground;
-    private BubbleTextView mFolderName;
+    protected ImageView mPreviewBackground;
+    protected BubbleTextView mFolderName;
 
     FolderRingAnimator mFolderRingAnimator = null;
 
@@ -260,8 +260,9 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     private boolean willAcceptItem(ItemInfo item) {
         final int itemType = item.itemType;
         return ((itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION ||
-                itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT ||
-                itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) &&
+                itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT 
+//                ||itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER
+                ) &&
                 !mFolder.isFull() && item != mInfo && !mInfo.opened);
     }
 
@@ -415,7 +416,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         }
     }
 
-    private void computePreviewDrawingParams(Drawable d) {
+    protected void computePreviewDrawingParams(Drawable d) {
         computePreviewDrawingParams(d.getIntrinsicWidth(), getMeasuredWidth());
     }
 
@@ -491,9 +492,12 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         canvas.restore();
     }
 
+    protected void dispatchDrawSuper(Canvas canvas){
+    	 super.dispatchDraw(canvas);
+    }
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(canvas);
+    	dispatchDrawSuper(canvas);
 
         if (mFolder == null) return;
         if (mFolder.getItemCount() == 0 && !mAnimating) return;
