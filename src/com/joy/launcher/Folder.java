@@ -73,16 +73,16 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     private final IconCache mIconCache;
     private int mState = STATE_NONE;
     private static final int FULL_GROW = 0;
-    private static final int PARTIAL_GROW = 1;
+    protected static final int PARTIAL_GROW = 1;
     private static final int REORDER_ANIMATION_DURATION = 230;
     private static final int ON_EXIT_CLOSE_DELAY = 800;
-    private int mMode = PARTIAL_GROW;
+    protected int mMode = PARTIAL_GROW;
     private boolean mRearrangeOnClose = false;
     private FolderIcon mFolderIcon;
     private int mMaxCountX;
     private int mMaxCountY;
     private int mMaxNumItems;
-    private Rect mNewSize = new Rect();
+    protected Rect mNewSize = new Rect();
     private Rect mIconRect = new Rect();
     private ArrayList<View> mItemsInReadingOrder = new ArrayList<View>();
     private Drawable mIconDrawable;
@@ -819,7 +819,13 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 (1.0f * folderPivotY / height));
         mFolderIcon.setPivotX(folderIconPivotX);
         mFolderIcon.setPivotY(folderIconPivotY);
-
+        setFolderLayoutParams(left, top, width, height);
+    }
+    
+    protected void setFolderLayoutParams(int left,int top,int width,int height) {
+    	
+    	DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
+    	CellLayout currentPage = mLauncher.getWorkspace().getCurrentDropLayout();
         if (mMode == PARTIAL_GROW) {
             lp.width = width;
             lp.height = height;
@@ -828,7 +834,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         } else {
             mNewSize.set(left, top, left + width, top + height);
         }
-    }
+	}
 
     protected void setupContentForNumItems(int count) {
         setupContentDimensions(count);
