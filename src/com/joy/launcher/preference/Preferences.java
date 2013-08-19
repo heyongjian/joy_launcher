@@ -22,11 +22,13 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceGroup;
+import android.util.Log;
 
 import com.joy.launcher.LauncherApplication;
 import com.joy.launcher.R;
 
-public class Preferences extends PreferenceActivity {
+public class Preferences extends PreferenceActivity 
+            implements SharedPreferences.OnSharedPreferenceChangeListener{
 
     private static final String TAG = "Launcher.Preferences";
 	private SharedPreferences prefs;
@@ -57,9 +59,25 @@ public class Preferences extends PreferenceActivity {
         Preference version = findPreference("application_version");
         version.setTitle(getString(R.string.application_name));
     }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        prefs.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        prefs.unregisterOnSharedPreferenceChangeListener(this);
+    }
+    
+    @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+//    	Log.e(TAG, "----------onSharedPreferenceChanged() : " );
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(PreferencesProvider.PREFERENCES_CHANGED, true);
         editor.commit();
+
     }
 }

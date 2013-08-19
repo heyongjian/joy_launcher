@@ -31,6 +31,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -973,7 +974,8 @@ public final class Launcher extends Activity
         }
     }
 
-    Rect getDefaultPaddingForWidget(Context context, ComponentName component, Rect rect) {
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
+	Rect getDefaultPaddingForWidget(Context context, ComponentName component, Rect rect) {
         // Public api for widget padding was added in 4.0.3
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             return AppWidgetHostView.getDefaultPaddingForWidget(context, component, rect);
@@ -1167,7 +1169,8 @@ public final class Launcher extends Activity
     }
 
     private final Handler mHandler = new Handler() {
-        @Override
+        @TargetApi(16)
+		@Override
         public void handleMessage(Message msg) {
             if (msg.what == ADVANCE_MSG) {
                 int i = 0;
@@ -1188,12 +1191,13 @@ public final class Launcher extends Activity
         }
     };
 
-    void addWidgetToAutoAdvanceIfNeeded(View hostView, AppWidgetProviderInfo appWidgetInfo) {
+    @TargetApi(16)
+	void addWidgetToAutoAdvanceIfNeeded(View hostView, AppWidgetProviderInfo appWidgetInfo) {
         if (appWidgetInfo == null || appWidgetInfo.autoAdvanceViewId == -1) return;
         View v = hostView.findViewById(appWidgetInfo.autoAdvanceViewId);
         if (v instanceof Advanceable) {
             mWidgetsToAdvance.put(hostView, appWidgetInfo);
-            ((Advanceable) v).fyiWillBeAdvancedByHostKThx();
+            ((Advanceable) v).fyiWillBeAdvancedByHostKThx(); 
             updateRunning();
         }
     }
@@ -2119,7 +2123,7 @@ public final class Launcher extends Activity
             startActivity(intent);
             return true;
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.activity_not_found, Toast.LENGTH_SHORT).show(); 
             Log.e(TAG, "Unable to launch. tag=" + tag + " intent=" + intent, e);
         } catch (SecurityException e) {
             Toast.makeText(this, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
@@ -2131,7 +2135,8 @@ public final class Launcher extends Activity
         return false;
     }
 
-    void startActivityForResultSafely(Intent intent, int requestCode) {
+
+	void startActivityForResultSafely(Intent intent, int requestCode) {
         try {
             startActivityForResult(intent, requestCode);
         } catch (ActivityNotFoundException e) {
@@ -3040,7 +3045,8 @@ public final class Launcher extends Activity
         }
     }
 
-    private boolean updateGlobalSearchIcon() {
+	@TargetApi(16)
+	private boolean updateGlobalSearchIcon() {
         final View searchButtonContainer = findViewById(R.id.search_button_container);
         final ImageView searchButton = (ImageView) findViewById(R.id.search_button);
         final View searchDivider = findViewById(R.id.search_divider);
@@ -3482,7 +3488,6 @@ public final class Launcher extends Activity
     public void bindAppsAdded(ArrayList<ApplicationInfo> apps) {
         setLoadOnResume();
         removeDialog(DIALOG_CREATE_SHORTCUT);
-
         if (mAppsCustomizeContent != null) {
             mAppsCustomizeContent.addApps(apps);
         }
@@ -3528,6 +3533,7 @@ public final class Launcher extends Activity
      * A number of packages were updated.
      */
     public void bindPackagesUpdated() {
+//        Log.e(TAG, "-------bindPackagesUpdated:  " ); 
         if (mAppsCustomizeContent != null) {
             mAppsCustomizeContent.onPackagesUpdated();
         }

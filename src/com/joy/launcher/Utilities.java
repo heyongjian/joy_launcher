@@ -16,6 +16,8 @@
 
 package com.joy.launcher;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -31,6 +33,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 /**
  * Various utilities shared amongst the Launcher's classes.
@@ -56,7 +59,6 @@ final class Utilities {
     }
     static int sColors[] = { 0xffff0000, 0xff00ff00, 0xff0000ff };
     static int sColorIndex = 0;
-
     /**
      * Returns a bitmap suitable for the all apps view. Used to convert pre-ICS
      * icon bitmaps that are stored in the database (which were 74x74 pixels at hdpi size)
@@ -109,6 +111,7 @@ final class Utilities {
             int sourceWidth = icon.getIntrinsicWidth();
             int sourceHeight = icon.getIntrinsicHeight();
 
+//            Log.e(TAG, "---createIconBitmap: " + width + "sourceWidth: " + sourceWidth);
             if (sourceWidth > 0 && sourceHeight > 0) {
                 // There are intrinsic sizes.
                 if (width < sourceWidth || height < sourceHeight) {
@@ -148,6 +151,36 @@ final class Utilities {
         }
     }
 
+    /**
+     * Return a Bitmap for and vritual app preset in default_workspace.xml
+     * @param context The application's context.
+     * @author yongjian.he
+     * 
+     */
+    static Bitmap createVirtualAppIconBitmap(Bitmap bitmap, Context context) {
+    	synchronized (sCanvas) {
+    		int textureWidth = bitmap.getWidth();  
+            int textureHeight = bitmap.getHeight();
+            Log.e(TAG, "---createVirtualAppIconBitmap: " + "sourceWidth: " + textureWidth);
+            Paint paint = new Paint();
+            Resources res = context.getResources();
+			final Bitmap bitmaps = Bitmap.createBitmap(textureWidth, textureHeight,Bitmap.Config.ARGB_8888);
+//			final Bitmap covers = BitmapFactory.decodeResource(res,R.drawable.uu_androidonlinefolder_recommend_flag);
+			Drawable drawable = res.getDrawable(R.drawable.joy_androidonlinefolder_recommend_flag);
+			BitmapDrawable bDrawable = new BitmapDrawable(res, bitmap);
+			final Canvas canvas = sCanvas;
+			
+			canvas.setBitmap(bitmaps);
+			bDrawable.setBounds(0, 0, textureWidth, textureHeight);
+			bDrawable.draw(canvas);
+			drawable.setBounds(0, textureHeight-40, textureWidth, textureHeight-10);
+			drawable.draw(canvas);
+			canvas.setBitmap(null);
+//			return createIconBitmap(new BitmapDrawable( bitmaps), context);
+			return createIconBitmap(new BitmapDrawable(context.getResources(), bitmaps), context);
+		}
+    }
+    
     /**
      * Returns a Bitmap representing the thumbnail of the specified Bitmap.
      * The size of the thumbnail is defined by the dimension
@@ -210,4 +243,5 @@ final class Utilities {
         sDisabledPaint.setColorFilter(new ColorMatrixColorFilter(cm));
         sDisabledPaint.setAlpha(0x88);
     }
+    
 }
