@@ -24,7 +24,7 @@ import com.joy.launcher.LauncherApplication;
 import com.joy.launcher.Workspace;
 
 public final class PreferencesProvider {
-    public static final String PREFERENCES_KEY = "com.cyanogenmod.trebuchet_preferences";
+    public static final String PREFERENCES_KEY = "com.joy.launcher_preferences"; 
 
     public static final String PREFERENCES_CHANGED = "preferences_changed";
 
