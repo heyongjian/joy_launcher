@@ -48,6 +48,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.joy.launcher.InstallWidgetReceiver.WidgetMimeTypeHandlerData;
+import com.joy.launcher.util.Util;
 
 import java.lang.ref.WeakReference;
 import java.net.URISyntaxException;
@@ -100,7 +101,8 @@ public class LauncherModel extends BroadcastReceiver {
     //       LauncherModel that are directly on the home screen (however, no widgets or shortcuts
     //       within folders).
     static final ArrayList<ItemInfo> sWorkspaceItems = new ArrayList<ItemInfo>();
-
+    // an filter for virtual apps
+    static final ArrayList<String> sVirtualApps = new ArrayList<String>();
     // sAppWidgets is all LauncherAppWidgetInfo created by LauncherModel. Passed to bindAppWidget()
     static final ArrayList<LauncherAppWidgetInfo> sAppWidgets =
         new ArrayList<LauncherAppWidgetInfo>();
@@ -142,6 +144,7 @@ public class LauncherModel extends BroadcastReceiver {
         mAppsCanBeOnExternalStorage = !Environment.isExternalStorageEmulated();
         mApp = app;
         mAllAppsList = new AllAppsList(iconCache);
+        initVirtualApps(app);
         mIconCache = iconCache;
 
         mDefaultIcon = Utilities.createIconBitmap(
@@ -152,10 +155,24 @@ public class LauncherModel extends BroadcastReceiver {
         mPreviousConfigMcc = config.mcc;
     }
 
-    public Bitmap getFallbackIcon() {
+    private void initVirtualApps(LauncherApplication app) {
+		// TODO Auto-generated method stub
+//    	String [] vritualapps = app.getApplicationContext().getResources().getStringArray(R.array.virtual_app_icon_array);
+//    	for (String apps : vritualapps){
+//
+//    		Log.e(TAG, "------1111getShortcutInfo " + apps);
+//    		sVirtualApps.add(apps);
+//    	}
+	}
+
+	public Bitmap getFallbackIcon() {
         return Bitmap.createBitmap(mDefaultIcon);
     }
 
+    public Bitmap getVirtualAppIcon(Bitmap bitmap, Context context){
+    	return Utilities.createVirtualAppIconBitmap(bitmap, context);
+    }
+    
     public void unbindWorkspaceItems() {
         sWorker.post(new Runnable() {
             @Override
@@ -1044,7 +1061,7 @@ public class LauncherModel extends BroadcastReceiver {
                             } catch (URISyntaxException e) {
                                 continue;
                             }
-
+ 
                             if (itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
                                 info = getShortcutInfo(manager, intent, context, c, iconIndex,
                                         titleIndex, mLabelCache);
@@ -1650,6 +1667,7 @@ public class LauncherModel extends BroadcastReceiver {
                 icon = getIconFromCursor(c, iconIndex, context);
             }
         }
+        
         // the fallback icon
         if (icon == null) {
             icon = getFallbackIcon();
@@ -1675,10 +1693,11 @@ public class LauncherModel extends BroadcastReceiver {
                 info.title =  c.getString(titleIndex);
             }
         }
+
         // fall back to the class name of the activity
-        if (info.title == null) {
-            info.title = componentName.getClassName();
-        }
+		if (info.title == null) {     		
+			info.title = componentName.getClassName();
+		}
         info.itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
         return info;
     }

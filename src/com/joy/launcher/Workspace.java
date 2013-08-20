@@ -1352,22 +1352,35 @@ public class Workspace extends PagedView
     }
 
     private void screenScrolledCube(int screenScroll, boolean in) {
+    	//add by xiong.chen for bug wxy-512 at 2013-07-10
+    	float amount = 0;
         for (int i = 0; i < getChildCount(); i++) {
             CellLayout cl = (CellLayout) getPageAt(i);
             if (cl != null) {
                 float scrollProgress = getScrollProgress(screenScroll, cl, i);
                 float rotation = (in ? 90.0f : -90.0f) * scrollProgress;
-                float alpha = 1 - Math.abs(scrollProgress);
+                float scale = 1.0f - Math.abs(scrollProgress) * 0.2f;
 
                 if (in) {
                     cl.setCameraDistance(mDensity * CAMERA_DISTANCE);
+                    cl.setPivotX(scrollProgress < 0 ? 0 : cl.getMeasuredWidth());
+                } else {
+                    cl.setScaleX(scale);
+                    cl.setScaleY(scale);
+                    cl.setPivotX((scrollProgress + 1) * cl.getMeasuredWidth() * 0.5f);
+                    cl.setBackgroundAlpha(1);
+                    //add by xiong.chen for bug wxy-512 at 2013-07-10
+                    amount = Math.abs(scrollProgress);
+                	if (amount < 0.3f) {
+                		amount *= 3;
+                	} else {
+                		amount = 1;
+                	}
+                    cl.setBackgroundAlphaMultiplier(amount);
                 }
-
-                cl.setPivotX(scrollProgress < 0 ? 0 : cl.getMeasuredWidth());
                 cl.setPivotY(cl.getMeasuredHeight() * 0.5f);
                 cl.setRotationY(rotation);
-                cl.setAlpha(alpha);
-                cl.invalidate();
+
             }
         }
     }
@@ -1409,6 +1422,77 @@ public class Workspace extends PagedView
         invalidate();
     }
 
+    private void screenScrolledSpin(int screenScroll) {
+        for (int i = 0; i < getChildCount(); i++) {
+            CellLayout cl = (CellLayout) getPageAt(i);
+            if (cl != null) {
+                float scrollProgress = getScrollProgress(screenScroll, cl, i);
+                float rotation = 180.0f * scrollProgress;
+
+                if (getMeasuredHeight() > getMeasuredWidth()) {
+                    float translationX = (getMeasuredHeight() - getMeasuredWidth()) / 2.0f * -scrollProgress;
+                    cl.setTranslationX(translationX);
+                }
+
+                cl.setRotation(rotation);
+
+                if (mFadeInAdjacentScreens && !isSmall()) {
+//                    setCellLayoutFadeAdjacent(cl, scrollProgress);
+                }
+            }
+        }
+    }
+
+    private void screenScrolledFlip(int screenScroll) {
+        for (int i = 0; i < getChildCount(); i++) {
+            CellLayout cl = (CellLayout) getPageAt(i);
+            if (cl != null) {
+                float scrollProgress = getScrollProgress(screenScroll, cl, i);
+                float rotation = -180.0f * scrollProgress;
+//                Log.e(VIEW_LOG_TAG, "----screenScrolledFlip scrollProgress: " + scrollProgress + "celllayoutID:" + i);
+                if (scrollProgress >= -0.5f && scrollProgress <= 0.5f) {
+                    cl.setCameraDistance(mDensity * CAMERA_DISTANCE);
+                    cl.setTranslationX(cl.getMeasuredWidth() * scrollProgress);
+                    cl.setPivotX(cl.getMeasuredWidth() * 0.5f);
+                    cl.setPivotY(cl.getMeasuredHeight() * 0.5f);
+                    cl.setRotationY(rotation);
+                    if (cl.getVisibility() != VISIBLE) {
+                        cl.setVisibility(VISIBLE);
+                    }
+                    if (mFadeInAdjacentScreens && !isSmall()) {
+//                        setCellLayoutFadeAdjacent(cl, scrollProgress);
+                    }
+                } else {
+                	Log.e(VIEW_LOG_TAG, "----screenScrolledFlip + INVISIBLE " + "celllayoutID:" + i);
+                    cl.setVisibility(INVISIBLE);
+                    cl.invalidate();
+                }
+            }
+            cl.invalidate();
+        }
+        invalidate();
+    }
+    
+    private void screenScrolledAccordian(int screenScroll) {
+        for (int i = 0; i < getChildCount(); i++) {
+            CellLayout cl = (CellLayout) getPageAt(i);
+            if (cl != null) {
+                float scrollProgress = getScrollProgress(screenScroll, cl, i);
+                float scaleX = 1.0f - Math.abs(scrollProgress);
+
+                cl.setPivotX(scrollProgress < 0 ? 0 : cl.getMeasuredWidth());
+                cl.setScaleX(scaleX);
+                if (scaleX == 0.0f) {
+                    cl.setVisibility(INVISIBLE);
+                } else if (cl.getVisibility() != VISIBLE) {
+                    cl.setVisibility(VISIBLE);
+                }
+                if (mFadeInAdjacentScreens && !isSmall()) {
+//                    setCellLayoutFadeAdjacent(cl, scrollProgress);
+                }
+            }
+        }
+    }
     @Override
     protected void screenScrolled(int screenScroll) {
         super.screenScrolled(screenScroll);
