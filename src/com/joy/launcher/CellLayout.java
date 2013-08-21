@@ -133,7 +133,7 @@ public class CellLayout extends ViewGroup {
 
     private TimeInterpolator mEaseOutInterpolator;
     private CellLayoutChildren mChildren;
-
+    private final static Paint sPaint = new Paint();
     public CellLayout(Context context) {
         this(context, null);
     }
@@ -280,9 +280,9 @@ public class CellLayout extends ViewGroup {
         return minGap * (numCells - 1) + cellHeight * numCells;
     }
 
-    public void enableHardwareLayers() {
-        mChildren.enableHardwareLayers();
-    }
+//    public void enableHardwareLayers() {
+//        mChildren.enableHardwareLayers();
+//    }
 
     public void setGridSize(int x, int y) {
         mCountX = x;
@@ -904,7 +904,18 @@ public class CellLayout extends ViewGroup {
     protected void setChildrenDrawnWithCacheEnabled(boolean enabled) {
         mChildren.setChildrenDrawnWithCacheEnabled(enabled);
     }
+    public void enableHardwareLayers() {
+    	mChildren.setLayerType(LAYER_TYPE_HARDWARE, sPaint);
+    }
 
+    public void disableHardwareLayers() {
+    	mChildren.setLayerType(LAYER_TYPE_NONE, sPaint);
+    }
+
+    public void buildHardwareLayer() {
+    	mChildren.buildLayer();
+    }
+    
     public float getBackgroundAlpha() {
         return mBackgroundAlpha;
     }
@@ -957,7 +968,12 @@ public class CellLayout extends ViewGroup {
             getChildAt(i).setFastAlpha(alpha);
         }
     }
-
+    public CellLayoutChildren getShortcutsAndWidgets() {
+        if (getChildCount() > 0) {
+            return (CellLayoutChildren) getChildAt(0);
+        }
+        return null;
+    }
     public View getChildAt(int x, int y) {
         return mChildren.getChildAt(x, y);
     }

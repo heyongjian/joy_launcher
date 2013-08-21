@@ -131,8 +131,8 @@
     
 <!--add by wanghao-->
     
-    <dimen name="mylistprefrence_icon_width">50dp</dimen>
-	<dimen name="mylistprefrence_icon_height">50dp</dimen>
+    <dimen name="mylistprefrence_icon_width">42dp</dimen>
+	<dimen name="mylistprefrence_icon_height">42dp</dimen>
 
     <!-- online foldler view  ,add by wanghao-->
     <dimen name="joyfolder_gridview_height">100dp</dimen>

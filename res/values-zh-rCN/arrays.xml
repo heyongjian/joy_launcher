@@ -25,9 +25,10 @@
         <item>缩小</item>
         <item>向上旋转</item>
         <item>向下旋转</item>
-        <item>立方飞入</item>
         <item>立方飞出</item>
         <item>堆叠</item>
+        <item>手风琴</item>
+        <item>旋转</item>
     </string-array>
 
     <string-array name="preferences_interface_drawer_scrolling_transition_effect_entries">
@@ -37,9 +38,10 @@
         <item>缩小</item>
         <item>向上旋转</item>
         <item>向下旋转</item>
-        <item>立方飞入</item>
         <item>立方飞出</item>
         <item>堆叠</item>
+        <item>手风琴</item>
+        <item>旋转</item>
     </string-array>
 
 </resources>

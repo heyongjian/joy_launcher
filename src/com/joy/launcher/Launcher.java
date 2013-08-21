@@ -2559,7 +2559,7 @@ public final class Launcher extends Activity
         setPivotsForZoom(toView, scale);
 
         Workspace.TransitionEffect transitionEffect = mWorkspace.getTransitionEffect();
-        final boolean animateWorkspace = transitionEffect != Workspace.TransitionEffect.RotateUp &&
+        final boolean animateWorkspace = transitionEffect != Workspace.TransitionEffect.Stack && transitionEffect != Workspace.TransitionEffect.RotateUp &&
                 transitionEffect != Workspace.TransitionEffect.RotateDown;
 
         // Shrink workspaces away if going to AppsCustomize from workspace
@@ -2749,7 +2749,7 @@ public final class Launcher extends Activity
         int stagger = res.getInteger(R.integer.config_appsCustomizeWorkspaceAnimationStagger);
 
         Workspace.TransitionEffect transitionEffect = mWorkspace.getTransitionEffect();
-        final boolean animateWorkspace = (transitionEffect != Workspace.TransitionEffect.RotateUp &&
+        final boolean animateWorkspace = (transitionEffect != Workspace.TransitionEffect.Stack && transitionEffect != Workspace.TransitionEffect.RotateUp &&
                 transitionEffect != Workspace.TransitionEffect.RotateDown) || mWorkspace.getState() != Workspace.State.SMALL;
 
         if (animateWorkspace) {

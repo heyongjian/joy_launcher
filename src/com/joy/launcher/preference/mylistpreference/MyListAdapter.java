@@ -57,7 +57,7 @@ public class MyListAdapter extends BaseAdapter {
 		if (convertView == null) {
 			myHolder = new Holder();
 			convertView = inflater.inflate(R.layout.joy_list_single, null);
-			myHolder.tv1 = (TextView) convertView.findViewById(R.id.title);
+			myHolder.tv1 = (TextView) convertView.findViewById(R.id.title); 
 			myHolder.img = (ImageView) convertView.findViewById(R.id.icon);
 			myHolder.cbox = (ImageView) convertView.findViewById(R.id.checkbox);
 			convertView.setTag(myHolder);
@@ -67,10 +67,10 @@ public class MyListAdapter extends BaseAdapter {
 
 		if (position == this.currentID)
 			myHolder.cbox.setImageDrawable(c.getResources().getDrawable(
-					R.drawable.radio_clk));
+					R.drawable.common_radiobutton_selected)); 
 		else
 			myHolder.cbox.setImageDrawable(c.getResources().getDrawable(
-					R.drawable.radio));
+					R.drawable.common_radiobutton_unselected));
 		
 		myHolder.img.setImageDrawable((Drawable)list.get(position).get("img"));
 		myHolder.tv1.setText(list.get(position).get("title").toString());
