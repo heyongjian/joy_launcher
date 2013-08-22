@@ -194,4 +194,8 @@
     
     <style name="joy_prefrences_type" parent="android:Theme.Holo.Light">
 	</style>
+	 <style name="mypopwindow_animation" >
+        <item name="android:windowEnterAnimation">@anim/fade_in_fast</item>
+        <item name="android:windowExitAnimation">@anim/fade_out_fast</item>
+    </style>
 </resources>

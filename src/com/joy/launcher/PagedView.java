@@ -731,6 +731,9 @@ public abstract class PagedView extends ViewGroup {
         }
     }
 
+    protected boolean shouldDrawChild(View child) {
+        return child.getAlpha() > 0 && child.getVisibility() == VISIBLE;
+    }
     @Override
     protected void dispatchDraw(Canvas canvas) {
         if (mOverScrollX != mLastScreenScroll || mForceScreenScrolled) {

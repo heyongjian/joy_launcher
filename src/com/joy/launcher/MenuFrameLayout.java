@@ -3,6 +3,7 @@ package com.joy.launcher;
 
 import java.util.ArrayList;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -143,10 +144,15 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	        itemInfo.selectId = MENU_ADD_TO_DESKTOP;
 	        itemsAll.add(itemInfo);
 	        itemPositions.add(MENU_ITEM_IN_WORKSPACE);
-			
-			Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
-	        Intent chooser = Intent.createChooser(pickWallpaper,
-	        		getContext().getResources().getString(R.string.chooser_wallpaper));
+//shield by yongjian.he for live_wallpaper app.			
+//			Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
+//	        Intent chooser = Intent.createChooser(pickWallpaper,
+//	        		getContext().getResources().getString(R.string.chooser_wallpaper));
+	        Intent chooser = new Intent();
+	        ComponentName componentName = new ComponentName("com.joy.launcher.wallpaper",
+	        		"com.joy.launcher.wallpaper.WallpaperActivity");
+	        chooser.setComponent(componentName);
+	        
 	        itemInfo = new MenuItemInfo();
 	        itemInfo.textId = R.string.menu_wallpaper;
 	        itemInfo.iconId = R.drawable.menu_wallpaper;

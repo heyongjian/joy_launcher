@@ -230,7 +230,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private AccelerateInterpolator mAlphaInterpolator = new AccelerateInterpolator(0.9f);
     private DecelerateInterpolator mLeftScreenAlphaInterpolator = new DecelerateInterpolator(4);
     public enum TransitionEffect {
-        Standard,
+    	Standard,
         Tablet,
         ZoomIn,
         ZoomOut,
@@ -238,7 +238,9 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         RotateDown,
         CubeIn,
         CubeOut,
-        Stack
+        Stack,
+        Accordion,
+        Spin
     }
     private TransitionEffect mTransitionEffect;
 
@@ -1708,6 +1710,75 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
+    private void screenScrolledSpin(int screenScroll) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View cl = getPageAt(i);
+            if (cl != null) {
+                float scrollProgress = getScrollProgress(screenScroll, cl, i);
+                float rotation = 180.0f * scrollProgress;
+
+                if (getMeasuredHeight() > getMeasuredWidth()) {
+                    float translationX = (getMeasuredHeight() - getMeasuredWidth()) / 2.0f * -scrollProgress;
+                    cl.setTranslationX(translationX);
+                }
+
+                cl.setRotation(rotation);
+
+//                if (mFadeInAdjacentScreens && !isSmall()) {
+//                    setCellLayoutFadeAdjacent(cl, scrollProgress);
+//                }
+            }
+        }
+    }
+
+    private void screenScrolledFlip(int screenScroll) {
+        for (int i = 0; i < getChildCount(); i++) {
+            CellLayout cl = (CellLayout) getPageAt(i);
+            if (cl != null) {
+                float scrollProgress = getScrollProgress(screenScroll, cl, i);
+                Log.e(VIEW_LOG_TAG, "----screenScrolledFlip scrollProgress: " + scrollProgress);
+                float rotation = -180.0f * scrollProgress;
+
+                if (scrollProgress >= -0.5f && scrollProgress <= 0.5f) {
+                    cl.setCameraDistance(mDensity * CAMERA_DISTANCE);
+                    cl.setTranslationX(cl.getMeasuredWidth() * scrollProgress);
+                    cl.setPivotX(cl.getMeasuredWidth() * 0.5f);
+                    cl.setPivotY(cl.getMeasuredHeight() * 0.5f);
+                    cl.setRotationY(rotation);
+                    if (cl.getVisibility() != VISIBLE) {
+                        cl.setVisibility(VISIBLE);
+                    }
+//                    if (mFadeInAdjacentScreens && !isSmall()) {
+//                        setCellLayoutFadeAdjacent(cl, scrollProgress);
+//                    }
+                } else {
+                    cl.setVisibility(INVISIBLE);
+                }
+            }
+        }
+        invalidate();
+    }
+    
+    private void screenScrolledAccordion(int screenScroll) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View cl = getPageAt(i);
+            if (cl != null) {
+                float scrollProgress = getScrollProgress(screenScroll, cl, i);
+                float scaleX = 1.0f - Math.abs(scrollProgress);
+
+                cl.setPivotX(scrollProgress < 0 ? 0 : cl.getMeasuredWidth());
+                cl.setScaleX(scaleX);
+                if (scaleX == 0.0f) {
+                    cl.setVisibility(INVISIBLE);
+                } else if (cl.getVisibility() != VISIBLE) {
+                    cl.setVisibility(VISIBLE);
+                }
+//                if (mFadeInAdjacentScreens && !isSmall()) {
+//                    setCellLayoutFadeAdjacent(cl, scrollProgress);
+//                }
+            }
+        }
+    }
     // Transition effects
     @Override
     protected void screenScrolled(int screenScroll) {
@@ -1744,33 +1815,39 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 v1.setPivotY(v1.getMeasuredHeight() / 2);
             }
             switch (mTransitionEffect) {
-                case Standard:
-                    screenScrolledStandard(screenScroll);
-                    break;
-                case Tablet:
-                    screenScrolledTablet(screenScroll);
-                    break;
-                case ZoomIn:
-                    screenScrolledZoom(screenScroll, true);
-                    break;
-                case ZoomOut:
-                    screenScrolledZoom(screenScroll, false);
-                    break;
-                case RotateUp:
-                    screenScrolledRotate(screenScroll, true);
-                    break;
-                case RotateDown:
-                    screenScrolledRotate(screenScroll, false);
-                    break;
-                case CubeIn:
-                    screenScrolledCube(screenScroll, true);
-                    break;
-                case CubeOut:
-                    screenScrolledCube(screenScroll, false);
-                    break;
-                case Stack:
-                    screenScrolledStack(screenScroll);
-                    break;
+            case Standard:
+                screenScrolledStandard(screenScroll);
+                break;
+            case Tablet:
+                screenScrolledTablet(screenScroll);
+                break;
+            case ZoomIn:
+                screenScrolledZoom(screenScroll, true);
+                break;
+            case ZoomOut:
+                screenScrolledZoom(screenScroll, false);
+                break;
+            case RotateUp:
+                screenScrolledRotate(screenScroll, true);
+                break;
+            case RotateDown:
+                screenScrolledRotate(screenScroll, false);
+                break;
+            case CubeIn:
+                screenScrolledCube(screenScroll, true);
+                break;
+            case CubeOut:
+                screenScrolledCube(screenScroll, false);
+                break;
+            case Stack:
+                screenScrolledStack(screenScroll);
+                break;
+            case Accordion:
+            	screenScrolledAccordion(screenScroll);
+            	break;
+            case Spin:
+            	screenScrolledSpin(screenScroll);
+            	break;
             }
         }
     }

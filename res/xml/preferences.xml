@@ -24,6 +24,7 @@
         <PreferenceScreen android:key="ui_homescreen"
             android:title="@string/preferences_interface_homescreen_title"
             android:icon="@drawable/preference_set_homescreen"
+            android:layout="@layout/joy_preference_preferencescreen"
             >
             <PreferenceCategory android:title="@string/preferences_interface_homescreen_general_category"
                 android:layout="@layout/joy_preference_category">
@@ -122,7 +123,8 @@
         <!-- Drawer -->
         <PreferenceScreen android:key="ui_drawer"
             android:title="@string/preferences_interface_drawer_title"
-            android:icon="@drawable/preference_set_drawer">
+            android:icon="@drawable/preference_set_drawer"
+            android:layout="@layout/joy_preference_preferencescreen">
             <PreferenceCategory android:title="@string/preferences_interface_drawer_widgets_category"
                 android:layout="@layout/joy_preference_category">
                 <CheckBoxPreference android:key="ui_drawer_widgets_join_apps"
@@ -182,6 +184,7 @@
         <PreferenceScreen android:key="ui_general"
             android:title="@string/preferences_interface_general_title"
             android:icon="@drawable/preference_set_general"
+            android:layout="@layout/joy_preference_preferencescreen"
             >
             <CheckBoxPreference android:key="ui_general_orientation"
                 android:title="@string/preferences_interface_general_orientation_title"
@@ -194,10 +197,12 @@
         android:layout="@layout/joy_preference_category">
         <PreferenceScreen android:key="preferences_bakcup"
             android:title="@string/preferences_bakcup_title"
-            android:icon="@drawable/preference_backup"/>
+            android:icon="@drawable/preference_backup"
+            android:layout="@layout/joy_preference_preferencescreen"/>
         <PreferenceScreen android:key="preferences_recover"
             android:title="@string/preferences_recover_title"
-            android:icon="@drawable/preference_recover"/>
+            android:icon="@drawable/preference_recover"
+            android:layout="@layout/joy_preference_preferencescreen"/>
     </PreferenceCategory>
     
     <!-- Application -->
@@ -206,6 +211,7 @@
         <PreferenceScreen android:key="application_version"
             android:title="@string/application_name"
             android:summary="@string/application_copyright"
-            android:icon="@drawable/preference_aboutme"/>
+            android:icon="@drawable/preference_aboutme"
+            android:layout="@layout/joy_preference_preferencescreen"/>
     </PreferenceCategory>
 </PreferenceScreen>

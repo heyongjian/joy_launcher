@@ -18,6 +18,8 @@ package com.joy.launcher;
 
 import java.util.ArrayList;
 
+import com.joy.launcher.util.Util;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -59,7 +61,7 @@ public class DragController {
 
     private Launcher mLauncher;
     private Handler mHandler;
-    private final Vibrator mVibrator = new Vibrator();
+    private final Vibrator mVibrator;
 
     // temporaries to avoid gc thrash
     private Rect mRectTemp = new Rect();
@@ -135,6 +137,12 @@ public class DragController {
      * @param context The application's context.
      */
     public DragController(Launcher launcher) {
+//    	Log.d(TAG, "-----dragController: " + Util.getCurrentApiVersion()); 
+    	if (Util.getCurrentApiVersion() >= 16){
+    		mVibrator = (Vibrator) launcher.getSystemService(Context.VIBRATOR_SERVICE);
+    	}else{
+    		mVibrator = new Vibrator(); 
+    	}
         mLauncher = launcher;
         mHandler = new Handler();
         mScrollZone = launcher.getResources().getDimensionPixelSize(R.dimen.scroll_zone);

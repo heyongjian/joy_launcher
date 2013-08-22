@@ -375,6 +375,14 @@ public class Util {
 	}
 	
 	/**
+	 * get current API Versions
+	 * @return
+	 */
+	public static int getCurrentApiVersion() {
+		return Build.VERSION.SDK_INT;
+	}
+	
+	/**
 	 * 获取mac地址
 	 * @return
 	 */

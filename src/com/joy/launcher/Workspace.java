@@ -64,7 +64,6 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -248,7 +247,9 @@ public class Workspace extends PagedView
         RotateDown,
         CubeIn,
         CubeOut,
-        Stack
+        Stack,
+        Accordion,
+        Spin
     }
 
     // Preferences
@@ -1352,28 +1353,41 @@ public class Workspace extends PagedView
     }
 
     private void screenScrolledCube(int screenScroll, boolean in) {
+    	float amount = 0;
         for (int i = 0; i < getChildCount(); i++) {
             CellLayout cl = (CellLayout) getPageAt(i);
             if (cl != null) {
                 float scrollProgress = getScrollProgress(screenScroll, cl, i);
                 float rotation = (in ? 90.0f : -90.0f) * scrollProgress;
-                float alpha = 1 - Math.abs(scrollProgress);
+                float scale = 1.0f - Math.abs(scrollProgress) * 0.2f;
 
                 if (in) {
                     cl.setCameraDistance(mDensity * CAMERA_DISTANCE);
+                    cl.setPivotX(scrollProgress < 0 ? 0 : cl.getMeasuredWidth());
+                } else {
+                    cl.setScaleX(scale);
+                    cl.setScaleY(scale);
+                    cl.setPivotX((scrollProgress + 1) * cl.getMeasuredWidth() * 0.5f);
+                    cl.setBackgroundAlpha(1);
+                    //add by xiong.chen for galss effect.
+                    amount = Math.abs(scrollProgress);
+                	if (amount < 0.3f) {
+                		amount *= 3;
+                	} else {
+                		amount = 1;
+                	}
+                    cl.setBackgroundAlphaMultiplier(amount);
+                    //End.
                 }
-
-                cl.setPivotX(scrollProgress < 0 ? 0 : cl.getMeasuredWidth());
                 cl.setPivotY(cl.getMeasuredHeight() * 0.5f);
                 cl.setRotationY(rotation);
-                cl.setAlpha(alpha);
-                cl.invalidate();
+
             }
         }
     }
 
     private void screenScrolledStack(int screenScroll) {
-        for (int i = 0; i < getChildCount(); i++) {
+    	for (int i = 0; i < getChildCount(); i++) {
             CellLayout cl = (CellLayout) getPageAt(i);
             if (cl != null) {
                 float scrollProgress = getScrollProgress(screenScroll, cl, i);
@@ -1403,12 +1417,86 @@ public class Workspace extends PagedView
                 } else if (cl.getVisibility() != VISIBLE) {
                     cl.setVisibility(VISIBLE);
                 }
-                cl.invalidate();
             }
         }
         invalidate();
     }
 
+    private void screenScrolledSpin(int screenScroll) {
+        for (int i = 0; i < getChildCount(); i++) {
+            CellLayout cl = (CellLayout) getPageAt(i);
+            if (cl != null) {
+                float scrollProgress = getScrollProgress(screenScroll, cl, i);
+                float rotation = 180.0f * scrollProgress;
+
+                if (getMeasuredHeight() > getMeasuredWidth()) {
+                    float translationX = (getMeasuredHeight() - getMeasuredWidth()) / 2.0f * -scrollProgress;
+                    cl.setTranslationX(translationX);
+                }
+
+                cl.setRotation(rotation);
+
+                if (mFadeInAdjacentScreens && !isSmall()) {
+//                    setCellLayoutFadeAdjacent(cl, scrollProgress);
+                }
+            }
+        }
+    }
+
+    private void screenScrolledFlip(int screenScroll) {
+        for (int i = 0; i < getChildCount(); i++) {
+            CellLayout cl = (CellLayout) getPageAt(i);
+            if (cl != null) {
+                float scrollProgress = getScrollProgress(screenScroll, cl, i);
+                float rotation = 180.0f * scrollProgress;
+                float translationX = cl.getMeasuredWidth() * scrollProgress;
+                Log.e(VIEW_LOG_TAG, "----screenScrolledFlip scrollProgress: " + "celllayoutID:" + i + "-----+" + scrollProgress + " " + cl.getMeasuredWidth());
+                Log.e(VIEW_LOG_TAG, "----screenScrolledFlip screenScroll: " + "celllayoutID:" + i + "------" + screenScroll + ":" + translationX);
+                if (scrollProgress >= -0.5f && scrollProgress <= 0.5f) {
+                    cl.setCameraDistance(mDensity * CAMERA_DISTANCE);
+                    cl.setTranslationX(translationX);
+                    cl.setPivotX(cl.getMeasuredWidth() * 0.5f);
+                    cl.setPivotY(cl.getMeasuredHeight() * 0.5f);
+                    cl.setRotationY(rotation);
+                    if (cl.getVisibility() != VISIBLE) {
+                        cl.setVisibility(VISIBLE);
+                    }
+                    if (mFadeInAdjacentScreens && !isSmall()) {
+//                        setCellLayoutFadeAdjacent(cl, scrollProgress);
+                    }
+
+                } else {
+                	Log.e(VIEW_LOG_TAG, "----screenScrolledFlip + INVISIBLE " + "celllayoutID:" + i);
+                    if(cl.getVisibility() != View.INVISIBLE)
+                	cl.setVisibility(View.INVISIBLE);
+                }
+            }
+        }
+        invalidate();
+    }
+    
+    
+    
+    private void screenScrolledAccordion(int screenScroll) {
+        for (int i = 0; i < getChildCount(); i++) {
+            CellLayout cl = (CellLayout) getPageAt(i);
+            if (cl != null) {
+                float scrollProgress = getScrollProgress(screenScroll, cl, i);
+                float scaleX = 1.0f - Math.abs(scrollProgress);
+
+                cl.setPivotX(scrollProgress < 0 ? 0 : cl.getMeasuredWidth());
+                cl.setScaleX(scaleX);
+                if (scaleX == 0.0f) {
+                    cl.setVisibility(INVISIBLE);
+                } else if (cl.getVisibility() != VISIBLE) {
+                    cl.setVisibility(VISIBLE);
+                }
+                if (mFadeInAdjacentScreens && !isSmall()) {
+//                    setCellLayoutFadeAdjacent(cl, scrollProgress);
+                }
+            }
+        }
+    }
     @Override
     protected void screenScrolled(int screenScroll) {
         super.screenScrolled(screenScroll);
@@ -1503,6 +1591,12 @@ public class Workspace extends PagedView
                 case Stack:
                     screenScrolledStack(screenScroll);
                     break;
+                case Accordion:
+                	screenScrolledAccordion(screenScroll);
+                	break;
+                case Spin:
+                	screenScrolledSpin(screenScroll);
+                	break;
             }
         }
     }
@@ -1580,20 +1674,21 @@ public class Workspace extends PagedView
     // We do this because calling setChildrenLayersEnabled on a view that's not
     // visible/rendered causes slowdowns on some graphics cards
     private void syncChildrenLayersEnabledOnVisiblePages() {
-        if (mChildrenLayersEnabled) {
-            getVisiblePages(mTempVisiblePagesRange);
-            final int leftScreen = mTempVisiblePagesRange[0];
-            final int rightScreen = mTempVisiblePagesRange[1];
-            if (leftScreen != -1 && rightScreen != -1) {
-                for (int i = leftScreen; i <= rightScreen; i++) {
-                    ViewGroup page = (ViewGroup) getPageAt(i);
-                    if (page.getVisibility() == VISIBLE &&
-                            page.getAlpha() > ViewConfiguration.ALPHA_THRESHOLD) {
-                        ((ViewGroup)getPageAt(i)).setChildrenLayersEnabled(true);
-                    }
-                }
-            }
-        }
+//        if (mChildrenLayersEnabled) {
+//            getVisiblePages(mTempVisiblePagesRange);
+//            final int leftScreen = mTempVisiblePagesRange[0];
+//            final int rightScreen = mTempVisiblePagesRange[1];
+//            if (leftScreen != -1 && rightScreen != -1) {
+//                for (int i = leftScreen; i <= rightScreen; i++) {
+//                    ViewGroup page = (ViewGroup) getPageAt(i);
+//                    if (page.getVisibility() == VISIBLE &&
+//                            page.getAlpha() > ViewConfiguration.ALPHA_THRESHOLD) {
+//                        final CellLayout cl = (CellLayout) getChildAt(i);
+//                        cl.enableHardwareLayers();
+//                    }
+//                }
+//            }
+//        } 
     }
 
     @Override
@@ -1695,24 +1790,76 @@ public class Workspace extends PagedView
         }
     }
 
+//    private void updateChildrenLayersEnabled() {
+//        boolean small = isSmall() || mIsSwitchingState;
+//        boolean dragging = mAnimatingViewIntoPlace || mIsDragOccuring;
+//        boolean enableChildrenLayers = small || dragging || isPageMoving();
+//
+//        if (enableChildrenLayers != mChildrenLayersEnabled) {
+//            mChildrenLayersEnabled = enableChildrenLayers;
+//            // calling setChildrenLayersEnabled on a view that's not visible/rendered
+//            // causes slowdowns on some graphics cards, so we only disable it here and leave
+//            // the enabling to dispatchDraw
+//            if (!enableChildrenLayers) {
+//                for (int i = 0; i < getPageCount(); i++) {
+//                    ((ViewGroup)getPageAt(i)).setChildrenLayersEnabled(false);
+//                }
+//            }
+//        }
+//    }
+    
     private void updateChildrenLayersEnabled() {
-        boolean small = isSmall() || mIsSwitchingState;
-        boolean dragging = mAnimatingViewIntoPlace || mIsDragOccuring;
-        boolean enableChildrenLayers = small || dragging || isPageMoving();
+        boolean small = mState == State.SMALL || mIsSwitchingState;
+        boolean enableChildrenLayers =  small || mAnimatingViewIntoPlace || isPageMoving();
 
         if (enableChildrenLayers != mChildrenLayersEnabled) {
             mChildrenLayersEnabled = enableChildrenLayers;
-            // calling setChildrenLayersEnabled on a view that's not visible/rendered
-            // causes slowdowns on some graphics cards, so we only disable it here and leave
-            // the enabling to dispatchDraw
-            if (!enableChildrenLayers) {
+            if (mChildrenLayersEnabled) {
+                enableHwLayersOnVisiblePages();
+            } else {
                 for (int i = 0; i < getPageCount(); i++) {
-                    ((ViewGroup)getPageAt(i)).setChildrenLayersEnabled(false);
+                    final CellLayout cl = (CellLayout) getChildAt(i);
+                    cl.disableHardwareLayers();
                 }
             }
         }
     }
 
+    private void enableHwLayersOnVisiblePages() {
+        if (mChildrenLayersEnabled) {
+            final int screenCount = getChildCount();
+            getVisiblePages(mTempVisiblePagesRange);
+            int leftScreen = mTempVisiblePagesRange[0];
+            int rightScreen = mTempVisiblePagesRange[1];
+            if (leftScreen == rightScreen) {
+                // make sure we're caching at least two pages always
+                if (rightScreen < screenCount - 1) {
+                    rightScreen++;
+                } else if (leftScreen > 0) {
+                    leftScreen--;
+                }
+            }
+            for (int i = 0; i < screenCount; i++) {
+                final CellLayout layout = (CellLayout) getChildAt(i);
+                if (!(leftScreen <= i && i <= rightScreen && shouldDrawChild(layout))) {
+                    layout.disableHardwareLayers();
+                }
+            }
+            for (int i = 0; i < screenCount; i++) {
+                final CellLayout layout = (CellLayout) getChildAt(i);
+                if (leftScreen <= i && i <= rightScreen && shouldDrawChild(layout)) {
+                    layout.enableHardwareLayers();
+                }
+            }
+        }
+    }
+    protected boolean shouldDrawChild(View child) {
+        final CellLayout cl = (CellLayout) child;
+        return super.shouldDrawChild(child) &&
+            (cl.getShortcutsAndWidgets().getAlpha() > 0 ||
+             cl.getBackgroundAlpha() > 0);
+    }
+    
     protected void onWallpaperTap(MotionEvent ev) {
         final int[] position = mTempCell;
         getLocationOnScreen(position);
