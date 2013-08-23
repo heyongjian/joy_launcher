@@ -74,7 +74,7 @@ public class Preferences extends PreferenceActivity
     
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//    	Log.e(TAG, "----------onSharedPreferenceChanged() : " );
+//    	Log.e(TAG, "----------onSharedPreferenceChanged() : " ); 
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(PreferencesProvider.PREFERENCES_CHANGED, true);
         editor.commit();

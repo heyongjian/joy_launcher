@@ -230,7 +230,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private AccelerateInterpolator mAlphaInterpolator = new AccelerateInterpolator(0.9f);
     private DecelerateInterpolator mLeftScreenAlphaInterpolator = new DecelerateInterpolator(4);
     public enum TransitionEffect {
-        Standard,
+    	Standard,
         Tablet,
         ZoomIn,
         ZoomOut,
@@ -238,7 +238,9 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         RotateDown,
         CubeIn,
         CubeOut,
-        Stack
+        Stack,
+        Accordion,
+        Spin
     }
     private TransitionEffect mTransitionEffect;
 
@@ -1710,7 +1712,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
     private void screenScrolledSpin(int screenScroll) {
         for (int i = 0; i < getChildCount(); i++) {
-            CellLayout cl = (CellLayout) getPageAt(i);
+            View cl = getPageAt(i);
             if (cl != null) {
                 float scrollProgress = getScrollProgress(screenScroll, cl, i);
                 float rotation = 180.0f * scrollProgress;
@@ -1757,9 +1759,9 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         invalidate();
     }
     
-    private void screenScrolledAccordian(int screenScroll) {
+    private void screenScrolledAccordion(int screenScroll) {
         for (int i = 0; i < getChildCount(); i++) {
-            CellLayout cl = (CellLayout) getPageAt(i);
+            View cl = getPageAt(i);
             if (cl != null) {
                 float scrollProgress = getScrollProgress(screenScroll, cl, i);
                 float scaleX = 1.0f - Math.abs(scrollProgress);
@@ -1840,6 +1842,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             case Stack:
                 screenScrolledStack(screenScroll);
                 break;
+            case Accordion:
+            	screenScrolledAccordion(screenScroll);
+            	break;
+            case Spin:
+            	screenScrolledSpin(screenScroll);
+            	break;
             }
         }
     }
