@@ -17,13 +17,16 @@
 package com.joy.launcher.preference;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceGroup;
+import android.preference.PreferenceScreen;
 import android.util.Log;
 
+import com.joy.launcher.IconStyleActivity;
 import com.joy.launcher.LauncherApplication;
 import com.joy.launcher.R;
 
@@ -73,6 +76,21 @@ public class Preferences extends PreferenceActivity
     }
     
     @Override
+	@Deprecated
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+			Preference preference) {
+		// TODO Auto-generated method stub
+    	String key = preference.getKey();
+    	if(PreferencesProvider.ICON_STYLE_KEY.equals(key))
+    	{
+    		Intent intent = new Intent();
+    		intent.setClass(this, IconStyleActivity.class);
+    		startActivity(intent);
+    	}
+		return super.onPreferenceTreeClick(preferenceScreen, preference);
+	}
+
+	@Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 //    	Log.e(TAG, "----------onSharedPreferenceChanged() : " ); 
         SharedPreferences.Editor editor = prefs.edit();

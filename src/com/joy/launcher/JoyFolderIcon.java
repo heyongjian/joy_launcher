@@ -1,12 +1,17 @@
 package com.joy.launcher;
 
+import com.joy.launcher.preference.PreferencesProvider;
+import com.joy.launcher.preference.PreferencesProvider.Size;
+
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 /**
  * 在线文件夹icon
@@ -38,6 +43,31 @@ public class JoyFolderIcon extends FolderIcon {
         icon.mFolderName.setText(folderInfo.title);
         icon.mPreviewBackground = (ImageView) icon.findViewById(R.id.preview_background);
 
+      //add by huangming for icon size
+        Resources res = launcher.getResources();
+        if(mPreviewSize <= 0)
+        {
+            mPreviewSize = (int)launcher.getResources().getDimension(R.dimen.folder_preview_size);
+            Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+            		launcher, 
+            		res.getString(R.string.config_defaultSize));
+            if(iconSize == Size.Small)
+            {
+            	mPreviewSize = (int)(mPreviewSize * Utilities.SMALL_RATIO);
+            }
+            else if(iconSize == Size.Large)
+            {
+            	mPreviewSize = (int)(mPreviewSize * Utilities.LARGE_RATIO);
+            }
+        }
+        int previewSize = mPreviewSize;
+        
+        if(icon.mPreviewBackground.getLayoutParams() instanceof LinearLayout.LayoutParams)
+        {
+        	LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)icon.mPreviewBackground.getLayoutParams();
+        	lp.width = lp.height = previewSize;
+        }
+        //end
         icon.setTag(folderInfo);
         icon.setOnClickListener(launcher);
         icon.mInfo = folderInfo;
