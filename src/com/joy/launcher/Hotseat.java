@@ -19,6 +19,8 @@ package com.joy.launcher;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -100,8 +102,11 @@ public class Hotseat extends FrameLayout {
         LayoutInflater inflater = LayoutInflater.from(context);
         BubbleTextView allAppsButton = (BubbleTextView)
                 inflater.inflate(R.layout.application, mContent, false);
+        //modify by huangming for icon size
+        Drawable d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
+        Bitmap b = Utilities.createIconBitmap(d, context);
         allAppsButton.setCompoundDrawablesWithIntrinsicBounds(null,
-                context.getResources().getDrawable(R.drawable.all_apps_button_icon), null, null);
+                new FastBitmapDrawable(b), null, null);
         allAppsButton.setContentDescription(context.getString(R.string.all_apps_button_label));
         allAppsButton.setOnTouchListener(new View.OnTouchListener() {
             @Override

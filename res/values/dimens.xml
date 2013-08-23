@@ -152,4 +152,9 @@
     <dimen name="menu_padding_right">40dip</dimen>
     <dimen name="menu_item_drawable_padding">8dip</dimen>
     
+    <!-- add by huangming for icon size -->
+    <dimen name="cell_h_margin_new">8dp</dimen>
+    <dimen name="cell_v_margin_new">12dp</dimen>
+    <dimen name="icon_text_size_default">15px</dimen>
+    
 </resources>

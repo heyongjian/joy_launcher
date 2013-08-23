@@ -76,7 +76,11 @@ public class DialogListView extends ListView {
 		int size = entries.length;
 		for (int i = 0; i < size; i++) {
 			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("img", entryDrawables.getDrawable(i));
+			if(entryDrawables != null)
+			{
+				map.put("img", entryDrawables.getDrawable(i));
+			}
+			
 			map.put("title", entries[i]);
 			map.put("value", entryValues[i]);
 			list.add(map);
