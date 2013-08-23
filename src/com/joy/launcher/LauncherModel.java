@@ -1664,7 +1664,7 @@ public class LauncherModel extends BroadcastReceiver {
         // the db
         if (icon == null) {
             if (c != null) {
-                icon = getIconFromCursor(c, iconIndex, context);
+                icon = getIconFromCursor(c, iconIndex, context, componentName.getPackageName());
             }
         }
         
@@ -1717,10 +1717,11 @@ public class LauncherModel extends BroadcastReceiver {
 
         info.title = c.getString(titleIndex);
 
+        String packageName = c.getString(iconPackageIndex);
         int iconType = c.getInt(iconTypeIndex);
         switch (iconType) {
         case LauncherSettings.Favorites.ICON_TYPE_RESOURCE:
-            String packageName = c.getString(iconPackageIndex);
+            
             String resourceName = c.getString(iconResourceIndex);
             PackageManager packageManager = context.getPackageManager();
             info.customIcon = false;
@@ -1730,14 +1731,14 @@ public class LauncherModel extends BroadcastReceiver {
                 if (resources != null) {
                     final int id = resources.getIdentifier(resourceName, null, null);
                     icon = Utilities.createIconBitmap(
-                            mIconCache.getFullResIcon(resources, id), context);
+                            mIconCache.getFullResIcon(resources, id), context, packageName);
                 }
             } catch (Exception e) {
                 // drop this.  we have other places to look for icons
             }
             // the db
             if (icon == null) {
-                icon = getIconFromCursor(c, iconIndex, context);
+                icon = getIconFromCursor(c, iconIndex, context, packageName);
             }
             // the fallback icon
             if (icon == null) {
@@ -1746,7 +1747,7 @@ public class LauncherModel extends BroadcastReceiver {
             }
             break;
         case LauncherSettings.Favorites.ICON_TYPE_BITMAP:
-            icon = getIconFromCursor(c, iconIndex, context);
+            icon = getIconFromCursor(c, iconIndex, context, packageName);
             if (icon == null) {
                 icon = getFallbackIcon();
                 info.customIcon = false;
@@ -1765,7 +1766,7 @@ public class LauncherModel extends BroadcastReceiver {
         return info;
     }
 
-    Bitmap getIconFromCursor(Cursor c, int iconIndex, Context context) {
+    Bitmap getIconFromCursor(Cursor c, int iconIndex, Context context, String packageName) {
         if (false) {
             Log.d(TAG, "getIconFromCursor app="
                     + c.getString(c.getColumnIndexOrThrow(LauncherSettings.Favorites.TITLE)));
@@ -1773,7 +1774,7 @@ public class LauncherModel extends BroadcastReceiver {
         byte[] data = c.getBlob(iconIndex);
         try {
             return Utilities.createIconBitmap(
-                    BitmapFactory.decodeByteArray(data, 0, data.length), context);
+                    BitmapFactory.decodeByteArray(data, 0, data.length), context, packageName);
         } catch (Exception e) {
             return null;
         }
@@ -1871,7 +1872,7 @@ public class LauncherModel extends BroadcastReceiver {
                             iconResource.packageName);
                     final int id = resources.getIdentifier(iconResource.resourceName, null, null);
                     icon = Utilities.createIconBitmap(
-                            mIconCache.getFullResIcon(resources, id), context);
+                            mIconCache.getFullResIcon(resources, id), context, iconResource.packageName);
                 } catch (Exception e) {
                     Log.w(TAG, "Could not load shortcut icon: " + extra);
                 }
