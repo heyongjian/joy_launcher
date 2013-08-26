@@ -18,6 +18,9 @@ package com.joy.launcher;
 
 import java.util.ArrayList;
 
+import com.joy.launcher.preference.PreferencesProvider;
+import com.joy.launcher.preference.PreferencesProvider.Size;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -52,6 +55,12 @@ final class Utilities {
     private static final Paint sDisabledPaint = new Paint();
     private static final Rect sOldBounds = new Rect();
     private static final Canvas sCanvas = new Canvas();
+    //add by huangming for icon size.
+    private static Drawable sBg = null;
+    private static ArrayList<String> sFilter = new ArrayList<String>();
+    static float LARGE_RATIO = 1.2f;
+    static float SMALL_RATIO = 0.8F;
+    //end
 
     static {
         sCanvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.DITHER_FLAG,
@@ -59,12 +68,13 @@ final class Utilities {
     }
     static int sColors[] = { 0xffff0000, 0xff00ff00, 0xff0000ff };
     static int sColorIndex = 0;
+   
     /**
      * Returns a bitmap suitable for the all apps view. Used to convert pre-ICS
      * icon bitmaps that are stored in the database (which were 74x74 pixels at hdpi size)
      * to the proper size (48dp)
      */
-    static Bitmap createIconBitmap(Bitmap icon, Context context) {
+    static Bitmap createIconBitmap(Bitmap icon, Context context, String packageName) {
         int textureWidth = sIconTextureWidth;
         int textureHeight = sIconTextureHeight;
         int sourceWidth = icon.getWidth();
@@ -80,17 +90,52 @@ final class Utilities {
             return icon;
         } else {
             // Icon is too small, render to a larger bitmap
-            return createIconBitmap(new BitmapDrawable(icon), context);
+            return createIconBitmap(new BitmapDrawable(icon), context, packageName);
         }
     }
 
+    //add by huangming for icon size
+    static Bitmap createIconBitmap(Drawable icon, Context context)
+    {
+    	return createIconBitmap(icon, context, null);
+    }
+    //end
+    
     /**
      * Returns a bitmap suitable for the all apps view.
      */
-    static Bitmap createIconBitmap(Drawable icon, Context context) {
+    static Bitmap createIconBitmap(Drawable icon, Context context, String packageName) {
         synchronized (sCanvas) { // we share the statics :-(
             if (sIconWidth == -1) {
                 initStatics(context);
+            }
+            //modify by huangming for icon size
+            if(sFilter == null)
+            {
+            	sFilter = new ArrayList<String>();
+            }
+            
+            if(sFilter.size() <= 0)
+            {
+            	String[] systemIcons = context.getResources().getStringArray(R.array.system_icon_array);
+            	if(systemIcons != null)
+            	{
+            		for(String systemIcon : systemIcons)
+            		{
+            			sFilter.add(systemIcon);
+            		}
+            	}
+            }
+            
+            if(sBg == null)
+            {
+            	Resources res = context.getResources();
+            	String bgName = PreferencesProvider.Interface.Homescreen.getIconStyle(context, "");
+            	int bgId = res == null ?0 : res.getIdentifier(bgName, "drawable", "com.joy.launcher");
+            	if(bgId > 0)
+            	{
+            		sBg = res.getDrawable(bgId);
+            	}
             }
 
             int width = sIconWidth;
@@ -112,7 +157,7 @@ final class Utilities {
             int sourceHeight = icon.getIntrinsicHeight();
 
 //            Log.e(TAG, "---createIconBitmap: " + width + "sourceWidth: " + sourceWidth);
-            if (sourceWidth > 0 && sourceHeight > 0) {
+            /*if (sourceWidth > 0 && sourceHeight > 0) {
                 // There are intrinsic sizes.
                 if (width < sourceWidth || height < sourceHeight) {
                     // It's too big, scale it down.
@@ -127,6 +172,21 @@ final class Utilities {
                     width = sourceWidth;
                     height = sourceHeight;
                 }
+            }*/
+            
+            if(sourceWidth > 0 && sourceHeight > 0)
+            {
+            	float ratio;
+            	if(sourceWidth > sourceHeight)
+            	{
+            		ratio = (float)sourceWidth / width;
+            	}
+            	else
+            	{
+            		ratio = (float)sourceHeight / height;
+            	}
+            	width = (int)(sourceWidth / ratio);
+            	height = (int)(sourceHeight / ratio);
             }
 
             // no intrinsic size --> use default size
@@ -137,7 +197,12 @@ final class Utilities {
                     Bitmap.Config.ARGB_8888);
             final Canvas canvas = sCanvas;
             canvas.setBitmap(bitmap);
-
+            if(sBg != null && packageName != null && !sFilter.contains(packageName))
+            {
+            	sBg.setBounds(0, 0, sIconWidth, sIconHeight);
+            	sBg.draw(canvas);
+            }
+            //end
             final int left = (textureWidth-width) / 2;
             final int top = (textureHeight-height) / 2;
 
@@ -229,7 +294,26 @@ final class Utilities {
         final DisplayMetrics metrics = resources.getDisplayMetrics();
         final float density = metrics.density;
 
-        sIconWidth = sIconHeight = (int) resources.getDimension(R.dimen.app_icon_size);
+        //modify by huangming for icon size;
+        Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+        		context, 
+        		resources.getString(R.string.config_defaultSize));
+        int appIconSize = (int) resources.getDimension(R.dimen.app_icon_size);
+        if(iconSize == Size.Large)
+        {
+        	appIconSize = (int)(appIconSize * LARGE_RATIO);
+        }
+        else if(iconSize == Size.Small)
+        {
+        	appIconSize = (int)(appIconSize * SMALL_RATIO);
+        }
+        else
+        {
+        	
+        }
+        sIconWidth = sIconHeight = appIconSize;
+        //sIconWidth = sIconHeight = (int) resources.getDimension(R.dimen.app_icon_size);
+        //end
         sIconTextureWidth = sIconTextureHeight = sIconWidth;
 
         sBlurPaint.setMaskFilter(new BlurMaskFilter(5 * density, BlurMaskFilter.Blur.NORMAL));

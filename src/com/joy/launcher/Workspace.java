@@ -74,6 +74,7 @@ import android.widget.Toast;
 import com.joy.launcher.FolderIcon.FolderRingAnimator;
 import com.joy.launcher.InstallWidgetReceiver.WidgetMimeTypeHandlerData;
 import com.joy.launcher.preference.PreferencesProvider;
+import com.joy.launcher.preference.PreferencesProvider.Size;
 
 /**
  * The workspace is a wide area with a wallpaper and a finite number of pages.
@@ -265,6 +266,12 @@ public class Workspace extends PagedView
     private boolean mFadeScrollingIndicator;
     private boolean mShowDockDivider;
     private TransitionEffect mTransitionEffect;
+    
+    //add by huangming for icon size    
+    private int mLeftMargin;
+    private int mTopMargin;
+    private int mRightMargin;
+    private int mBottomMargin;
 
     /**
      * Used to inflate the Workspace from XML.
@@ -448,6 +455,7 @@ public class Workspace extends PagedView
         mLauncher.unlockScreenOrientationOnLargeUI();
     }
 
+
     /**
      * Initializes various states for this workspace.
      */
@@ -462,6 +470,18 @@ public class Workspace extends PagedView
         setChildrenDrawnWithCacheEnabled(true);
 
         final Resources res = getResources();
+        //add by huangming for icon size
+        Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+        		context, 
+        		res.getString(R.string.config_defaultSize));
+        int widthGap = 0;
+        int heightGap = 0;
+        if(iconSize == Size.Small)
+        {
+        	//mLeftMargin = mRightMargin = (int)res.getDimension(R.dimen.cell_h_margin_new);
+        	//mTopMargin = mBottomMargin = (int)res.getDimension(R.dimen.cell_v_margin_new);
+        }
+        //end
 
         LayoutInflater inflater =
                 (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -471,6 +491,9 @@ public class Workspace extends PagedView
                     screen.getPaddingTop() + mScreenPaddingVertical,
                     screen.getPaddingRight() + mScreenPaddingHorizontal,
                     screen.getPaddingBottom() + mScreenPaddingVertical);
+            //add by huangming for icon size
+            //((CellLayout)screen).setGap(widthGap, heightGap);
+            //end
             addView(screen);        }
 
         try {
@@ -637,6 +660,17 @@ public class Workspace extends PagedView
 
         if (spanX < 0 && spanY < 0) {
             lp.isLockedToGrid = false;
+        }
+        if(container == LauncherSettings.Favorites.CONTAINER_DESKTOP)
+        {
+        	lp.leftMargin = mLeftMargin;
+        	lp.topMargin = mTopMargin;
+        	lp.rightMargin = mRightMargin;
+        	lp.bottomMargin = mBottomMargin;
+        }
+        else
+        {
+        	lp.leftMargin = lp.topMargin = lp.rightMargin = lp.bottomMargin = 0;
         }
 
         // Get the canonical child id to uniquely represent this view in this screen

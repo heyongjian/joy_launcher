@@ -46,7 +46,11 @@ public class MyListPreference extends Preference {
 		entryValues = a.getTextArray(R.styleable.MyListPrefrence_entryValues);
 		int drawid = a.getResourceId(R.styleable.MyListPrefrence_entryDrawables, -1);
 
-		entryDrawables = context.getResources().obtainTypedArray(drawid);
+		if(drawid > 0)
+		{
+			entryDrawables = context.getResources().obtainTypedArray(drawid);
+		}
+		
 		a.recycle();
 
 	}

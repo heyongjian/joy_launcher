@@ -42,6 +42,8 @@ import android.widget.TextView;
 
 import com.joy.launcher.DropTarget.DragObject;
 import com.joy.launcher.FolderInfo.FolderListener;
+import com.joy.launcher.preference.PreferencesProvider;
+import com.joy.launcher.preference.PreferencesProvider.Size;
 
 /**
  * An icon that can appear on in the workspace representing an {@link UserFolder}.
@@ -91,6 +93,10 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     boolean mAnimating = false;
     private PreviewItemDrawingParams mParams = new PreviewItemDrawingParams(0, 0, 0, 0);
     private PreviewItemDrawingParams mAnimParams = new PreviewItemDrawingParams(0, 0, 0, 0);
+    
+    //add by huangming for icon size.
+    protected static int mPreviewSize = -1;
+    //end
 
     public FolderIcon(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -116,6 +122,31 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         icon.mFolderName.setText(folderInfo.title);
         icon.mPreviewBackground = (ImageView) icon.findViewById(R.id.preview_background);
 
+        //add by huangming for icon size
+        Resources res = launcher.getResources();
+        if(mPreviewSize <= 0)
+        {
+            mPreviewSize = (int)launcher.getResources().getDimension(R.dimen.folder_preview_size);
+            Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+            		launcher, 
+            		res.getString(R.string.config_defaultSize));
+            if(iconSize == Size.Small)
+            {
+            	mPreviewSize = (int)(mPreviewSize * Utilities.SMALL_RATIO);
+            }
+            else if(iconSize == Size.Large)
+            {
+            	mPreviewSize = (int)(mPreviewSize * Utilities.LARGE_RATIO);
+            }
+        }
+        int previewSize = mPreviewSize;
+        
+        if(icon.mPreviewBackground.getLayoutParams() instanceof LinearLayout.LayoutParams)
+        {
+        	LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)icon.mPreviewBackground.getLayoutParams();
+        	lp.width = lp.height = previewSize;
+        }
+        //end
         icon.setTag(folderInfo);
         icon.setOnClickListener(launcher);
         icon.mInfo = folderInfo;
@@ -166,7 +197,21 @@ public class FolderIcon extends LinearLayout implements FolderListener {
             // We need to reload the static values when configuration changes in case they are
             // different in another configuration
             if (sStaticValuesDirty) {
-                sPreviewSize = res.getDimensionPixelSize(R.dimen.folder_preview_size);
+            	//modify by huangming for icon size
+            	//sPreviewSize = res.getDimensionPixelSize(R.dimen.folder_preview_size);
+            	sPreviewSize = launcher.getResources().getDimensionPixelSize(R.dimen.folder_preview_size);
+                Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+                		launcher, 
+                		res.getString(R.string.config_defaultSize));
+                if(iconSize == Size.Small)
+                {
+                	sPreviewSize = (int)(sPreviewSize * Utilities.SMALL_RATIO);
+                }
+                else if(iconSize == Size.Large)
+                {
+                	sPreviewSize = (int)(sPreviewSize * Utilities.LARGE_RATIO);
+                }
+            	//end               
                 sPreviewPadding = res.getDimensionPixelSize(R.dimen.folder_preview_padding);
                 sSharedOuterRingDrawable = res.getDrawable(R.drawable.portal_ring_outer_holo);
                 sSharedInnerRingDrawable = res.getDrawable(R.drawable.portal_ring_inner_holo);

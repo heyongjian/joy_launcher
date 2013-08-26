@@ -146,6 +146,12 @@
             android:authorities="com.joy.launcher.settings"
             android:writePermission="com.android.launcher.permission.WRITE_SETTINGS"
             android:readPermission="com.android.launcher.permission.READ_SETTINGS" />
+        
+         <activity
+            android:name=".IconStyleActivity"
+            android:label="@string/icon_style_activity_title"
+            android:theme="@style/joy_prefrences_icon_style" >
+        </activity>
 
     </application>
 </manifest>
