@@ -393,4 +393,6 @@ s -->
     <string name="menu_hide_apps">Hide applications</string>
     <string name="menu_mainmenu_settings">Main menu settings</string>
 
+    <!-- add by huangming for screen cycle -->
+    <string name="preferences_interface_general_screen_cycle_title">Screen circulation slide</string>
 </resources>
