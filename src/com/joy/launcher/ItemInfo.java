@@ -27,10 +27,10 @@ import java.io.IOException;
  * Represents an item in the launcher.
  */
 class ItemInfo {
-    static final int LOCAL = 0;//正常本地
-    static final int ONLINE = LOCAL+1;//在线1
-    static final int ONLINE_1 = ONLINE+1;//在线2
-    int natureType = LOCAL;
+    static final int LOCAL = -1;
+    static final int ONLINE = LOCAL+1;
+    static final int ONLINE_1 = ONLINE+1;
+    int natureId = LOCAL;
     
     static final int NO_ID = -1;
     
@@ -102,7 +102,7 @@ class ItemInfo {
         screen = info.screen;
         itemType = info.itemType;
         container = info.container;
-        natureType = info.natureType;
+        natureId = info.natureId;
     }
 
     /**
@@ -114,7 +114,7 @@ class ItemInfo {
         values.put(LauncherSettings.BaseLauncherColumns.ITEM_TYPE, itemType);
         if (!isGesture) {
             values.put(LauncherSettings.Favorites.CONTAINER, container);
-            values.put(LauncherSettings.Favorites.NATURE_TYPE, natureType);
+            values.put(LauncherSettings.Favorites.NATURE_ID, natureId);
             values.put(LauncherSettings.Favorites.SCREEN, screen);
             values.put(LauncherSettings.Favorites.CELLX, cellX);
             values.put(LauncherSettings.Favorites.CELLY, cellY);
@@ -164,6 +164,6 @@ class ItemInfo {
     public String toString() {
         return "Item(id=" + this.id + " type=" + this.itemType + " container=" + this.container
             + " screen=" + screen + " cellX=" + cellX + " cellY=" + cellY + " spanX=" + spanX
-            + " spanY=" + spanY + " isGesture=" + isGesture + " dropPos=" + dropPos +" mNatureType= "+natureType + ")";
+            + " spanY=" + spanY + " isGesture=" + isGesture + " dropPos=" + dropPos +" mNatureType= "+natureId + ")";
     }
 }

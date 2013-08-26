@@ -48,6 +48,8 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -71,6 +73,10 @@ public class LauncherProvider extends ContentProvider {
     static final String TABLE_FAVORITES = "favorites";
     static final String PARAMETER_NOTIFY = "notify";
 
+    /**
+     * ͼ���Ƿ�Ϊ����Ӧ��
+     */
+    static final String IS_VIRTUAL_SHORTCUT = "virtual_Shortcut_add_by_wanghao";
     /**
      * {@link Uri} triggered at any registered {@link android.database.ContentObserver} when
      * {@link AppWidgetHost#deleteHost()} is called during database creation.
@@ -243,7 +249,7 @@ public class LauncherProvider extends ContentProvider {
                     "title TEXT," +
                     "intent TEXT," +
                     "container INTEGER," +
-                    "natureType INTEGER," +
+                    "natureId INTEGER," +
                     "screen INTEGER," +
                     "cellX INTEGER," +
                     "cellY INTEGER," +
@@ -318,7 +324,7 @@ public class LauncherProvider extends ContentProvider {
             final int iconPackageIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_PACKAGE);
             final int iconResourceIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_RESOURCE);
             final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
-            final int natureTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_TYPE);
+            final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
             final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
             final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
             final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
@@ -338,7 +344,7 @@ public class LauncherProvider extends ContentProvider {
                 values.put(LauncherSettings.Favorites.ICON_PACKAGE, c.getString(iconPackageIndex));
                 values.put(LauncherSettings.Favorites.ICON_RESOURCE, c.getString(iconResourceIndex));
                 values.put(LauncherSettings.Favorites.CONTAINER, c.getInt(containerIndex));
-                values.put(LauncherSettings.Favorites.NATURE_TYPE, c.getInt(natureTypeIndex));
+                values.put(LauncherSettings.Favorites.NATURE_ID, c.getInt(natureIdIndex));
                 values.put(LauncherSettings.Favorites.ITEM_TYPE, c.getInt(itemTypeIndex));
                 values.put(LauncherSettings.Favorites.APPWIDGET_ID, -1);
                 values.put(LauncherSettings.Favorites.SCREEN, c.getInt(screenIndex));
@@ -733,10 +739,10 @@ public class LauncherProvider extends ContentProvider {
                     if (a.hasValue(R.styleable.Favorite_container)) {
                         container = Long.valueOf(a.getString(R.styleable.Favorite_container));
                     }
-                    //默认为本地应用
-                    int natureType = ItemInfo.LOCAL;
-                    if(a.hasValue(R.styleable.Favorite_natureType)){
-                    	natureType = Integer.valueOf(a.getString(R.styleable.Favorite_natureType));
+                    //默认为本地应�?
+                    int natureId = ItemInfo.LOCAL;
+                    if(a.hasValue(R.styleable.Favorite_natureId)){
+                    	natureId = Integer.valueOf(a.getString(R.styleable.Favorite_natureId));
                     }
                     String screen = a.getString(R.styleable.Favorite_screen);
                     String x = a.getString(R.styleable.Favorite_x);
@@ -752,13 +758,18 @@ public class LauncherProvider extends ContentProvider {
 
                     values.clear();
                     values.put(LauncherSettings.Favorites.CONTAINER, container);
-                    values.put(LauncherSettings.Favorites.NATURE_TYPE, natureType);
+                    values.put(LauncherSettings.Favorites.NATURE_ID, natureId);
                     values.put(LauncherSettings.Favorites.SCREEN, screen);
                     values.put(LauncherSettings.Favorites.CELLX, x);
                     values.put(LauncherSettings.Favorites.CELLY, y);
 
                     if (TAG_FAVORITE.equals(name)) {
-                        long id = addAppShortcut(db, values, a, packageManager, intent);
+                    	long id = -1;
+                    	if (natureId == ItemInfo.LOCAL) {
+                    		addAppShortcut(db, values, a, packageManager, intent);
+						}else {
+							 id = addVirtualShortcut(db, values, a);
+						}
                         added = id >= 0;
                     } else if (TAG_SEARCH.equals(name)) {
                         added = addSearchWidget(db, values);
@@ -1023,8 +1034,44 @@ public class LauncherProvider extends ContentProvider {
             }
             return id;
         }
+        
+        //add by wanghao
+        private long addVirtualShortcut(SQLiteDatabase db, ContentValues values,
+                TypedArray a) {
+            Resources r = mContext.getResources();
+
+            Drawable icon = a.getDrawable(R.styleable.Favorite_icon);
+            Bitmap icon_bitmap = Utilities.createIconBitmap(icon, mContext);
+//            BitmapDrawable bd = (BitmapDrawable) icon;
+//            Bitmap icon_bitmap = bd.getBitmap();
+            String title = a.getString(R.styleable.Favorite_title);
+            
+            String packageName = a.getString(R.styleable.Favorite_packageName);
+            String className = a.getString(R.styleable.Favorite_className);
+            
+            ComponentName cn = new ComponentName(packageName, className);
+            Intent intent = new Intent();
+            long id = generateNewId();
+            intent.setComponent(cn);
+            intent.putExtra(IS_VIRTUAL_SHORTCUT, true);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            values.put(Favorites.INTENT, intent.toUri(0));
+            values.put(Favorites.TITLE, title);
+            values.put(Favorites.ITEM_TYPE, Favorites.ITEM_TYPE_APPLICATION);//
+            values.put(Favorites.ICON_TYPE, Favorites.ICON_TYPE_BITMAP);
+            values.put(Favorites.SPANX, 1);
+            values.put(Favorites.SPANY, 1);
+            values.put(Favorites._ID, id);
+
+            ItemInfo.writeBitmap(values, icon_bitmap);
+            
+            if (dbInsertAndCheck(db, TABLE_FAVORITES, null, values) < 0) {
+                return -1;
+            }
+            return id;
+        }
     }
-    
     /**
      * Build a query string that will match any row where the column matches
      * anything in the values list.

@@ -30,6 +30,7 @@ import org.json.JSONTokener;
 
 import android.util.Log;
 
+import com.joy.launcher.network.impl.ProtocalFactory;
 import com.joy.launcher.util.Constants;
 import com.joy.launcher.util.Util;
 
@@ -42,7 +43,7 @@ import com.joy.launcher.util.Util;
 public class ClientHttp implements ClientInterface {
 
 	private static final String TAG = "ClientHttp";
-	private static final Boolean DEBUG = false;
+	private static final Boolean DEBUG = true;
 	@Override
 	public JSONObject request(Protocal protocal) throws Exception {
 		JSONObject data = post(protocal);
@@ -93,14 +94,10 @@ public class ClientHttp implements ClientInterface {
 			if(DEBUG) Log.e(TAG, "---getInputStream 没有打开网络连接！");
 			return null;
 		}
-		DefaultHttpClient httpClient = null;
+		DefaultHttpClient httpClient = new DefaultHttpClient();  
 
 		InputStream result = null;
 		try {
-			// ��������
-//			httpClient = NetworkinfoParser.getHttpConnector(marketContext);
-			httpClient = new DefaultHttpClient();  
-			// �Ƿ�Ҫ�������Ի���
 			if (protocal.isReTry()) {
 				httpClient.setHttpRequestRetryHandler(new RetryHandler());
 			}
@@ -113,9 +110,10 @@ public class ClientHttp implements ClientInterface {
 			} else {
 				urlStrl = protocal.getHost();
 			}
+			String randomTS = Util.getTS(9999);
 			// url
 			if (protocal.getGetData() != null) {
-				urlStrl += "?" + protocal.getGetData();
+				urlStrl += "?" + protocal.getGetData() +ProtocalFactory.getSign(randomTS);
 			}
 			if(DEBUG) Log.i(TAG, "---getInputStream urlStrl： "+urlStrl);
 			
@@ -133,13 +131,14 @@ public class ClientHttp implements ClientInterface {
 					protocal.getSoTimeout() > 0 ? protocal.getSoTimeout() : 15000);
 
 			//添加头
-			httpRequest.addHeader("ts", Util.getTS(9999));//–随机数
+			httpRequest.addHeader("ts", randomTS);//–随机数
 			httpRequest.addHeader("deviceId", Util.getDeviceID());// –唯一设备号
 			httpRequest.addHeader("Accept-Encoding", "gzip");
 			httpRequest.addHeader("Content-Type", "text/json;charset=UTF-8");
 
 			HttpResponse httpResponse = httpClient.execute(httpRequest);
 			int httpCode = httpResponse.getStatusLine().getStatusCode();
+			if(DEBUG) Log.i(TAG, "-----httpCode-------"+httpCode);
 			if (httpCode == HttpURLConnection.HTTP_OK) {
 				Header encodeHader = httpResponse.getLastHeader("Content-Encoding");
 				if (encodeHader != null && "gzip".equals(encodeHader.getValue())) {
@@ -154,10 +153,6 @@ public class ClientHttp implements ClientInterface {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			if(DEBUG) Log.e(TAG, "---getInputStream 网络异常    -----------》1");
-		} finally {
-			if (httpClient != null) {
-				httpClient.getConnectionManager().shutdown();
-			}
 		}
 		return result;
 	}
