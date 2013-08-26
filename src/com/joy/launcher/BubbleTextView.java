@@ -16,9 +16,6 @@
 
 package com.joy.launcher;
 
-import com.joy.launcher.preference.PreferencesProvider.Size;
-import com.joy.launcher.preference.PreferencesProvider;
-import com.joy.launcher.preference.PreferencesProvider.TextStyle;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -32,10 +29,13 @@ import android.graphics.Region.Op;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.widget.TextView;
+
+import com.joy.launcher.download.DownloadInfo;
+import com.joy.launcher.preference.PreferencesProvider;
+import com.joy.launcher.preference.PreferencesProvider.Size;
+import com.joy.launcher.preference.PreferencesProvider.TextStyle;
 
 /**
  * TextView that draws a bubble behind the text. We cannot use a LineBackgroundSpan
@@ -72,6 +72,9 @@ public class BubbleTextView extends TextView {
     private boolean mTextVisible = true;
     private CharSequence mVisibleText;
 
+    //add by wanghao
+    DownLoadProgressBar mProgressBar;
+    
     public BubbleTextView(Context context) {
         super(context);
         init();
@@ -336,7 +339,58 @@ public class BubbleTextView extends TextView {
         super.draw(canvas);
         canvas.restore();
     }
+    
+    //add by wanghao
+    @Override
+    protected void onDraw(Canvas canvas) {
+    	// TODO Auto-generated method stub
+    	super.onDraw(canvas);
+    	
+    	  final int scrollX = mScrollX;
+          final int scrollY = mScrollY;
+          if ((scrollX | scrollY) == 0) {
+          	drawProgressBar(canvas);
+          } else {
+              canvas.translate(scrollX, scrollY);
+              drawProgressBar(canvas);
+              canvas.translate(-scrollX, -scrollY);
+          }
+    }
+    
+    //add by wanghao
+    private void initProgressBar(){
+    	mProgressBar = new DownLoadProgressBar();
+    	
+    }
+    /**
+     * draw progress bar,add by wanghao
+     * @param canvas
+     */
+	protected void drawProgressBar(Canvas canvas) {
 
+		ShortcutInfo info = (ShortcutInfo)getTag();
+		
+		if (info == null) {
+			return;
+		}
+		if (info.intent == null) {
+			return;
+		}
+		
+		boolean isVirtual = (Boolean) info.intent.getExtra(LauncherProvider.IS_VIRTUAL_SHORTCUT, false);
+		if (isVirtual) {
+			if (mProgressBar == null) {
+				mProgressBar = new DownLoadProgressBar();
+			}
+			mProgressBar.drawProgressBar(canvas,info,isVirtual);
+		}else {
+			if(mProgressBar != null){
+				mProgressBar = null;
+			}
+		}
+
+	}
+ 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -367,6 +421,64 @@ public class BubbleTextView extends TextView {
         } else {
             mVisibleText = getText();
             setText("");
+        }
+    }
+    
+    // add by wanghao
+    class DownLoadProgressBar{
+        
+        private Drawable progressbar;
+        private Drawable progressbar_cursor;
+        private Drawable progressbar_bg;
+        private Rect progressbarBounds;
+        
+        public DownLoadProgressBar(){
+        	
+        	progressbar = getResources().getDrawable(R.drawable.download_progressbar);
+        	progressbar_bg = getResources().getDrawable(R.drawable.download_progressbar_bg);
+        	progressbar_cursor = getResources().getDrawable(R.drawable.download_progressbar_cursor);
+        	Drawable[] drawables = getCompoundDrawables();
+            Drawable drawableTop = drawables[1];
+            progressbarBounds = drawableTop.getBounds();
+        }
+        
+        public void drawProgressBar(Canvas canvas,ShortcutInfo info,boolean isVirtual){
+    		
+        	DownloadInfo downloadInfo = info.getDownLoadInfo();
+        	
+        	int left = (getWidth()-progressbarBounds.width())/2;
+    		int top = getPaddingTop();
+
+    		if (downloadInfo == null&&isVirtual) {
+    			canvas.save();
+    			canvas.translate(left, top);
+    			progressbar.setBounds(progressbarBounds);
+    			progressbar.draw(canvas);
+    			canvas.restore();
+    			return;
+    		}else if (downloadInfo != null) {
+    			canvas.save();
+    			canvas.translate(left, top);
+    			progressbar_bg.setBounds(progressbarBounds);
+    			progressbar_bg.draw(canvas);
+    			
+    			int w = progressbarBounds.width()*downloadInfo.getCompletesize()/downloadInfo.getFilesize();
+    			if (w < progressbar_cursor.getIntrinsicWidth()) {
+//    				w = progressbar_cursor.getIntrinsicWidth();
+    				canvas.restore();
+    				return;
+    			}
+    			canvas.translate(left, top);
+    			int cursor_left = progressbarBounds.left;
+    			int cursor_top = (progressbarBounds.bottom - progressbar_cursor.getIntrinsicHeight())/2;
+
+    			int bottom = cursor_top+progressbar_cursor.getIntrinsicHeight();
+    			canvas.translate(-left, -top);
+    			progressbar_cursor.setBounds(cursor_left, cursor_top, w, bottom);
+    			progressbar_cursor.draw(canvas);
+
+    			canvas.restore();
+    		}
         }
     }
 }

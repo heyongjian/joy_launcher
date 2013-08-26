@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.joy.launcher.cache.ImageOption;
+import com.joy.launcher.download.DownloadInfo;
 import com.joy.launcher.network.handler.BitmapHandler;
 import com.joy.launcher.network.handler.WallpaperHandler;
 import com.joy.launcher.network.util.ClientHttp;
@@ -21,7 +22,7 @@ import com.joy.launcher.util.Constants;
  * @author wanghao
  *
  */
-public class Service implements ServiceInterface {
+public class Service {
 	private static Service service;
 	ClientInterface cs = null;
 	ProtocalFactory pfactory;
@@ -89,19 +90,16 @@ public class Service implements ServiceInterface {
 	/**
 	 * 释放网络资源
 	 */
-	@Override
 	public void shutdownNetwork() {
 		cs.shutdownNetwork();
 		cs = null;
 		service = null;
 	}
 
-	@Override
 	public boolean netWorkIsOK() {
 		return cs.isOK();
 	}
 
-	@Override
 	public String getTestData() throws Exception {
 		// TODO Auto-generated method stub
 		String url = Constants.TEST_URL;
@@ -113,7 +111,6 @@ public class Service implements ServiceInterface {
 		return json.toString();
 	}
 
-	@Override
 	public Bitmap getBitmapByUrl(String url, ImageOption... option) {
 		// TODO Auto-generated method stub
 		Protocal protocal = pfactory.bitmapProtocal(url);
@@ -123,12 +120,11 @@ public class Service implements ServiceInterface {
 		return bp;
 	}
 
-	@Override
-	public void getWallpaper() throws Exception {
-		// TODO Auto-generated method stub
-		Protocal protocal = pfactory.wallpaperProtocal();
-		JSONObject result = cs.request(protocal);
-		WallpaperHandler whandler = new WallpaperHandler();
-		whandler.getWallpaperType(result);
+	public InputStream getDownLoadInputStream(){
+		
+		Protocal protocal = pfactory.downloadApkProtocal();
+		InputStream iStream = cs.getInputStream(protocal);
+		
+		return iStream;
 	}
 }
