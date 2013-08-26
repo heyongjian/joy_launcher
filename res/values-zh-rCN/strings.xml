@@ -229,4 +229,6 @@
     <string name="menu_show_apps">显示应用程序</string>
     <string name="menu_hide_apps">隐藏应用程序</string>
     <string name="menu_mainmenu_settings">主菜单设置</string>
+    <!-- add by huangming for screen cycle -->
+    <string name="preferences_interface_general_screen_cycle_title">屏幕循环滑动</string>
 </resources>
