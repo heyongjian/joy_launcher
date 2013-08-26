@@ -377,7 +377,12 @@ s -->
     <string name="online_folder">online folder</string>
     <string name="add_to_desktop">add to desktop</string>
     <string name="add_widget_to_desktop">add widget to desktop</string>
- 	<string name="add_folder_to_desktop">add online folder to desktop</string>
+	<string name="add_folder_to_desktop">add online folder to desktop</string>
+	<string name="tip">tip</string>
+	<string name="tip_message">download the application?</string>
+	<string name="tip_confirm">confirm</string>
+	<string name="tip_cancle">cancle</string>
+ 	<string name="virtualshortcut_test">virtual shortcut test</string>
  	
     <!-- menu view added by huangming. -->
     <string name="menu_edit_screen">Edit screen</string>

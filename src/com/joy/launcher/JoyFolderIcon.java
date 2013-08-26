@@ -102,7 +102,7 @@ public class JoyFolderIcon extends FolderIcon {
     private  Drawable getJoyFolderIcon(){
     	Drawable d = null;
     	int id = R.drawable.game_folder;
-    	switch(mInfo.natureType){
+    	switch(mInfo.natureId){
     	case ItemInfo.LOCAL:
     		id = R.drawable.game_folder;
     		break;

@@ -3524,7 +3524,7 @@ public class Workspace extends PagedView
                         (ShortcutInfo) info);
                 break;
             case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
-                if (info.natureType == ItemInfo.ONLINE||info.natureType == ItemInfo.ONLINE_1) {
+                if (info.natureId == ItemInfo.ONLINE||info.natureId == ItemInfo.ONLINE_1) {
 					view = JoyFolderIcon.fromXml(R.layout.joy_folder_icon,
 							mLauncher, cellLayout, (FolderInfo) info,
 							mIconCache);

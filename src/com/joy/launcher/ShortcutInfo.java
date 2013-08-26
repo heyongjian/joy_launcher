@@ -16,23 +16,24 @@
 
 package com.joy.launcher;
 
+import java.util.ArrayList;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import java.util.ArrayList;
+import com.joy.launcher.download.DownloadInfo;
 
 /**
  * Represents a launchable icon on the workspaces and in folders.
  */
-class ShortcutInfo extends ItemInfo {
+public class ShortcutInfo extends ItemInfo {
 
     /**
      * The application name.
      */
-    CharSequence title;
+    public CharSequence title;
 
     /**
      * The intent used to start the application.
@@ -61,6 +62,7 @@ class ShortcutInfo extends ItemInfo {
      * The application icon.
      */
     private Bitmap mIcon;
+    private DownloadInfo mDownloadInfo;
 
     ShortcutInfo() {
         itemType = LauncherSettings.BaseLauncherColumns.ITEM_TYPE_SHORTCUT;
@@ -99,6 +101,13 @@ class ShortcutInfo extends ItemInfo {
         return mIcon;
     }
 
+    public void setDownLoadInfo(DownloadInfo info){
+    	mDownloadInfo = info;
+    }
+    
+    public DownloadInfo getDownLoadInfo(){
+    	return mDownloadInfo;
+    }
     /**
      * Creates the application intent based on a component name and various launch flags.
      * Sets {@link #itemType} to {@link LauncherSettings.BaseLauncherColumns#ITEM_TYPE_APPLICATION}.

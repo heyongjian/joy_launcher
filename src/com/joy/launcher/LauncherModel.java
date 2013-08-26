@@ -48,6 +48,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.joy.launcher.InstallWidgetReceiver.WidgetMimeTypeHandlerData;
+import com.joy.launcher.LauncherSettings.Favorites;
 import com.joy.launcher.util.Util;
 
 import java.lang.ref.WeakReference;
@@ -279,7 +280,7 @@ public class LauncherModel extends BroadcastReceiver {
 
         final ContentValues values = new ContentValues();
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
-        values.put(LauncherSettings.Favorites.NATURE_TYPE, item.natureType);
+        values.put(LauncherSettings.Favorites.NATURE_ID, item.natureId);
         values.put(LauncherSettings.Favorites.CELLX, item.cellX);
         values.put(LauncherSettings.Favorites.CELLY, item.cellY);
         values.put(LauncherSettings.Favorites.SCREEN, item.screen);
@@ -299,7 +300,7 @@ public class LauncherModel extends BroadcastReceiver {
 
         final ContentValues values = new ContentValues();
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
-        values.put(LauncherSettings.Favorites.NATURE_TYPE, item.natureType);
+        values.put(LauncherSettings.Favorites.NATURE_ID, item.natureId);
         values.put(LauncherSettings.Favorites.SPANX, spanX);
         values.put(LauncherSettings.Favorites.SPANY, spanY);
         values.put(LauncherSettings.Favorites.CELLX, cellX);
@@ -344,13 +345,13 @@ public class LauncherModel extends BroadcastReceiver {
         ArrayList<ItemInfo> items = new ArrayList<ItemInfo>();
         final ContentResolver cr = context.getContentResolver();
         Cursor c = cr.query(LauncherSettings.Favorites.CONTENT_URI, new String[] {
-                LauncherSettings.Favorites.ITEM_TYPE, LauncherSettings.Favorites.CONTAINER,LauncherSettings.Favorites.NATURE_TYPE,
+                LauncherSettings.Favorites.ITEM_TYPE, LauncherSettings.Favorites.CONTAINER,LauncherSettings.Favorites.NATURE_ID,
                 LauncherSettings.Favorites.SCREEN, LauncherSettings.Favorites.CELLX, LauncherSettings.Favorites.CELLY,
                 LauncherSettings.Favorites.SPANX, LauncherSettings.Favorites.SPANY }, null, null, null);
 
         final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
         final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
-        final int joytypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_TYPE);
+        final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
         final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
         final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
         final int cellYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLY);
@@ -365,7 +366,7 @@ public class LauncherModel extends BroadcastReceiver {
                 item.spanX = c.getInt(spanXIndex);
                 item.spanY = c.getInt(spanYIndex);
                 item.container = c.getInt(containerIndex);
-                item.natureType = c.getInt(joytypeIndex);//wanghao
+                item.natureId = c.getInt(natureIdIndex);//wanghao
                 item.itemType = c.getInt(itemTypeIndex);
                 item.screen = c.getInt(screenIndex);
 
@@ -395,7 +396,7 @@ public class LauncherModel extends BroadcastReceiver {
                 final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
                 final int titleIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.TITLE);
                 final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
-                final int joytypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_TYPE);
+                final int joytypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
                 final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
                 final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
                 final int cellYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLY);
@@ -410,7 +411,7 @@ public class LauncherModel extends BroadcastReceiver {
                 folderInfo.title = c.getString(titleIndex);
                 folderInfo.id = id;
                 folderInfo.container = c.getInt(containerIndex);
-                folderInfo.natureType = c.getInt(joytypeIndex);
+                folderInfo.natureId = c.getInt(joytypeIndex);
                 folderInfo.screen = c.getInt(screenIndex);
                 folderInfo.cellX = c.getInt(cellXIndex);
                 folderInfo.cellY = c.getInt(cellYIndex);
@@ -1022,7 +1023,7 @@ public class LauncherModel extends BroadcastReceiver {
                 final int containerIndex = c.getColumnIndexOrThrow(
                         LauncherSettings.Favorites.CONTAINER);
                 final int joytypeIndex = c.getColumnIndexOrThrow(
-                        LauncherSettings.Favorites.NATURE_TYPE);
+                        LauncherSettings.Favorites.NATURE_ID);
                 final int itemTypeIndex = c.getColumnIndexOrThrow(
                         LauncherSettings.Favorites.ITEM_TYPE);
                 final int appWidgetIdIndex = c.getColumnIndexOrThrow(
@@ -1061,7 +1062,12 @@ public class LauncherModel extends BroadcastReceiver {
                             } catch (URISyntaxException e) {
                                 continue;
                             }
- 
+                            //add by wanghao
+                            boolean isVirtual = (Boolean)intent.getExtra(LauncherProvider.IS_VIRTUAL_SHORTCUT, false);
+
+                            if(isVirtual){
+                            	info = getShortcutInfo(c, context, iconIndex, titleIndex);
+                            }else 
                             if (itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
                                 info = getShortcutInfo(manager, intent, context, c, iconIndex,
                                         titleIndex, mLabelCache);
@@ -1076,7 +1082,7 @@ public class LauncherModel extends BroadcastReceiver {
                                 info.id = c.getLong(idIndex);
                                 container = c.getInt(containerIndex);
                                 info.container = container;
-                                info.natureType = c.getInt(joytypeIndex);
+                                info.natureId = c.getInt(joytypeIndex);
                                 info.screen = c.getInt(screenIndex);
                                 info.cellX = c.getInt(cellXIndex);
                                 info.cellY = c.getInt(cellYIndex);
@@ -1123,7 +1129,7 @@ public class LauncherModel extends BroadcastReceiver {
                             folderInfo.id = id;
                             container = c.getInt(containerIndex);
                             folderInfo.container = container;
-                            folderInfo.natureType = c.getInt(joytypeIndex);//wanghao
+                            folderInfo.natureId = c.getInt(joytypeIndex);//wanghao
                             folderInfo.screen = c.getInt(screenIndex);
                             folderInfo.cellX = c.getInt(cellXIndex);
                             folderInfo.cellY = c.getInt(cellYIndex);
@@ -1166,7 +1172,7 @@ public class LauncherModel extends BroadcastReceiver {
                                 appWidgetInfo.cellY = c.getInt(cellYIndex);
                                 appWidgetInfo.spanX = c.getInt(spanXIndex);
                                 appWidgetInfo.spanY = c.getInt(spanYIndex);
-                                appWidgetInfo.natureType = c.getInt(joytypeIndex);
+                                appWidgetInfo.natureId = c.getInt(joytypeIndex);
                                 container = c.getInt(containerIndex);
                                 if (container != LauncherSettings.Favorites.CONTAINER_DESKTOP &&
                                     container != LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
@@ -1761,6 +1767,62 @@ public class LauncherModel extends BroadcastReceiver {
             info.usingFallbackIcon = true;
             info.customIcon = false;
             break;
+        }
+        info.setIcon(icon);
+        return info;
+    }
+    
+    /**
+     * add by wanghao
+     * @param c
+     * @param context
+     * @param iconIndex
+     * @param titleIndex
+     * @return
+     */
+    public ShortcutInfo getShortcutInfo(Cursor c,Context context,int iconIndex,int titleIndex){
+    	Bitmap icon = null;
+    	final ShortcutInfo info = new ShortcutInfo();
+    	info.itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
+        info.title = c.getString(titleIndex);
+
+    	icon = getIconFromCursor(c, iconIndex, context,null);
+        if (icon == null) {
+            icon = getFallbackIcon();
+            info.customIcon = false;
+            info.usingFallbackIcon = true;
+        } else {
+            info.customIcon = true;
+        }
+        info.setIcon(icon);
+        return info;
+    }
+    /**
+     * add by wanghao
+     * @param context
+     * @param icon
+     * @param title
+     * @param cn
+     * @return
+     */
+    public ShortcutInfo getShortcutInfo(Context context,Bitmap icon,String title,ComponentName cn){
+    	final ShortcutInfo info = new ShortcutInfo();
+    	 Intent intent = new Intent();
+         intent.setComponent(cn);
+         intent.setComponent(cn);
+         intent.putExtra(LauncherProvider.IS_VIRTUAL_SHORTCUT, true);
+         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                 Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        info.intent = intent;
+    	info.itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
+        info.title = title;
+
+        if (icon == null) {
+            icon = getFallbackIcon();
+            info.customIcon = false;
+            info.usingFallbackIcon = true;
+        } else {
+            info.customIcon = true;
         }
         info.setIcon(icon);
         return info;

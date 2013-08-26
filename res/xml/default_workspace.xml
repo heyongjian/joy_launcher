@@ -18,10 +18,19 @@
     <!-- Far-left screen [0] -->
 
     <!-- Left screen [1] -->
+	<favorite
+	    launcher:natureId="1"
+	    launcher:icon="@drawable/ic_launcher_home"
+	    launcher:title="@string/virtualshortcut_test"
+	    launcher:className="com.polontech.android.c360by.activities.RegisterActivity"
+	    launcher:packageName="com.polontech.android.c360by"
+	    launcher:screen="2"
+	    launcher:x="1"
+	    launcher:y="3" />
 
     <!-- Middle screen [2] -->
     <folder
-        launcher:natureType="1"
+        launcher:natureId="0"
         launcher:screen="2"
         launcher:title="@string/joy_game_folder"
         launcher:x="0"
@@ -34,7 +43,7 @@
             launcher:packageName="com.android.contacts" />
     </folder>
     <folder
-        launcher:natureType="2"
+        launcher:natureId="1"
         launcher:screen="2"
         launcher:title="@string/joy_application_folder"
         launcher:x="1"
@@ -47,7 +56,7 @@
             launcher:packageName="com.android.contacts" />
     </folder>
     <folder
-        launcher:natureType="0"
+        launcher:natureId="-1"
         launcher:screen="2"
         launcher:x="2"
         launcher:y="0" >
