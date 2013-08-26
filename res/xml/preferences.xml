@@ -223,6 +223,9 @@
             <CheckBoxPreference android:key="ui_general_orientation"
                 android:title="@string/preferences_interface_general_orientation_title"
                 android:defaultValue="@bool/config_defaultAutoRotate" />
+            <CheckBoxPreference android:key="ui_general_screen_cycle"
+                android:title="@string/preferences_interface_general_screen_cycle_title"
+                android:defaultValue="@bool/config_defaultScreenCycle" />
         </PreferenceScreen>
     </PreferenceCategory>
 

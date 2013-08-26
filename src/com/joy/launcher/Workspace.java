@@ -964,7 +964,25 @@ public class Workspace extends PagedView
         int scrollRange = getScrollRange();
 
         // Again, we adjust the wallpaper offset to be consistent between values of mLayoutScale
+        //add by huangming for screen cycle
         float adjustedScrollX = Math.max(0, Math.min(mScrollX, mMaxScrollX));
+        
+        if(mOverScrollX < 0 && mIsCycle)
+        {
+        	scrollRange = getWidth();
+        	adjustedScrollX = Math.abs(mOverScrollX);
+        }
+        else if(mOverScrollX > mMaxScrollX  && mIsCycle)
+        {
+        	scrollRange = getWidth();
+        	adjustedScrollX = scrollRange - (mOverScrollX - mMaxScrollX);
+        	
+        }
+        else
+        {
+        	adjustedScrollX = Math.max(0, Math.min(getScrollX(), mMaxScrollX));
+        }
+        //end
         adjustedScrollX *= mWallpaperScrollRatio;
         mLayoutScale = layoutScale;
 
@@ -1546,7 +1564,7 @@ public class Workspace extends PagedView
                     cl.invalidate();
                 }
             }
-        } else if (mOverScrollX < 0 || mOverScrollX > mMaxScrollX) {
+        } else if ((mOverScrollX < 0 || mOverScrollX > mMaxScrollX) && !mIsCycle) {
             int index = mOverScrollX < 0 ? 0 : getChildCount() - 1;
             CellLayout cl = (CellLayout) getPageAt(index);
             if (!LauncherApplication.isScreenLarge()) {
@@ -1728,8 +1746,42 @@ public class Workspace extends PagedView
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
+        //modify by huangming for screen cycle.
+        if (!mIsCycle) {
+    		return;
+    	}
+    	long drawingTime = getDrawingTime();
+        int width = getMeasuredWidth();
+        int childOffset = getRelativeChildOffset(0);
+        int childCount = getChildCount();
+        int offset = childCount * ( width - childOffset);
+        float scrollPos = (float) getScrollX() / width;
+        int scrollX = mScrollX;
+        int leftSideScreen = (scrollX / width);
+        boolean isMovingRight = scrollX >= 0 && leftSideScreen >= mCurrentPage;
+        int leftScreen = -1;
+        int rightScreen = -1;
+        
+        if (scrollX < 0 || scrollX > mMaxScrollX) {
+            leftScreen = childCount - 1;
+            rightScreen = 0;
+        }
 
-        if (mInScrollArea && !LauncherApplication.isScreenLarge()) {
+        if (rightScreen == 0) { 
+            if (isMovingRight) {
+                canvas.translate(offset, 0);
+                drawChild(canvas, getChildAt(rightScreen), drawingTime);
+                canvas.translate(-offset, 0);
+                
+            } else {
+                canvas.translate(-offset, 0);
+                drawChild(canvas, getChildAt(leftScreen), drawingTime);
+                canvas.translate(offset, 0);
+           }
+
+        }
+
+       /* if (mInScrollArea && !LauncherApplication.isScreenLarge()) {
             final int width = getWidth();
             final int height = getHeight();
             final int pageHeight = getPageAt(0).getHeight();
@@ -1753,7 +1805,7 @@ public class Workspace extends PagedView
                         height - paddingBottom);
                 d.draw(canvas);
             }
-        }
+        }*/
     }
 
     @Override
