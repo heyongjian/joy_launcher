@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.R.anim;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -60,7 +61,10 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -107,8 +111,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.joy.launcher.DropTarget.DragObject;
+import com.joy.launcher.download.DownloadInfo;
+import com.joy.launcher.download.DownloadManager;
+import com.joy.launcher.download.DownloadManager.CallBack;
 import com.joy.launcher.preference.Preferences;
 import com.joy.launcher.preference.PreferencesProvider;
+import com.joy.launcher.util.Constants;
+import com.joy.launcher.util.Util;
 
 /**
  * Default launcher application.
@@ -882,6 +891,12 @@ public final class Launcher extends Activity
             favorite.setTextVisible(false);
         }
         favorite.setOnClickListener(this);
+        //add by wanghao
+        DownloadInfo downinfo = info.getDownLoadInfo();
+        if(downinfo != null){
+        	downinfo.setView(favorite);
+        }
+        
         return favorite;
     }
 
@@ -1461,6 +1476,7 @@ public final class Launcher extends Activity
         
     //added by huangming for menu.
     public boolean onMenuOpened(int featureId, Menu menu) {
+    	addVirtualShortcutTEST();
 		if(menuView != null)
 		{
 			int visible = menuView.getVisibility();
@@ -1693,7 +1709,7 @@ public final class Launcher extends Activity
 		}
     }
     /**
-     * 添加到桌面
+     * 添加到桌�?
      */
     public void showAddToDesktop(){
 		LayoutInflater inflater = getLayoutInflater();
@@ -1734,8 +1750,8 @@ public final class Launcher extends Activity
         startActivityForResult(pickIntent, REQUEST_PICK_APPWIDGET);
     }
     /**
-     * 弹出添加在线文件的窗口
-     * @param natureType
+     * 弹出添加在线文件的窗�?
+     * @param natureId
      * @return
      */
     private void showAddOnlineFolder(){
@@ -1767,7 +1783,7 @@ public final class Launcher extends Activity
     }
     /**
      * 手动添加在线文件
-     * @param natureType
+     * @param natureId
      * @return
      */
     FolderIcon addJoyFolder(int natureType) {
@@ -1793,7 +1809,7 @@ public final class Launcher extends Activity
 				folderInfo.title = getText(R.string.joy_application_folder);
 				break;
 			}
-            folderInfo.natureType = natureType;
+            folderInfo.natureId = natureType;
            
             LauncherModel.addItemToDatabase(Launcher.this, folderInfo, container, screen, cellX, cellY,
                     false);
@@ -1839,6 +1855,38 @@ public final class Launcher extends Activity
 
     void removeFolder(FolderInfo folder) {
         sFolders.remove(folder.id);
+    }
+    
+    public void addVirtualShortcutTEST(){
+    	
+    	Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_home);
+        BitmapDrawable bd= new BitmapDrawable(getResources(), icon); 
+        Bitmap icon_bitmap = Utilities.createIconBitmap(bd, this);
+        String title = getString(R.string.virtualshortcut_test);
+	    String className="com.polontech.android.c360by.activities.RegisterActivity";
+	    String packageName="com.polontech.android.c360by";
+        ComponentName cn = new ComponentName(packageName, className); 
+        final ShortcutInfo info = mModel.getShortcutInfo(this, icon_bitmap, title,cn);
+        long container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+        int screen = 1;
+        int cellX = 2;
+        int cellY = 0;
+        
+        addVirtualShortcut(container, screen, cellX, cellY, info);
+    }
+    View addVirtualShortcut(long container, final int screen, int cellX,
+            int cellY,ShortcutInfo info) {
+
+        LauncherModel.addItemToDatabase(Launcher.this, info, container, screen, cellX, cellY,
+                false);
+
+        View shortcut = createShortcut(info);
+        mWorkspace.addInScreen(shortcut, info.container, info.screen, info.cellX,
+        		info.cellY, 1, 1, false);
+        return shortcut;
+    }
+    public void updateVirtualShortcut(ShortcutInfo info){
+    	mModel.updateItemInDatabase(this, info);
     }
 
     private void startWallpaper() {
@@ -1955,17 +2003,8 @@ public final class Launcher extends Activity
         Object tag = v.getTag();
         if (tag instanceof ShortcutInfo) {
             // Open shortcut
-            final Intent intent = ((ShortcutInfo) tag).intent;
-            int[] pos = new int[2];
-            v.getLocationOnScreen(pos);
-            intent.setSourceBounds(new Rect(pos[0], pos[1],
-                    pos[0] + v.getWidth(), pos[1] + v.getHeight()));
-            boolean success = startActivitySafely(intent, tag);
-
-            if (success && v instanceof BubbleTextView) {
-                mWaitingForResume = (BubbleTextView) v;
-                mWaitingForResume.setStayPressed(true);
-            }
+        	OpenShortcut(v);
+           
         } else if (tag instanceof FolderInfo) {
             if (v instanceof FolderIcon) {
                 FolderIcon fi = (FolderIcon) v;
@@ -2226,6 +2265,80 @@ public final class Launcher extends Activity
         });
         oa.start();
     }
+    public void OpenShortcut(View v){
+    	 Object tag = v.getTag();
+    	 final Intent intent = ((ShortcutInfo) tag).intent;
+    	 if (intent == null) {
+    		 Log.e(TAG, "OpenShortcut --- intent == null");
+			return;
+		}
+    	 boolean isVirtual = (Boolean)intent.getExtra(LauncherProvider.IS_VIRTUAL_SHORTCUT, false);
+    	 if (isVirtual) {
+    		 OpenVirtualShortcut(v);
+		 }else {
+			 int[] pos = new int[2];
+	         v.getLocationOnScreen(pos);
+	         intent.setSourceBounds(new Rect(pos[0], pos[1],
+	                 pos[0] + v.getWidth(), pos[1] + v.getHeight()));
+	         boolean success = startActivitySafely(intent, tag);
+
+	         if (success && v instanceof BubbleTextView) {
+	             mWaitingForResume = (BubbleTextView) v;
+	             mWaitingForResume.setStayPressed(true);
+	         }
+		}
+    }
+    int myTempId = 0;
+	private void OpenVirtualShortcut(final View view) {
+		
+//		DownloadInfo downinfo = (DownloadInfo)view.getTag(R.id.download_info);
+		DownloadInfo downinfo = ((ShortcutInfo)view.getTag()).getDownLoadInfo();
+		if(downinfo != null){
+			return;
+		}
+		final Dialog alertDialog = new AlertDialog.Builder(this)
+				.setTitle(Launcher.this.getString(R.string.tip))
+				.setMessage(Launcher.this.getString(R.string.tip_message))
+				.setPositiveButton(Launcher.this.getString(R.string.tip_confirm), new DialogInterface.OnClickListener() {
+                     
+                    @Override 
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO Auto-generated method stub 
+                    	//下载id
+                		int id = myTempId++;
+                		//应用名称
+                		final String name = "downTest"+id+".apk";
+                		
+                		int filesize = 2792121;
+
+                		DownloadManager.getInstances().createTask(view, name, id, filesize,new CallBack() {
+							
+							@Override
+							public void DownloadSucceed() {
+								// TODO Auto-generated method stub
+								ShortcutInfo info = (ShortcutInfo)view.getTag();
+								info.intent.putExtra(LauncherProvider.IS_VIRTUAL_SHORTCUT, false);
+								Launcher.this.updateVirtualShortcut(info);
+								
+								view.postDelayed(new Runnable() {
+									
+									@Override
+									public void run() {
+										// TODO Auto-generated method stub
+										Util.installAPK(Constants.DOWNLOAD_APK_DIR,name);
+									}
+								}, 2000);
+								
+							}
+						});
+//                		DownloadManager.getInstances().createTask(view);
+                    }
+                })
+                .setNegativeButton(Launcher.this.getString(R.string.tip_cancle), null)
+				.create();
+		        alertDialog.show();
+ 
+	}
 
     /**
      * Opens the user folder described by the specified tag. The opening of the folder
@@ -3343,7 +3456,7 @@ public final class Launcher extends Activity
                     break;
                 case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
                 	FolderIcon newFolder = null;
-    				if(item.natureType == ItemInfo.ONLINE||item.natureType == ItemInfo.ONLINE_1){
+    				if(item.natureId == ItemInfo.ONLINE||item.natureId == ItemInfo.ONLINE_1){
     					newFolder = JoyFolderIcon.fromXml(R.layout.joy_folder_icon,
     							this, (ViewGroup) workspace.getChildAt(workspace
     									.getCurrentPage()), (FolderInfo) item,

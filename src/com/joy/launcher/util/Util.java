@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -26,6 +27,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -36,9 +38,9 @@ import android.util.Log;
 import com.joy.launcher.LauncherApplication;
 
 /**
- * 工具类
- * 提供随机数生成（数字和字符），加密相关（mod5），字符串操作（追加和替换），图片操作（生成、缩放、裁剪），
- * 本机信息（id，mac，IME, sd operate，network status ）这些分类方法。
+ * 工具类 提供随机数生成（数字和字符），加密相关（mod5），字符串操作（追加和替换），图片操作（生成、缩放、裁剪）， 本机信息（id，mac，IME,
+ * sd operate，network status ）这些分类方法。
+ * 
  * @author hao.wang
  * 
  */
@@ -46,17 +48,20 @@ public class Util {
 
 	private static String TAG = "Util";
 	private static String deviceid;
-    private static int sBitmapTextureWidth = 48;
-    private static int sBitmapTextureHeight = 48;
+	private static int sBitmapTextureWidth = 48;
+	private static int sBitmapTextureHeight = 48;
 	private static Random mRandom = new Random();
+
 	/**
 	 * 随机数
+	 * 
 	 * @return
 	 */
 	public static String getTS(int n) {
 		String str = String.valueOf(mRandom.nextInt(n));
 		return str;
 	}
+
 	/**
 	 * 获取随机字符串
 	 */
@@ -74,7 +79,7 @@ public class Util {
 		}
 		return new String(randBuffer);
 	}
-	
+
 	/**
 	 * 将字符串编码为md5格式
 	 * 
@@ -109,7 +114,7 @@ public class Util {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * 构造String字符串
 	 * 
@@ -123,24 +128,27 @@ public class Util {
 		}
 		return buffer.toString();
 	}
-	
+
 	/**
 	 * 字符串转换
+	 * 
 	 * @param content
 	 * @return
 	 */
 	public static String encodeContentForUrl(String content) {
 
 		try {
-			return (content == null ? "" : URLEncoder.encode(URLEncoder.encode(content, "UTF-8"), "UTF-8"));
+			return (content == null ? "" : URLEncoder.encode(
+					URLEncoder.encode(content, "UTF-8"), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return content;
 	}
-	
+
 	/**
 	 * 字符串转换
+	 * 
 	 * @param content
 	 * @return
 	 */
@@ -159,9 +167,10 @@ public class Util {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * 根据url返回文件名
+	 * 
 	 * @param content
 	 * @return
 	 */
@@ -171,9 +180,10 @@ public class Util {
 		}
 		return url.substring(url.lastIndexOf("/") + 1);
 	}
-	
+
 	/**
 	 * 将流转换成字节数组
+	 * 
 	 * @param is
 	 * @return
 	 */
@@ -193,9 +203,10 @@ public class Util {
 		}
 		return bab.toByteArray();
 	}
-	
+
 	/**
 	 * generate bitmap rely on ID
+	 * 
 	 * @author yongjian.he
 	 * @param id
 	 * @return
@@ -207,86 +218,97 @@ public class Util {
 
 	/**
 	 * bitmap to drawable
+	 * 
 	 * @author yongjian.he
 	 */
-	public static Drawable bitmapToDrawable(Bitmap bp){
+	public static Drawable bitmapToDrawable(Bitmap bp) {
 		Bitmap bitmap = bp;
-		if(bitmap != null){
-			return new BitmapDrawable(LauncherApplication.mContext.getResources(), bitmap);			
-		}else{
-			Log.e(TAG, "---bitmapToDrawable " + "error: the src bitmap is null!");
-			bitmap = Bitmap.createBitmap(sBitmapTextureWidth, sBitmapTextureHeight, Bitmap.Config.ARGB_8888);
-			return new BitmapDrawable(LauncherApplication.mContext.getResources(), bitmap);		
+		if (bitmap != null) {
+			return new BitmapDrawable(
+					LauncherApplication.mContext.getResources(), bitmap);
+		} else {
+			Log.e(TAG, "---bitmapToDrawable "
+					+ "error: the src bitmap is null!");
+			bitmap = Bitmap.createBitmap(sBitmapTextureWidth,
+					sBitmapTextureHeight, Bitmap.Config.ARGB_8888);
+			return new BitmapDrawable(
+					LauncherApplication.mContext.getResources(), bitmap);
 		}
 	}
-	
+
 	/**
 	 * bitmap to drawable
+	 * 
 	 * @author yongjian.he
 	 */
-	public static Bitmap drawableToBitmap(Drawable drawable){
-		if(drawable != null){
-	        int w = drawable.getIntrinsicWidth();  
-	        int h = drawable.getIntrinsicHeight();  
-	        Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888  
-	                : Bitmap.Config.RGB_565;  
-	        Bitmap bitmap = Bitmap.createBitmap(w, h, config);  
-	        Canvas canvas = new Canvas(bitmap);  
-	        drawable.setBounds(0, 0, w, h);  
-	        drawable.draw(canvas);  
-	        return bitmap;  	
-		}else{
-			Log.e(TAG, "---drawableToBitmap " + "error: the src drawable is null!");
-			return null;		
+	public static Bitmap drawableToBitmap(Drawable drawable) {
+		if (drawable != null) {
+			int w = drawable.getIntrinsicWidth();
+			int h = drawable.getIntrinsicHeight();
+			Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
+					: Bitmap.Config.RGB_565;
+			Bitmap bitmap = Bitmap.createBitmap(w, h, config);
+			Canvas canvas = new Canvas(bitmap);
+			drawable.setBounds(0, 0, w, h);
+			drawable.draw(canvas);
+			return bitmap;
+		} else {
+			Log.e(TAG, "---drawableToBitmap "
+					+ "error: the src drawable is null!");
+			return null;
 		}
 	}
-	
+
 	/**
 	 * zoom drawable
+	 * 
 	 * @author yongjian.he
 	 */
-	public static Drawable zoomDrawable(Drawable drawable, int w, int h) {  
-		if(drawable != null){
-			int width = drawable.getIntrinsicWidth();  
-			int height = drawable.getIntrinsicHeight();   
-			Bitmap oldbmp = drawableToBitmap(drawable);  
-			Matrix matrix = new Matrix();  
-			float sx = ((float) w / width);  
-			float sy = ((float) h / height);  
-			matrix.postScale(sx, sy);  
-			Bitmap newbmp = Bitmap.createBitmap(oldbmp, 0, 0, width, height,  
-					matrix, true);  
-			return new BitmapDrawable(LauncherApplication.mContext.getResources(),newbmp);  
-		}else{
+	public static Drawable zoomDrawable(Drawable drawable, int w, int h) {
+		if (drawable != null) {
+			int width = drawable.getIntrinsicWidth();
+			int height = drawable.getIntrinsicHeight();
+			Bitmap oldbmp = drawableToBitmap(drawable);
+			Matrix matrix = new Matrix();
+			float sx = ((float) w / width);
+			float sy = ((float) h / height);
+			matrix.postScale(sx, sy);
+			Bitmap newbmp = Bitmap.createBitmap(oldbmp, 0, 0, width, height,
+					matrix, true);
+			return new BitmapDrawable(
+					LauncherApplication.mContext.getResources(), newbmp);
+		} else {
 			Log.e(TAG, "---zoomDrawable " + "error: the src drawable is null!");
-			return null;	
+			return null;
 		}
-    }
-	
+	}
+
 	/**
 	 * generate RoundedCornerBitmap
+	 * 
 	 * @author yongjian.he
-	 * @param roundPx : corner radius.
+	 * @param roundPx
+	 *            : corner radius.
 	 */
-	public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, float roundPx) {  
-        int w = bitmap.getWidth();  
-        int h = bitmap.getHeight();  
-        Bitmap output = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);  
-        Canvas canvas = new Canvas(output);  
-        final int color = 0xff424242;  
-        final Paint paint = new Paint();  
-        final Rect rect = new Rect(0, 0, w, h);  
-        final RectF rectF = new RectF(rect);  
-        paint.setAntiAlias(true);  
-        canvas.drawARGB(0, 0, 0, 0);  
-        paint.setColor(color);  
-        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);  
-        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));  
-        canvas.drawBitmap(bitmap, rect, rect, paint);  
-  
-        return output;  
-    }  
-	
+	public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, float roundPx) {
+		int w = bitmap.getWidth();
+		int h = bitmap.getHeight();
+		Bitmap output = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		Canvas canvas = new Canvas(output);
+		final int color = 0xff424242;
+		final Paint paint = new Paint();
+		final Rect rect = new Rect(0, 0, w, h);
+		final RectF rectF = new RectF(rect);
+		paint.setAntiAlias(true);
+		canvas.drawARGB(0, 0, 0, 0);
+		paint.setColor(color);
+		canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+		canvas.drawBitmap(bitmap, rect, rect, paint);
+
+		return output;
+	}
+
 	/**
 	 * 判断是否有网络连接
 	 * 
@@ -359,6 +381,7 @@ public class Util {
 
 	/**
 	 * 获取本机唯一标识符
+	 * 
 	 * @return
 	 */
 	public static String getDeviceID() {
@@ -373,17 +396,19 @@ public class Util {
 		}
 		return deviceid;
 	}
-	
+
 	/**
 	 * get current API Versions
+	 * 
 	 * @return
 	 */
 	public static int getCurrentApiVersion() {
 		return Build.VERSION.SDK_INT;
 	}
-	
+
 	/**
 	 * 获取mac地址
+	 * 
 	 * @return
 	 */
 	public static String getMac() {
@@ -416,5 +441,75 @@ public class Util {
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		return tm.getDeviceId();
 	}
+
+	/**
+	 * 检测文件是否有重名 若重名则在名字后面加数字来区别 eg：a.txt --> a(1).txt --> a(2).txt
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static File getCleverFileName(File file) {
+		if (file == null) {
+			return null;
+		}
+		String fileName = file.getName();
+		if (!file.exists()) {
+			if (!file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
+			}
+			return file;
+		} else {
+			int index = fileName.lastIndexOf(".");
+			if (index == -1) {
+				index = fileName.length();
+			}
+			boolean end = false;
+			String numStr = "";
+			String name = file.getName().substring(0, index);
+			for (int i = name.length(); i > 0; i--) {
+				String c = name.substring(i - 1, i);
+				if ("(".equals(c)) {
+					break;
+				}
+				if (end) {
+					numStr += c;
+				}
+				if (")".equals(c)) {
+					end = true;
+				}
+			}
+			if (end) {
+				int x = 1;
+				try {
+					x = Integer.parseInt(numStr);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				int y = name.length() - ("(" + x + ")").length();
+				name = name.substring(0, y);
+				fileName = name + "(" + (x + 1) + ")"
+						+ file.getName().substring(index);
+			} else {
+				fileName = name + "(1)" + file.getName().substring(index);
+			}
+
+			file = new File(file.getParentFile() + "/" + fileName);
+			if (file.exists()) {
+				return getCleverFileName(file);
+			} else {
+				return file;
+			}
+		}
+	}
 	
+	public static void installAPK(String apkPath, String apkName) {
+		File file = new File(apkPath, apkName);
+		Log.i("OpenFile", file.getName());
+		Intent intent = new Intent();
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.setAction(android.content.Intent.ACTION_VIEW);
+		intent.setDataAndType(Uri.fromFile(file),
+				"application/vnd.android.package-archive");
+		LauncherApplication.mContext.startActivity(intent);
+	}
 }
