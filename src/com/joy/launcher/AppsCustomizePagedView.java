@@ -531,6 +531,43 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
+    
+    //add by huangming for screen cycle
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+    	super.dispatchDraw(canvas);
+    	//drawChild(canvas, getChildAt(mCurrentPage), getDrawingTime());
+    	long drawingTime = getDrawingTime();
+        int width = getWidth();
+        int childCount = getChildCount();
+        int offset = childCount * width;
+        float scrollPos = (float) getScrollX() / width;
+        int scrollX = mScrollX;
+        int leftSideScreen = (scrollX / width);
+        boolean isMovingRight = scrollX >= 0 && leftSideScreen >= mCurrentPage;
+        int leftScreen = -1;
+        int rightScreen = -1;
+        
+        if (scrollX < 0 || scrollX > mMaxScrollX) {
+            leftScreen = childCount - 1;
+            rightScreen = 0;
+        }
+        if (rightScreen == 0 && leftScreen != -1 && leftScreen != 0 && rightScreen != -1) { 
+            if (!isMovingRight) {
+            	canvas.translate(-offset, 0);
+                drawChild(canvas, getPageAt(leftScreen), drawingTime);
+                canvas.translate(offset, 0);
+                
+            } else {
+                canvas.translate(offset, 0);
+                drawChild(canvas, getPageAt(rightScreen), drawingTime);
+                canvas.translate(-offset, 0);
+           } 
+        }
+    	
+    }
+    //end
+
 
     public void onPackagesUpdated() {
         // TODO: this isn't ideal, but we actually need to delay here. This call is triggered
@@ -791,7 +828,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
 
         // Update the thread priorities given the direction lookahead
-        for (AppsCustomizeAsyncTask task : mRunningTasks) {
+        //delete by huangming for screen cycle
+        /*for (AppsCustomizeAsyncTask task : mRunningTasks) {
             int pageIndex = task.page + mNumAppsPages;
             if ((mNextPage > mCurrentPage && pageIndex >= mCurrentPage) ||
                     (mNextPage < mCurrentPage && pageIndex <= mCurrentPage)) {
@@ -799,7 +837,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             } else {
                 task.setThreadPriority(Process.THREAD_PRIORITY_LOWEST);
             }
-        }
+        }*/
     }
 
     private void updateCurrentTab(int currentPage) {
@@ -1784,7 +1822,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     protected void screenScrolled(int screenScroll) {
         super.screenScrolled(screenScroll);
 
-        if (mOverScrollX < 0 || mOverScrollX > mMaxScrollX) {
+        if ((mOverScrollX < 0 || mOverScrollX > mMaxScrollX) && !mIsCycle) {
             int index = mOverScrollX < 0 ? 0 : getChildCount() - 1;
             View v = getPageAt(index);
             if (v != null) {

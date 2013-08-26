@@ -18,6 +18,8 @@ package com.joy.launcher;
 
 import java.util.ArrayList;
 
+import com.joy.launcher.preference.PreferencesProvider;
+
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
@@ -186,6 +188,9 @@ public abstract class PagedView extends ViewGroup {
 
     // If set, will defer loading associated pages until the scrolling settles
     private boolean mDeferLoadAssociatedPagesUntilScrollCompletes;
+    
+    //add by huangming for screen cycle.
+    protected boolean mIsCycle;
 
     public interface PageSwitchListener {
         void onPageSwitch(View newPage, int newPageIndex);
@@ -243,6 +248,9 @@ public abstract class PagedView extends ViewGroup {
         mPagingTouchSlop = configuration.getScaledPagingTouchSlop();
         mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
         mDensity = getResources().getDisplayMetrics().density;
+        //add by huangming for screen cycle
+        mIsCycle = PreferencesProvider.Interface.General.getCycleScrollMode(getContext(), false);
+        //end
     }
 
     public void setPageSwitchListener(PageSwitchListener pageSwitchListener) {
@@ -371,8 +379,30 @@ public abstract class PagedView extends ViewGroup {
     @Override
     public void scrollTo(int x, int y) {
         mUnboundedScrollX = x;
-
-        if (x < 0) {
+        //modify by huangming  for screen cycle
+        if(mIsCycle)
+        {
+        	mOverScrollX = x;
+            super.scrollTo(x, y);
+        }
+        else
+        {
+        	 if (x < 0) {
+                 super.scrollTo(0, y);
+                 if (mAllowOverScroll) {
+                     overScroll(x);
+                 }
+             } else if (x > mMaxScrollX) {
+                 super.scrollTo(mMaxScrollX, y);
+                 if (mAllowOverScroll) {
+                     overScroll(x - mMaxScrollX);
+                 }
+             } else {
+                 mOverScrollX = x;
+                 super.scrollTo(x, y);
+             }
+        }
+       /* if (x < 0) {
             super.scrollTo(0, y);
             if (mAllowOverScroll) {
                 overScroll(x);
@@ -385,7 +415,8 @@ public abstract class PagedView extends ViewGroup {
         } else {
             mOverScrollX = x;
             super.scrollTo(x, y);
-        }
+        }*/
+        //end
 
         mTouchX = x;
     }
@@ -1049,9 +1080,24 @@ public abstract class PagedView extends ViewGroup {
         final int halfScreenSize = getMeasuredWidth() / 2;
         int screenCenter = screenScroll + getMeasuredWidth() / 2;
 
+        final int pageCount = getChildCount();
         int totalDistance = getScaledMeasuredWidth(v) + mPageSpacing;
-        int delta = screenCenter - (getChildOffset(page) -
-                getRelativeChildOffset(page) + halfScreenSize);
+        //modify by huangming for screen cycle
+        /*int delta = screenCenter - (getChildOffset(page) -
+                getRelativeChildOffset(page) + halfScreenSize);*/
+        
+        int delta;
+        if ((mOverScrollX < 0) && page == (pageCount - 1) && mIsCycle) {
+        	delta = screenCenter - (getChildOffset(0) -
+                    getRelativeChildOffset(0) + halfScreenSize) + totalDistance;
+		} else if ((mOverScrollX > mMaxScrollX) && page == 0 && mIsCycle) {
+			delta = screenCenter - (getChildOffset(pageCount - 1) -
+	                getRelativeChildOffset(pageCount - 1) + halfScreenSize) - totalDistance; 
+		} else {
+			delta = screenCenter - (getChildOffset(page) -
+	                getRelativeChildOffset(page) + halfScreenSize);
+		}
+        //end
 
         float scrollProgress = delta / (totalDistance * 1.0f);
         scrollProgress = Math.min(scrollProgress, 1.0f);
@@ -1211,13 +1257,31 @@ public abstract class PagedView extends ViewGroup {
                 // test for a large move if a fling has been registered. That is, a large
                 // move to the left and fling to the right will register as a fling to the right.
                 if (((isSignificantMove && deltaX > 0 && !isFling) ||
-                        (isFling && velocityX > 0)) && mCurrentPage > 0) {
-                    finalPage = returnToOriginalPage ? mCurrentPage : mCurrentPage - 1;
+                        (isFling && velocityX > 0))) {
+                	//modify by huangming
+                	if(mIsCycle && mCurrentPage <= 0)
+                	{
+                		finalPage = getChildCount() -1;
+                	}
+                	else 
+                	{
+                		finalPage = returnToOriginalPage ? mCurrentPage : mCurrentPage - 1;
+                	}
+                    //finalPage = returnToOriginalPage ? mCurrentPage : mCurrentPage - 1;
+                	//end
                     snapToPageWithVelocity(finalPage, velocityX);
                 } else if (((isSignificantMove && deltaX < 0 && !isFling) ||
-                        (isFling && velocityX < 0)) &&
-                        mCurrentPage < getChildCount() - 1) {
-                    finalPage = returnToOriginalPage ? mCurrentPage : mCurrentPage + 1;
+                        (isFling && velocityX < 0))) {
+                	if(mIsCycle && mCurrentPage >= getChildCount() - 1)
+                	{
+                		finalPage = 0;
+                	}
+                	else
+                	{
+                		finalPage = returnToOriginalPage ? mCurrentPage : mCurrentPage + 1;
+                	}
+                    //finalPage = returnToOriginalPage ? mCurrentPage : mCurrentPage + 1;
+                	//end
                     snapToPageWithVelocity(finalPage, velocityX);
                 } else {
                     snapToDestination();
@@ -1474,6 +1538,24 @@ public abstract class PagedView extends ViewGroup {
         }
 
         if (!mScroller.isFinished()) mScroller.abortAnimation();
+        //add by huangming for screen cycle.
+        int width = getMeasuredWidth();
+        int childCount = getChildCount();
+        int childOffset = getRelativeChildOffset(0);
+        int offset = childCount * (width - childOffset);
+        int loopDelta = width * 2;
+        if (childCount <= 2 && childCount != 0) {
+        	loopDelta = width;
+		}
+        if (delta > loopDelta) {
+			delta -= offset;
+			mUnboundedScrollX += offset;
+		}
+        if (delta < -loopDelta) {
+			delta += offset;
+			mUnboundedScrollX -= offset;
+		}
+        //end
         mScroller.startScroll(mUnboundedScrollX, 0, delta, 0, duration);
 
         // Load associated pages immediately if someone else is handling the scroll, otherwise defer

@@ -191,6 +191,11 @@ public final class PreferencesProvider {
                 final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
                 return preferences.getBoolean("ui_general_orientation", def);
             }
+            
+            public static boolean getCycleScrollMode(Context context, boolean def) {
+                final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
+                return preferences.getBoolean("ui_general_screen_cycle", def);
+            }
         }
     }
 
