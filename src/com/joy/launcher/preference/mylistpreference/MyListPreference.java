@@ -18,6 +18,7 @@ public class MyListPreference extends Preference {
 	AlertDialog dialog;
 	CharSequence[] entries = null;
 	CharSequence[] entryValues = null;
+	CharSequence defaultValue;
 	TypedArray entryDrawables;
 	private int initCurrentID = 0;
 
@@ -44,15 +45,16 @@ public class MyListPreference extends Preference {
 				R.styleable.MyListPrefrence);
 		entries = a.getTextArray(R.styleable.MyListPrefrence_entries);
 		entryValues = a.getTextArray(R.styleable.MyListPrefrence_entryValues);
+		defaultValue = a.getText(R.styleable.MyListPrefrence_defaultValue);
+	 
+		defaultValue = (defaultValue==null)?"null":defaultValue;
 		int drawid = a.getResourceId(R.styleable.MyListPrefrence_entryDrawables, -1);
 
 		if(drawid > 0)
 		{
 			entryDrawables = context.getResources().obtainTypedArray(drawid);
 		}
-		
 		a.recycle();
-
 	}
 
 	@Override
@@ -88,7 +90,7 @@ public class MyListPreference extends Preference {
 
 	private void readData() {
 		SharedPreferences sharedpre = this.getContext().getSharedPreferences(PreferencesProvider.PREFERENCES_KEY, Context.MODE_WORLD_READABLE);
-		String stringData = sharedpre.getString(this.getKey(), "null");
+		String stringData = sharedpre.getString(this.getKey(), (String) defaultValue);
 		for (int i = 0; i < entryValues.length; i++) {
 			if (stringData.equals(entryValues[i])) {
 				initCurrentID = i;

@@ -163,5 +163,6 @@
         <attr name="entries" format="string" />
         <attr name="entryValues" format="string" />
         <attr name="entryDrawables" format="string" />
+        <attr name="defaultValue" format="string" />
         </declare-styleable>
 </resources>
