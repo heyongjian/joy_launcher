@@ -79,7 +79,6 @@ public class DownLoadDBHelper {
 			db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
 			onCreate(db);
 		}
-
 	}
 
 	/**

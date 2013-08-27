@@ -4066,6 +4066,40 @@ public class Workspace extends PagedView
         }
     }
 
+    //add by wanghao
+    void updateVirtualShortcuts(ArrayList<ApplicationInfo> apps) {
+        ArrayList<CellLayoutChildren> childrenLayouts = getWorkspaceAndHotseatCellLayoutChildren();
+        for (CellLayoutChildren layout: childrenLayouts) {
+            int childCount = layout.getChildCount();
+            for (int j = 0; j < childCount; j++) {
+                final View view = layout.getChildAt(j);
+                Object tag = view.getTag();
+                if (tag instanceof ShortcutInfo) {
+                    ShortcutInfo info = (ShortcutInfo)tag;
+
+                    final Intent intent = info.intent;
+                    final ComponentName name = intent.getComponent();
+                    int shortcutType = (Integer) intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
+                    boolean isVirtualToNormal = (shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL);
+                    
+                    if (isVirtualToNormal && name != null) {
+                        final int appCount = apps.size();
+                        for (ApplicationInfo app : apps) {
+                            if (app.componentName.equals(name)) {
+                            	info.title = app.title;
+                                info.setIcon(mIconCache.getIcon(info.intent));
+                                ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(null,
+                                        new FastBitmapDrawable(info.getIcon(mIconCache)),
+                                        null, null);
+                                mLauncher.updateVirtualShortcut(info);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     void moveToDefaultScreen(boolean animate) {
         if (!isSmall()) {
             if (animate) {

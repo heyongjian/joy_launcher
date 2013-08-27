@@ -90,7 +90,8 @@
 				    android:title="@string/preferences_interface_homescreen_scrolling_transition_effect_title"
 				    launcher:entries="@array/preferences_interface_homescreen_scrolling_transition_effect_entries"
 				    launcher:entryDrawables="@array/preferences_interface_homescreen_scrolling_transition_effect_drawables"
-				    launcher:entryValues="@array/preferences_interface_homescreen_scrolling_transition_effect_values" >
+				    launcher:entryValues="@array/preferences_interface_homescreen_scrolling_transition_effect_values"
+				    launcher:defaultValue="@string/config_workspaceDefaultTransitionEffect" >
 				</com.joy.launcher.preference.mylistpreference.MyListPreference>
 
                 <CheckBoxPreference android:key="ui_homescreen_scrolling_fade_adjacent_screens"
@@ -131,14 +132,16 @@
 				    android:summary="@string/preferences_interface_homescreen_icon_size_summary"
 				    android:title="@string/preferences_interface_homescreen_icon_size_title"
 				    launcher:entries="@array/preferences_interface_homescreen_icon_szie_entries"
-				    launcher:entryValues="@array/preferences_interface_homescreen_icon_size_values" >
+				    launcher:entryValues="@array/preferences_interface_homescreen_icon_size_values" 
+				    launcher:defaultValue="@string/config_defaultSize" >
 				</com.joy.launcher.preference.mylistpreference.MyListPreference>
 				<com.joy.launcher.preference.mylistpreference.MyListPreference
 				    android:key="ui_homescreen_icon_text_size"
 				    android:summary="@string/preferences_interface_homescreen_icon_text_size_summary"
 				    android:title="@string/preferences_interface_homescreen_icon_text_size_title"
 				    launcher:entries="@array/preferences_interface_homescreen_icon_text_szie_entries"
-				    launcher:entryValues="@array/preferences_interface_homescreen_icon_text_size_values" >
+				    launcher:entryValues="@array/preferences_interface_homescreen_icon_text_size_values"
+				    launcher:defaultValue="@string/config_defaultSize" >
 				</com.joy.launcher.preference.mylistpreference.MyListPreference>
                 <com.joy.launcher.preference.DoubleNumberPickerPreference android:key="ui_homescreen_grid"
                     android:title="@string/preferences_interface_homescreen_row_column_num_title"
@@ -180,7 +183,8 @@
 				    android:title="@string/preferences_interface_drawer_scrolling_transition_effect_title"
 				    launcher:entries="@array/preferences_interface_drawer_scrolling_transition_effect_entries"
 				    launcher:entryDrawables="@array/preferences_interface_homescreen_scrolling_transition_effect_drawables"
-				    launcher:entryValues="@array/preferences_interface_drawer_scrolling_transition_effect_values" >
+				    launcher:entryValues="@array/preferences_interface_drawer_scrolling_transition_effect_values" 
+				    launcher:defaultValue="@string/config_drawerDefaultTransitionEffect">
 				</com.joy.launcher.preference.mylistpreference.MyListPreference>
 
                 <CheckBoxPreference android:key="ui_drawer_scrolling_fade_adjacent_screens"
