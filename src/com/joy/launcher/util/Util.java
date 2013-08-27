@@ -13,6 +13,8 @@ import java.util.Random;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -502,6 +504,11 @@ public class Util {
 		}
 	}
 	
+	/**
+	 * 自动安装 hao.wang
+	 * @param apkPath
+	 * @param apkName
+	 */
 	public static void installAPK(String apkPath, String apkName) {
 		File file = new File(apkPath, apkName);
 		Log.i("OpenFile", file.getName());
@@ -511,5 +518,20 @@ public class Util {
 		intent.setDataAndType(Uri.fromFile(file),
 				"application/vnd.android.package-archive");
 		LauncherApplication.mContext.startActivity(intent);
+	}
+	
+	/**
+	 * 是否已经安装APP应用程序
+	 * @param context
+	 * @param packageName
+	 * @return
+	 */
+	public static boolean isInstallApplication(Context context, String packageName){
+		try {
+			PackageInfo pkg = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+			return pkg != null;
+		} catch(Exception e){
+		}
+		return false;
 	}
 }

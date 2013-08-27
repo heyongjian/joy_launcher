@@ -1063,11 +1063,13 @@ public class LauncherModel extends BroadcastReceiver {
                                 continue;
                             }
                             //add by wanghao
-                            boolean isVirtual = (Boolean)intent.getExtra(LauncherProvider.IS_VIRTUAL_SHORTCUT, false);
+                            int shortcutType = (Integer)intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
 
-                            if(isVirtual){
+                            if(shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL||
+                            		shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL){
+                            	//load from db
                             	info = getShortcutInfo(c, context, iconIndex, titleIndex);
-                            }else 
+                            } else 
                             if (itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
                                 info = getShortcutInfo(manager, intent, context, c, iconIndex,
                                         titleIndex, mLabelCache);
@@ -1810,7 +1812,7 @@ public class LauncherModel extends BroadcastReceiver {
     	 Intent intent = new Intent();
          intent.setComponent(cn);
          intent.setComponent(cn);
-         intent.putExtra(LauncherProvider.IS_VIRTUAL_SHORTCUT, true);
+         intent.putExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL);
          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                  Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         info.intent = intent;

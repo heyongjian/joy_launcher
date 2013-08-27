@@ -40,11 +40,11 @@ public class DownloadManager {
 	// 下载请求对象
 	private Service mService;
 
-	//static DownLoadDBHelper dbHelper;
+	static DownLoadDBHelper dbHelper;
 	static DownloadManager mDownloadManager;
 
 	private DownloadManager(Context context) {
-		// dbHelper = new DownLoadDBHelper(context);
+		 dbHelper = new DownLoadDBHelper(context);
 		try {
 			mService = Service.getInstance();
 		} catch (Exception e) {
@@ -100,15 +100,14 @@ public class DownloadManager {
 			dInfo.setUrl("null");
 			dInfo.setCompletesize(0);
 			dInfo.setFilesize(fileSize);
-			//dbHelper.insert(dInfo);暂不支持断点下载
+			dbHelper.insert(dInfo);
 
 			// 检查本地是否有重名了的文件
-			File file = new File(Constants.DOWNLOAD_APK_DIR + "/"+ dInfo.getFilename() + ".apk");
+			File file = new File(Constants.DOWNLOAD_APK_DIR + "/"+ dInfo.getFilename());
 			file = Util.getCleverFileName(file);
 			dInfo.setLocalname(file.getName());
 		}
 		dInfo.setView(view);
-//		view.setTag(R.id.download_info,dInfo);
 		((ShortcutInfo)view.getTag()).setDownLoadInfo(dInfo);
 
 //		Log.i(TAG, "-----dInfo---> " + dInfo);
@@ -257,6 +256,11 @@ public class DownloadManager {
 		mHandler.sendMessage(msg);
 	}
 
+	
+	public DownloadInfo getFromDB(int id){
+		DownloadInfo info = dbHelper.get(id);
+		return info;
+	}
 	public void onDestroy() {
 		// 关闭线程池
 		pool.shutdown();
