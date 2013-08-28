@@ -377,7 +377,8 @@ public class BubbleTextView extends TextView {
 			return;
 		}
 		
-		boolean isVirtual = (Boolean) info.intent.getExtra(LauncherProvider.IS_VIRTUAL_SHORTCUT, false);
+		int shortcutType = (Integer) info.intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
+		boolean isVirtual = shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL;
 		if (isVirtual) {
 			if (mProgressBar == null) {
 				mProgressBar = new DownLoadProgressBar();

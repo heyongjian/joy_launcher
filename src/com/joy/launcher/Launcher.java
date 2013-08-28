@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.R.anim;
 import android.animation.Animator;
@@ -55,6 +56,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
@@ -1888,7 +1890,6 @@ public final class Launcher extends Activity
     public void updateVirtualShortcut(ShortcutInfo info){
     	mModel.updateItemInDatabase(this, info);
     }
-
     private void startWallpaper() {
         showWorkspace(true);
         final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
@@ -2265,6 +2266,11 @@ public final class Launcher extends Activity
         });
         oa.start();
     }
+    
+    /**
+     * add by wanghao
+     * @param v
+     */
     public void OpenShortcut(View v){
     	 Object tag = v.getTag();
     	 final Intent intent = ((ShortcutInfo) tag).intent;
@@ -2272,10 +2278,25 @@ public final class Launcher extends Activity
     		 Log.e(TAG, "OpenShortcut --- intent == null");
 			return;
 		}
-    	 boolean isVirtual = (Boolean)intent.getExtra(LauncherProvider.IS_VIRTUAL_SHORTCUT, false);
-    	 if (isVirtual) {
+    	 int shortcutType = (Integer)intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
+    	 if (shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL) {
     		 OpenVirtualShortcut(v);
 		 }else {
+			 String  packageName = intent.getComponent().getPackageName();
+			 if (shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL
+					 &&!Util.isInstallApplication(this, packageName)) {
+				 ShortcutInfo info = ((ShortcutInfo) tag);
+				 if (info.natureId != ItemInfo.LOCAL) {
+					 DownloadInfo downloadInfo = DownloadManager.getInstances().getFromDB(info.natureId);
+					if (downloadInfo != null) {
+						if (downloadInfo != null) {
+							String name = downloadInfo.getLocalname();
+							Util.installAPK(Constants.DOWNLOAD_APK_DIR, name);
+							return;
+						}
+					}
+				}
+			}
 			 int[] pos = new int[2];
 	         v.getLocationOnScreen(pos);
 	         intent.setSourceBounds(new Rect(pos[0], pos[1],
@@ -2304,8 +2325,8 @@ public final class Launcher extends Activity
                     @Override 
                     public void onClick(DialogInterface dialog, int which) {
                         // TODO Auto-generated method stub 
-                    	//下载id
-                		int id = myTempId++;
+                    	//下载id,get from json
+                		final int id = myTempId++;
                 		//应用名称
                 		final String name = "downTest"+id+".apk";
                 		
@@ -2317,18 +2338,17 @@ public final class Launcher extends Activity
 							public void DownloadSucceed() {
 								// TODO Auto-generated method stub
 								ShortcutInfo info = (ShortcutInfo)view.getTag();
-								info.intent.putExtra(LauncherProvider.IS_VIRTUAL_SHORTCUT, false);
+								info.intent.putExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL);
+								info.natureId = id;
 								Launcher.this.updateVirtualShortcut(info);
-								
+								final String localname = info.getDownLoadInfo().getLocalname();
 								view.postDelayed(new Runnable() {
-									
 									@Override
 									public void run() {
 										// TODO Auto-generated method stub
-										Util.installAPK(Constants.DOWNLOAD_APK_DIR,name);
+										Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname);
 									}
 								}, 2000);
-								
 							}
 						});
 //                		DownloadManager.getInstances().createTask(view);
@@ -3603,6 +3623,9 @@ public final class Launcher extends Activity
         removeDialog(DIALOG_CREATE_SHORTCUT);
         if (mAppsCustomizeContent != null) {
             mAppsCustomizeContent.addApps(apps);
+        }
+        if (mWorkspace != null) {
+            mWorkspace.updateVirtualShortcuts(apps);
         }
     }
 
