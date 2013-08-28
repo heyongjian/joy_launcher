@@ -231,4 +231,9 @@
     <string name="menu_mainmenu_settings">主菜单设置</string>
     <!-- add by huangming for screen cycle -->
     <string name="preferences_interface_general_screen_cycle_title">屏幕循环滑动</string>
+    
+    <!-- add by huangming for app show or hide -->
+    <string name="header_selected">已选择: </string>
+    <string name="header_sure">确定</string>
+    <string name="header_cancel">取消</string>
 </resources>
