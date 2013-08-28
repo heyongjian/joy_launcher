@@ -59,7 +59,6 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	private final static int MENU_MAINMENU_SETTINGS = MENU_HIDE_APPS + 1;
 	private final static int MENU_SYSTEM_SETTINGS = MENU_MAINMENU_SETTINGS + 1;
 	
-	
 	private boolean animationFinished = false;
 	
 	ArrayList<Integer> itemPositions;	
@@ -121,7 +120,30 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	}
 	
 
-	
+	private void setItemsEnable()
+	{
+		boolean isHideAppsEmpty = launcher.isHideAppsEmpty();
+		boolean isShowAppsView = launcher.isShowAppsView();
+		for(int i = 0; i < itemsAll.size(); i++)
+		{
+			MenuItemInfo info = itemsAll.get(i);
+			if(i >= MENU_MAINMENU_EDIT && i <= MENU_MAINMENU_SETTINGS)
+			{
+				if(i == MENU_SHOW_APPS)
+				{
+					info.enabled = isShowAppsView && !isHideAppsEmpty;
+				}
+				else
+				{
+					info.enabled = isShowAppsView;
+				}
+			}
+			else
+			{
+				info.enabled = true;
+			}
+		}
+	}
 	
 	private void setAdapterData(boolean isAllAppVisible)
 	{
@@ -247,6 +269,7 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	        
 		}
 		
+		setItemsEnable();
 
 		if(bodyAdapter.items == null)
 		{
@@ -303,6 +326,7 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 		int iconId;
 		Intent intent;
 		int selectId;
+		boolean enabled = true;
 	}
 
 	public void show(boolean animate, boolean isAllAppVisible)
@@ -466,8 +490,16 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 			Drawable d = mContext.getResources().getDrawable(items.get(position).iconId);
 			d.setBounds(rect);
 			tv.setCompoundDrawables(d, null, null, null);
+			convertView.setEnabled(items.get(position).enabled);
 			return convertView;
 		}
+		
+		@Override
+		public boolean isEnabled(int position) {
+			// TODO Auto-generated method stub
+			return items.get(position).enabled;
+		}
+		
 	}
 
 	@Override
@@ -512,8 +544,16 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 		case MENU_ICON_SORT:
 			break;
 		case MENU_SHOW_APPS:
+			if(launcher != null)
+			{
+				launcher.setAppsShowOrHide(true);
+			}
 			break;
 		case MENU_HIDE_APPS:
+			if(launcher != null)
+			{
+				launcher.setAppsShowOrHide(false);
+			}
 			break;
 		case MENU_MAINMENU_SETTINGS:
 			break;

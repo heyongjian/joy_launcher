@@ -59,6 +59,9 @@ class ApplicationInfo extends ItemInfo {
     static final int UPDATED_SYSTEM_APP_FLAG = 2;
 
     int flags = 0;
+    
+    //add by huangming for app show or hide.
+    boolean isHide = false;
 
     ApplicationInfo() {
         itemType = LauncherSettings.BaseLauncherColumns.ITEM_TYPE_SHORTCUT;
