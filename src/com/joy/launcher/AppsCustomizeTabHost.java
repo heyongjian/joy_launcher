@@ -19,6 +19,7 @@ package com.joy.launcher;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -55,7 +56,8 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
 
     // Preferences
     private boolean mFadeScrollingIndicator;
-
+//add by wanghao
+    private int mTransparency;
     public AppsCustomizeTabHost(Context context, AttributeSet attrs) {
         super(context, attrs);
         mLayoutInflater = LayoutInflater.from(context);
@@ -64,6 +66,8 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
 
         // Preferences
         mFadeScrollingIndicator = PreferencesProvider.Interface.Drawer.Indicator.getFadeScrollingIndicator(context);
+        int defvalue = context.getResources().getInteger(R.integer.config_drawer_default_transparency);
+        mTransparency = PreferencesProvider.Interface.Drawer.getDrawerTransparency(context,defvalue);
     }
 
     /**
@@ -148,6 +152,12 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
 
         // Hide the tab bar until we measure
         mTabsContainer.setAlpha(0f);
+        //add by wanghao
+        Drawable background = getBackground();
+        if (background != null) {
+        	int alpha = (int)(((float)mTransparency)/100*255);
+        	background.setAlpha(255-alpha);
+		}
     }
 
     @Override
