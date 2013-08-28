@@ -112,6 +112,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.joy.launcher.AppsCustomizeView.ContentType;
 import com.joy.launcher.DropTarget.DragObject;
 import com.joy.launcher.download.DownloadInfo;
 import com.joy.launcher.download.DownloadManager;
@@ -800,8 +801,8 @@ public final class Launcher extends Activity
 
         mDragLayer = (DragLayer) findViewById(R.id.drag_layer);
         //added by huangming for menu.
-        menuView = (MenuFrameLayout)mDragLayer.findViewById(R.id.menu_view);
-        menuView.setLauncher(this);
+        /*menuView = (MenuFrameLayout)mDragLayer.findViewById(R.id.menu_view);
+        menuView.setLauncher(this);*/
         mWorkspace = (Workspace) mDragLayer.findViewById(R.id.workspace);
         mQsbDivider = (ImageView) findViewById(R.id.qsb_divider);
         mDockDivider = (ImageView) findViewById(R.id.dock_divider);
@@ -863,6 +864,9 @@ public final class Launcher extends Activity
         if (mSearchDropTargetBar != null) {
             mSearchDropTargetBar.setup(this, dragController);
         }
+        //added by huangming for menu.
+        menuView = (MenuFrameLayout)mDragLayer.findViewById(R.id.menu_view);
+        menuView.setLauncher(this);
     }
 
     /**
@@ -1479,6 +1483,10 @@ public final class Launcher extends Activity
     //added by huangming for menu.
     public boolean onMenuOpened(int featureId, Menu menu) {
     	addVirtualShortcutTEST();
+    	if(AppsCustomizePagedView.mIsShowOrHideEidt)
+    	{
+    		return false;
+    	}
 		if(menuView != null)
 		{
 			int visible = menuView.getVisibility();
@@ -1944,7 +1952,14 @@ public final class Launcher extends Activity
 
     @Override
     public void onBackPressed() {
-    	if(menuView != null && menuView.getVisibility() != View.GONE)
+    	//modify by huangming for app show or hide
+    	if(AppsCustomizePagedView.mIsShowOrHideEidt)
+    	{
+    		final AppsCustomizePagedView content = 
+        			(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    		content.exitAppShowOrHideMode();
+    	}
+        else if(menuView != null && menuView.getVisibility() != View.GONE)
     	{
     		
     		menuView.dismiss(true);
@@ -3587,6 +3602,29 @@ public final class Launcher extends Activity
         boolean voiceVisible = updateVoiceSearchIcon(searchVisible);
         mSearchDropTargetBar.onSearchPackagesChanged(searchVisible, voiceVisible);
     }
+    
+    //add by huangming for apps show or hide.
+    public void setAppsShowOrHide(boolean isShowOrHide)
+    {
+    	final AppsCustomizePagedView content = 
+    			(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    	content.enterAppShowOrHideMode(isShowOrHide);
+    }
+    
+    public boolean isHideAppsEmpty()
+    {
+    	final AppsCustomizePagedView content = 
+    			(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    	return content.isHideAppsEmpty();
+    }
+    
+    public boolean isShowAppsView()
+    {
+    	final AppsCustomizePagedView content = 
+    			(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    	return content.isShowAppsView();
+    }
+    //end
 
     /**
      * Add the icons for all apps.
