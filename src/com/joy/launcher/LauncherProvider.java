@@ -76,7 +76,10 @@ public class LauncherProvider extends ContentProvider {
     /**
      * ͼ���Ƿ�Ϊ����Ӧ��
      */
-    static final String IS_VIRTUAL_SHORTCUT = "virtual_Shortcut_add_by_wanghao";
+    static final String SHORTCUT_TYPE = "virtual_Shortcut_add_by_wanghao";
+    static final int SHORTCUT_TYPE_NORMAL = 0;//normal app icon
+    static final int SHORTCUT_TYPE_VIRTUAL = 1;//virtual app icon
+    static final int SHORTCUT_TYPE_VIRTUAL_TO_NORMAL = 2;//virtual to normal
     /**
      * {@link Uri} triggered at any registered {@link android.database.ContentObserver} when
      * {@link AppWidgetHost#deleteHost()} is called during database creation.
@@ -1053,7 +1056,7 @@ public class LauncherProvider extends ContentProvider {
             Intent intent = new Intent();
             long id = generateNewId();
             intent.setComponent(cn);
-            intent.putExtra(IS_VIRTUAL_SHORTCUT, true);
+            intent.putExtra(SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                     Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             values.put(Favorites.INTENT, intent.toUri(0));
