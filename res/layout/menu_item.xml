@@ -2,7 +2,7 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textColor="@color/white"
+    android:textColor="@color/textview_enable"
     android:textSize="@dimen/menu_item_text_size"
     android:drawablePadding="@dimen/menu_item_drawable_padding"
     android:paddingTop="@dimen/menu_item_padding_top"

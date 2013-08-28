@@ -395,4 +395,9 @@ s -->
 
     <!-- add by huangming for screen cycle -->
     <string name="preferences_interface_general_screen_cycle_title">Screen circulation slide</string>
+    
+    <!-- add by huangming for app show or hide -->
+    <string name="header_selected">Selected: </string>
+    <string name="header_sure">Sure</string>
+    <string name="header_cancel">Cancel</string>
 </resources>

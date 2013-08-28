@@ -157,4 +157,13 @@
     <dimen name="cell_v_margin_new">12dp</dimen>
     <dimen name="icon_text_size_default">15px</dimen>
     
+    <!-- add by huangming for app show or hide -->
+    <dimen name="header_padding_top">8dp</dimen>
+    <dimen name="header_padding_bottom">8dp</dimen>
+    <dimen name="header_padding_left">10dp</dimen>
+    <dimen name="header_padding_right">10dp</dimen>
+    <dimen name="header_child_margin_left">8dp</dimen>
+    <dimen name="header_child_margin_right">8dp</dimen>
+    <dimen name="header_child_text_size">20sp</dimen>
+    
 </resources>

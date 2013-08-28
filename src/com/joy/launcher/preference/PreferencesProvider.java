@@ -42,6 +42,22 @@ public final class PreferencesProvider {
     
     public static final String ICON_STYLE_KEY = "ui_homescreen_icon_style";
     public static final String ICON__TEXT_STYLE_KEY = "ui_homescreen_icon_text_style";
+    //add by huangming for main menu show or hide.
+    private final static String APPS_HIDE_PREFERENCES = "apps_hide_preferences";
+    public static boolean getAppIsHide(Context context, String key)
+    {
+    	final SharedPreferences preferences = context.getSharedPreferences(APPS_HIDE_PREFERENCES, 0);
+    	return preferences.getBoolean(key, false);
+    }
+    
+    public final static void putAppHide(Context context, String key, boolean value)
+    {
+    	final SharedPreferences preferences = context.getSharedPreferences(APPS_HIDE_PREFERENCES, 0);
+    	SharedPreferences.Editor editor = preferences.edit();
+    	editor.putBoolean(key, value);
+    	editor.commit();
+    }
+    //end
 
     public static class Interface {
         public static class Homescreen {
