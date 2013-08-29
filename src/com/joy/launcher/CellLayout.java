@@ -52,6 +52,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LayoutAnimationController;
 
 import com.joy.launcher.FolderIcon.FolderRingAnimator;
+import com.joy.launcher.preference.PreferencesProvider;
+import com.joy.launcher.preference.PreferencesProvider.Size;
 
 public class CellLayout extends ViewGroup {
     static final String TAG = "CellLayout";
@@ -290,6 +292,33 @@ public class CellLayout extends ViewGroup {
         mOccupied = new boolean[mCountX][mCountY];
         requestLayout();
     }
+    
+    //add by huangming for folder adaptation.
+    public void setCellDimensionsChanged()
+    {
+    	Context context = getContext();
+    	if(context != null)
+    	{
+    		Resources res = context.getResources();
+    		if(res != null)
+    		{
+    			Size textSize = PreferencesProvider.Interface.Homescreen.getIconTextSize(
+    	        		context, 
+    	        		res.getString(R.string.config_defaultSize));
+    			Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+    	        		context, 
+    	        		res.getString(R.string.config_defaultSize));
+    			float radio = 1.0f;
+    			if((textSize == Size.Large || iconSize == Size.Large) && iconSize != Size.Small)
+    	        {
+    	        	radio *= Utilities.LARGE_RATIO;
+    	        } 	    	
+    	        mOriginalCellHeight =
+    	                mCellHeight = (int)(mCellHeight * radio);
+    		}
+    	}
+    }
+    //end
 
     private void invalidateBubbleTextView(BubbleTextView icon) {
         final int padding = icon.getPressedOrFocusedBackgroundPadding();

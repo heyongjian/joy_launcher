@@ -155,6 +155,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         super.onFinishInflate();
         mContent = (CellLayout) findViewById(R.id.folder_content);
         mContent.setGridSize(0, 0);
+        //add by huangming for folder adaptation
+        mContent.setCellDimensionsChanged();
+        //end
         mContent.getChildrenLayout().setMotionEventSplittingEnabled(false);
         mFolderName = (FolderEditText) findViewById(R.id.folder_name);
         mFolderName.setFolder(this);

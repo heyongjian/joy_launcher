@@ -272,6 +272,7 @@ public class Workspace extends PagedView
     private int mTopMargin;
     private int mRightMargin;
     private int mBottomMargin;
+    private Size mIconSize;
 
     /**
      * Used to inflate the Workspace from XML.
@@ -474,6 +475,7 @@ public class Workspace extends PagedView
         Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
         		context, 
         		res.getString(R.string.config_defaultSize));
+        mIconSize = iconSize;
         int widthGap = 0;
         int heightGap = 0;
         if(iconSize == Size.Small)
@@ -670,6 +672,16 @@ public class Workspace extends PagedView
         }
         else
         {
+        	//add by huangming for hotseat adaptation.
+        	if(child instanceof BubbleTextView && mIconSize == Size.Large)
+        	{
+        		BubbleTextView btv = (BubbleTextView)child;
+        		btv.setPadding(btv.getPaddingLeft(), 
+        				btv.getPaddingTop() / 4, 
+        				btv.getPaddingRight(), 
+        				btv.getPaddingBottom());
+        	}
+        	//end
         	lp.leftMargin = lp.topMargin = lp.rightMargin = lp.bottomMargin = 0;
         }
 
