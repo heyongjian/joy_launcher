@@ -351,6 +351,10 @@ s -->
     <string name="preferences_interface_drawer_indicator_enable_summary">Show current page indicator at the bottom of the screen</string>
     <string name="preferences_interface_drawer_indicator_fade_title">Fade indicator</string>
     <string name="preferences_interface_drawer_indicator_fade_summary">Fade the indicator after the page has changed</string>
+	<!-- add by wanghao -->
+    <string name="preferences_interface_drawer_setting_title">drawer setting</string>
+    <string name="preferences_interface_drawer_setting_row_column_num_title">drawer row and column</string>
+    <string name="preferences_interface_drawer_setting_transparency_title">transparency</string>
 
     <!-- Dock -->
     <string name="preferences_interface_dock_title">Dock</string>
@@ -372,7 +376,7 @@ s -->
     <string name="joy_application_folder">application folder</string>
     <string name="joy_foler_more_app">more</string>
     <string name="joy_foler_refresh">refreshr</string>
-    <string name="joy_foler_hot_app">【hot app】</string>
+    <string name="joy_foler_hot_app">[hot app]</string>
     <string name="menu_add_folder">add</string>
     <string name="online_folder">online folder</string>
     <string name="add_to_desktop">add to desktop</string>

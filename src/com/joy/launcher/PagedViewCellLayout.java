@@ -200,8 +200,9 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
             int vSpace = heightSpecSize - mPaddingTop - mPaddingBottom;
             int hFreeSpace = hSpace - (mCellCountX * mOriginalCellWidth);
             int vFreeSpace = vSpace - (mCellCountY * mOriginalCellHeight);
-            mWidthGap = Math.min(mMaxGap, numWidthGaps > 0 ? (hFreeSpace / numWidthGaps) : 0);
-            mHeightGap = Math.min(mMaxGap,numHeightGaps > 0 ? (vFreeSpace / numHeightGaps) : 0);
+            //add by wanghao
+	        mWidthGap = numWidthGaps > 0 ? (hFreeSpace / numWidthGaps) : 0;
+	        mHeightGap = numHeightGaps > 0 ? (vFreeSpace / numHeightGaps) : 0;
 
             mChildren.setGap(mWidthGap, mHeightGap);
         } else {
@@ -353,8 +354,8 @@ public class PagedViewCellLayout extends ViewGroup implements Page {
     }
 
     public void calculateCellCount(int width, int height, int maxCellCountX, int maxCellCountY) {
-        mCellCountX = Math.min(maxCellCountX, estimateCellHSpan(width));
-        mCellCountY = Math.min(maxCellCountY, estimateCellVSpan(height));
+	    mCellCountX = maxCellCountX;
+	    mCellCountY = maxCellCountY;
         requestLayout();
     }
 

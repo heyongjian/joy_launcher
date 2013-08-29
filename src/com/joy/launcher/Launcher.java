@@ -2768,7 +2768,7 @@ public final class Launcher extends Activity
                         hideDockDivider();
                     }
                     if (!animationCancelled) {
-                        updateWallpaperVisibility(false);
+                      //  updateWallpaperVisibility(false);
                     }
                 }
 
@@ -2810,7 +2810,13 @@ public final class Launcher extends Activity
                     hideDockDivider();
                 }
             }
-            updateWallpaperVisibility(false);
+          //  updateWallpaperVisibility(false);
+        }
+        {//add by wanghao
+          mWorkspace.setVisibility(View.INVISIBLE);
+          mHotseat.setVisibility(View.INVISIBLE);
+          mWorkspace.hideScrollingIndicator(true,0);
+          mDockDivider.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -2881,6 +2887,13 @@ public final class Launcher extends Activity
                 ((LauncherTransitionable) fromView).onLauncherTransitionEnd(instance, null, true);
             }
             mWorkspace.hideScrollingIndicator(false);
+        }
+        
+        {//add by wanghao
+        	mWorkspace.setVisibility(View.VISIBLE);
+            mHotseat.setVisibility(View.VISIBLE);
+            mWorkspace.hideScrollingIndicator(false,0);
+            mDockDivider.setVisibility(View.VISIBLE);
         }
     }
 
