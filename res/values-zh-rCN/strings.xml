@@ -188,6 +188,12 @@
     <string name="preferences_interface_drawer_indicator_enable_summary">在屏幕的底部显示当前页面的指示器</string>
     <string name="preferences_interface_drawer_indicator_fade_title">淡出指示器</string>
     <string name="preferences_interface_drawer_indicator_fade_summary">改变页面后将淡出指示器</string>
+    <!-- add by wanghao -->
+    <string name="preferences_interface_drawer_setting_title">抽屉设置</string>
+    <string name="preferences_interface_drawer_setting_row_column_num_title">抽屉行列数</string>
+    <string name="preferences_interface_drawer_setting_row_column_num_summary">显示抽屉行列数</string>
+    <string name="preferences_interface_drawer_setting_transparency_title">背景透明度</string>
+    <string name="preferences_interface_drawer_setting_transparency_summary">设置抽屉背景透明度</string>
 
     <!-- Dock -->
     <string name="preferences_interface_dock_title">底座</string>

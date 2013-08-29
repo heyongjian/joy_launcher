@@ -204,6 +204,29 @@
                     android:defaultValue="true"
                     android:dependency="ui_drawer_indicator_enable" />
             </PreferenceCategory>
+            <!-- add by wanghao  -->
+            <PreferenceCategory android:key="ui_drawer_setting"
+                android:title="@string/preferences_interface_drawer_setting_title"
+                android:layout="@layout/joy_preference_category">
+                <com.joy.launcher.preference.DoubleNumberPickerPreference android:key="ui_drawer_grid"
+                    android:title="@string/preferences_interface_drawer_setting_row_column_num_title"
+                    android:summary="@string/preferences_interface_drawer_setting_row_column_num_summary"
+                    launcher:pickerTitle1="@string/preferences_interface_homescreen_general_grid_rows_title"
+                    launcher:pickerTitle2="@string/preferences_interface_homescreen_general_grid_columns_title"
+                    launcher:defaultValue1="@integer/config_drawer_Rows"
+                    launcher:defaultValue2="@integer/config_drawer_Columns"
+                    launcher:max1="6"
+                    launcher:min1="3"
+                    launcher:max2="5"
+                    launcher:min2="3" />
+				<com.joy.launcher.preference.SeekBarDialogPreference
+                    android:defaultValue="@integer/config_drawer_default_transparency"
+                    android:key="ui_drawer_transparency"
+                    android:summary="@string/preferences_interface_drawer_setting_transparency_summary"
+                    android:title="@string/preferences_interface_drawer_setting_transparency_title"
+                    launcher:max="100"
+                    launcher:min="0" />
+</PreferenceCategory>
         </PreferenceScreen>
 
         <!-- Dock -->

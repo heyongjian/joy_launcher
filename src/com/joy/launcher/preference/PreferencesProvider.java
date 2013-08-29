@@ -22,7 +22,6 @@ import android.content.SharedPreferences;
 import com.joy.launcher.AppsCustomizePagedView;
 import com.joy.launcher.LauncherApplication;
 import com.joy.launcher.Workspace;
-
 public final class PreferencesProvider {
     public static final String PREFERENCES_KEY = "com.joy.launcher_preferences"; 
 
@@ -192,6 +191,29 @@ public final class PreferencesProvider {
                     return preferences.getBoolean("ui_drawer_indicator_fade", true);
                 }
             }
+          //add by wanghao
+        	public static int getDrawerTransparency(Context context,int defvalue) {
+                final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
+                return preferences.getInt("ui_drawer_transparency", defvalue);
+            }
+        	 public static int getCellCountX(Context context, int def) {
+                 final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
+                 String[] values = preferences.getString("ui_drawer_grid", "0|" + def).split("\\|");
+                 try {
+                     return Integer.parseInt(values[1]);
+                 } catch (NumberFormatException e) {
+                     return def;
+                 }
+             }
+             public static int getCellCountY(Context context, int def) {
+                 final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
+                 String[] values = preferences.getString("ui_drawer_grid", def + "|0").split("\\|");;
+                 try {
+                     return Integer.parseInt(values[0]);
+                 } catch (NumberFormatException e) {
+                     return def;
+                 }
+             }
         }
 
         public static class Dock {

@@ -324,6 +324,11 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mShowScrollingIndicator = PreferencesProvider.Interface.Drawer.Indicator.getShowScrollingIndicator(context);
         mFadeScrollingIndicator = PreferencesProvider.Interface.Drawer.Indicator.getFadeScrollingIndicator(context);
 
+        //add by wanghao
+        int defCellCountX = getContext().getResources().getInteger(R.integer.config_drawer_Columns);
+        int defCellCountY = getContext().getResources().getInteger(R.integer.config_drawer_Rows);
+        mMaxAppCellCountX = PreferencesProvider.Interface.Drawer.getCellCountX(context, defCellCountX);
+        mMaxAppCellCountY = PreferencesProvider.Interface.Drawer.getCellCountY(context, defCellCountY);
         if (!mShowScrollingIndicator) {
             disableScrollingIndicator();
         }
