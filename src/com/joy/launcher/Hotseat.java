@@ -16,6 +16,9 @@
 
 package com.joy.launcher;
 
+import com.joy.launcher.preference.PreferencesProvider;
+import com.joy.launcher.preference.PreferencesProvider.Size;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -102,6 +105,18 @@ public class Hotseat extends FrameLayout {
         LayoutInflater inflater = LayoutInflater.from(context);
         BubbleTextView allAppsButton = (BubbleTextView)
                 inflater.inflate(R.layout.application, mContent, false);
+       //add by huangming for hotseat adaptation.
+        Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+        		context, 
+        		context.getResources().getString(R.string.config_defaultSize));
+        if(iconSize == Size.Large)
+        {
+        	allAppsButton.setPadding(allAppsButton.getPaddingLeft(), 
+        			allAppsButton.getPaddingTop() / 4, 
+        			allAppsButton.getPaddingRight(), 
+        			allAppsButton.getPaddingBottom());
+        }
+        //end
         //modify by huangming for icon size
         Drawable d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
         Bitmap b = Utilities.createIconBitmap(d, context);
