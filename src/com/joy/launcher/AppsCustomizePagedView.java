@@ -16,6 +16,11 @@
 
 package com.joy.launcher;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -61,17 +66,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.joy.launcher.R;
 import com.joy.launcher.DropTarget.DragObject;
 import com.joy.launcher.preference.PreferencesProvider;
-
-import static com.joy.launcher.AppsCustomizeView.ContentType;
-import static com.joy.launcher.AppsCustomizeView.SortMode;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * A simple callback interface which also provides the results of the task.
@@ -208,6 +204,11 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private TextView mCancelSelectedText;
     private TextView mSureSelectedText;
     private View mTabs;
+    //end
+    //add by huangming for installed apps show
+    private FrameLayout mInstalledAppsHeader;
+    private ImageView mExitInstalledImage;
+    protected static boolean mIsShowInstalledApps = false;
     //end
     
     // Cling
@@ -686,6 +687,16 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     			exitAppShowOrHideMode();
     		}
     		return;
+    	}
+    	//end
+    	//add by huangming for installed apps show
+    	if(mIsShowInstalledApps)
+    	{
+    		if(v == mExitInstalledImage)
+    		{
+    			exitShowInstalledApps();
+    			return;
+    		}
     	}
     	//end
         // When we have exited all apps or are in transition, disregard clicks
@@ -2013,6 +2024,14 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mSureSelectedText = (TextView)host.findViewById(R.id.sure_selected_text);
         mSureSelectedText.setOnClickListener(this);
         mTabs = host.findViewById(R.id.tabs_container);
+        mIsAppsHide = false;
+        mIsShowOrHideEidt = false;
+        //end
+        //add by huangming for installed apps show
+        mInstalledAppsHeader = (FrameLayout)host.findViewById(R.id.installed_apps_header);
+        mExitInstalledImage = (ImageView)host.findViewById(R.id.exit_installed_apps_image);
+        mExitInstalledImage.setOnClickListener(this);
+        mIsShowInstalledApps = false;
         //end
     }
 
@@ -2110,6 +2129,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     		if(mIsAppsHide == info.isHide)
     		{
     			mApps.add(info);
+    			//add by huangming for installed apps show
+    			if(mIsShowInstalledApps && info.flags == 0)
+        		{
+        			mApps.remove(info);
+        		}
+    			//end
     		}
     	}
     	
@@ -2134,7 +2159,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 						Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f); 
 				scale.setFillAfter(true);
 				scale.setRepeatCount(0);
-				scale.setDuration(600);
+				scale.setDuration(300);
 				scale.start();
 				layout.getChildOnPageAt(j).setAnimation(scale);
 			}
@@ -2180,6 +2205,42 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     		return host.getCurrentTabTag().equals(host.getTabTagForContentType(ContentType.Apps));
     	}
     	return false;
+    }
+    //end
+    
+    //add by huangming for installed apps show
+    public void enterShowInstalledApps()
+    {
+    	mIsShowInstalledApps = true;
+    	mJoinWidgetsApps = false;
+    	setContentType(ContentType.Apps);
+    	AppsCustomizeTabHost host = getTabHost();
+    	if(host != null)
+    	{
+    		host.setCurrentTabByTag(host.getTabTagForContentType(ContentType.Apps));
+    	}
+    	showInstalledAppsHeader();
+    	setApps();
+    }
+    
+    public void exitShowInstalledApps()
+    {
+    	mIsShowInstalledApps = false;
+    	mJoinWidgetsApps = PreferencesProvider.Interface.Drawer.getJoinWidgetsApps(getContext());
+    	hideInstalledAppsHeader();
+    	setApps();
+    }
+    
+    private void showInstalledAppsHeader()
+    {
+    	mInstalledAppsHeader.setVisibility(View.VISIBLE);
+    	mTabs.setVisibility(View.GONE);
+    }
+    
+    private void hideInstalledAppsHeader()
+    {
+    	mInstalledAppsHeader.setVisibility(View.GONE);
+    	mTabs.setVisibility(View.VISIBLE);
     }
     //end
 
