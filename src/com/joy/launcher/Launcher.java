@@ -1897,7 +1897,11 @@ public final class Launcher extends Activity
         return shortcut;
     }
     public void updateVirtualShortcut(ShortcutInfo info){
-    	mModel.updateItemInDatabase(this, info);
+    	boolean isHave = LauncherModel.checeItemInDatabase(info);
+    	System.out.println("aaaaadvdeg  isHave:"+isHave);
+    	if (isHave) {
+    		mModel.updateItemInDatabase(this, info);
+		}
     }
     private void startWallpaper() {
         showWorkspace(true);
@@ -2336,6 +2340,11 @@ public final class Launcher extends Activity
     int myTempId = 0;
 	private void OpenVirtualShortcut(final View view) {
 		
+		if (!Util.isNetworkConnected()) {
+			CharSequence errorStrings =  this.getResources().getText(R.string.network_not_connected);
+			Toast.makeText(this, errorStrings, Toast.LENGTH_LONG).show();
+			return;
+		}
 //		DownloadInfo downinfo = (DownloadInfo)view.getTag(R.id.download_info);
 		DownloadInfo downinfo = ((ShortcutInfo)view.getTag()).getDownLoadInfo();
 		if(downinfo != null){
@@ -2366,7 +2375,8 @@ public final class Launcher extends Activity
 								info.natureId = id;
 								Launcher.this.updateVirtualShortcut(info);
 								final String localname = info.getDownLoadInfo().getLocalname();
-								view.postDelayed(new Runnable() {
+								System.out.println("aaaaadvdeg  localname:"+localname);
+								mWorkspace.postDelayed(new Runnable() {
 									@Override
 									public void run() {
 										// TODO Auto-generated method stub
@@ -2762,7 +2772,8 @@ public final class Launcher extends Activity
 		fromScaleAnim.scaleX(toScale).scaleY(toScale).setDuration(duration).setInterpolator(new Workspace.ZoomInInterpolator());
 
 		fromView.setAlpha(1f);
-		final ObjectAnimator fromAlphaAnim = ObjectAnimator.ofFloat(fromView,"alpha", 1f, 0f).setDuration(280);
+		int alphaduartion = (duration - 40)<0?0:duration - 40;
+		final ObjectAnimator fromAlphaAnim = ObjectAnimator.ofFloat(fromView,"alpha", 1f, 0f).setDuration(alphaduartion);
 		fromAlphaAnim.setInterpolator(new DecelerateInterpolator(0.5f));
 
 		//show appscustomize
@@ -2909,7 +2920,8 @@ public final class Launcher extends Activity
         .setInterpolator(new Workspace.ZoomInInterpolator());
 
         fromView.setAlpha(1f);
-        final ObjectAnimator fromAlphaAnim = ObjectAnimator.ofFloat(fromView, "alpha", 1f, 0f).setDuration(250);
+        int alphaduartion = (duration - 40)<0?0:duration - 40;
+        final ObjectAnimator fromAlphaAnim = ObjectAnimator.ofFloat(fromView, "alpha", 1f, 0f).setDuration(alphaduartion);
         fromAlphaAnim.setInterpolator(new DecelerateInterpolator(0.5f));
         
         if (fromView instanceof LauncherTransitionable) {

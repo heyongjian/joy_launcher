@@ -226,6 +226,8 @@
 	 	<string name="tip_confirm">确定</string>
 	 	<string name="tip_cancle">取消</string>
 	 	<string name="virtualshortcut_test">虚框软件测试</string>
+	 	<string name="network_not_connected">请设置好网络后再来！</string>
+	 	<string name="download_error">网络不给力，请设置好网络后再来！</string>
  	
     <!-- menu view added by huangming. -->
     <string name="menu_edit_screen">编辑屏幕</string>
