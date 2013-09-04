@@ -1022,7 +1022,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                         removeView(child);
                         PagedViewWidget.setDeletePreviewsWhenDetachedFromWindow(true);
                         animationBuffer.setAlpha(1f);
-                        animationBuffer.setVisibility(View.VISIBLE);
+                        //animationBuffer.setVisibility(View.VISIBLE);
                         FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(child.getWidth(),
                                 child.getHeight());
                         p.setMargins((int) child.getLeft(), (int) child.getTop(), 0, 0);
