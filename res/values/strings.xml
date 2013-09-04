@@ -387,6 +387,8 @@ s -->
 	<string name="tip_confirm">confirm</string>
 	<string name="tip_cancle">cancle</string>
  	<string name="virtualshortcut_test">virtual shortcut test</string>
+ 	<string name="network_not_connected">please set up the network</string>
+ 	<string name="download_error">after the network is not to force, please set up the network again</string>
  	
     <!-- menu view added by huangming. -->
     <string name="menu_edit_screen">Edit screen</string>
