@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.joy.launcher.LauncherApplication;
 import com.joy.launcher.R;
@@ -43,8 +44,10 @@ public class DownloadManager {
 	static DownLoadDBHelper dbHelper;
 	static DownloadManager mDownloadManager;
 
+	Context mContext;
 	private DownloadManager(Context context) {
 		 dbHelper = new DownLoadDBHelper(context);
+		 mContext = context;
 		try {
 			mService = Service.getInstance();
 		} catch (Exception e) {
@@ -145,7 +148,7 @@ public class DownloadManager {
 			this.downinfo = downinfo;
 			this.randomAccessFile = randomAccessFile;
 			this.callback = callback;
-			sendBroadcast(downinfo);
+			sendBroadcast(downinfo,UPDATE_UI);
 		}
 
 		public void run() {
@@ -185,7 +188,7 @@ public class DownloadManager {
 						Log.i(TAG, "-----下载  未完成----");
 						// dbHelper.update(downinfo); 暂不支持断点下载
 						pool = 0;
-						sendBroadcast(downinfo);// 刷新一次
+						sendBroadcast(downinfo,UPDATE_UI);// 刷新一次
 					}
 					// 最后再写一次
 					if (pool != 0) {
@@ -201,17 +204,23 @@ public class DownloadManager {
 				Log.i(TAG,"-----Completesize()--->1 "+ downinfo.getCompletesize());
 				Log.i(TAG, "-------结束-------");
 
-				if (downinfo.getCompletesize() > downinfo.getFilesize()) {
-					Log.i(TAG, "-----下载的apk超出实际大小,请重新下载----");
-					// dbHelper.delete(downinfo);暂不支持断点下载
-				} else if (downinfo.getCompletesize() == downinfo.getFilesize()) {
+				if (downinfo.getCompletesize() == downinfo.getFilesize()) {
 					Log.i(TAG, "-----下载  完成----");
 					if(callback != null){
 						callback.DownloadSucceed();
-//						downinfo.getView().setTag(R.id.download_info,null);
 						((ShortcutInfo)downinfo.getView().getTag()).setDownLoadInfo(null);
-						sendBroadcast(downinfo);// 刷新一次
+						sendBroadcast(downinfo,UPDATE_UI);// 刷新一次
 					}
+				}else{
+					if (downinfo.getCompletesize() > downinfo.getFilesize()) {
+						Log.i(TAG, "-----下载的apk超出实际大小,请重新下载----");
+						// dbHelper.delete(downinfo);暂不支持断点下载
+					} else {
+						
+					}
+					((ShortcutInfo)downinfo.getView().getTag()).setDownLoadInfo(null);
+					sendBroadcast(downinfo,UPDATE_UI);// 刷新一次
+					sendBroadcast(downinfo,DOWNLOAD_ERROR);// 网络错误
 				}
 				
 				map.remove(String.valueOf(downinfo.getId()));
@@ -236,22 +245,32 @@ public class DownloadManager {
 	public interface CallBack{
 		public void DownloadSucceed();
 	}
+	final int UPDATE_UI = 0;
+	final int DOWNLOAD_ERROR = 1;
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			DownloadInfo td = (DownloadInfo) msg.obj;
-			td.getView().invalidate();
-			// Log.i("DownloadService",
-			// "-------->---"+((MyTextView)td.getView()));
-			Log.i("DownloadService", "-------->下载中----"+td.getView());
+			int what = msg.what;
+			switch(what){
+			case UPDATE_UI://更新ui
+				td.getView().invalidate();
+				Log.i(TAG, "-------->下载中----"+td.getView());
+				break;
+			case DOWNLOAD_ERROR:
+				CharSequence errorStrings =  mContext.getResources().getText(R.string.download_error);
+				Toast.makeText(mContext, errorStrings, Toast.LENGTH_LONG).show();
+				break;
+			case 2:
+				break;
+			}
 		}
 	};
 
 	// 发送广播
-	public void sendBroadcast(DownloadInfo td) {
-
+	public void sendBroadcast(Object obj,int what) {
 		Message msg = new Message();
-		msg.obj = td;
-		Log.i("DownloadService", "-----下载中----id:" + td.getId());
+		msg.what = what;
+		msg.obj = obj;
 
 		mHandler.sendMessage(msg);
 	}

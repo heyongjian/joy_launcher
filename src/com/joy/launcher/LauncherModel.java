@@ -206,6 +206,20 @@ public class LauncherModel extends BroadcastReceiver {
     }
 
     /**
+     * add by wanghao
+     * @param item
+     */
+    static boolean checeItemInDatabase(final ItemInfo item){
+    	final long itemId = item.id;
+    	ItemInfo modelItem = sItemsIdMap.get(itemId);
+        if (modelItem != null) {
+        	if (item == modelItem) {
+        		return true;
+			}
+        }
+        return false;
+    }
+    /**
      * Adds an item to the DB if it was not created previously, or move it to a new
      * <container, screen, cellX, cellY>
      */
