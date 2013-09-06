@@ -64,6 +64,10 @@
 	<uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
  	
+ 	<uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
     <uses-sdk android:minSdkVersion="14"
         android:targetSdkVersion="17" />
 
@@ -153,5 +157,15 @@
             android:theme="@style/joy_prefrences_icon_style" >
         </activity>
 
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:permission="android.permission.BAIDU_LOCATION_SERVICE"
+            android:process=":remote" >
+            <intent-filter>
+                <action android:name="com.baidu.location.service_v2.4" >
+                </action>
+            </intent-filter>
+        </service>
     </application>
 </manifest>

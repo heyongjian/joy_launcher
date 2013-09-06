@@ -1,6 +1,7 @@
 package com.joy.launcher.network.impl;
 
 import com.joy.launcher.network.util.Protocal;
+import com.joy.launcher.util.SystemInfo;
 import com.joy.launcher.util.Util;
 
 
@@ -54,6 +55,40 @@ public class ProtocalFactory{
 		String host = "http://www.appchina.com/market/d/1121573/cop.baidu_0/com.polontech.android.c360by.apk";
 		pw.setHost(host);
 		pw.setSoTimeout(30000);
+		return pw;
+	}
+	public Protocal activateProtocal(){
+		Protocal pw = new Protocal();
+
+		StringBuffer sb = new StringBuffer(200);
+		sb.append("op=").append(1000)
+		.append("&channel=").append(Util.encodeContentForUrl(SystemInfo.channel))
+		.append("&imei=").append(Util.encodeContentForUrl(SystemInfo.imei))
+		.append("&imsi=").append(Util.encodeContentForUrl(SystemInfo.imsi))
+		.append("&mac=").append(Util.encodeContentForUrl(SystemInfo.mac))
+		.append("&os=").append(Util.encodeContentForUrl(SystemInfo.os))
+		.append("&province=").append(Util.encodeContentForUrl(SystemInfo.province))
+		.append("&city=").append(Util.encodeContentForUrl(SystemInfo.city))
+//		.append("&sms=").append(Util.encodeContentForUrl(SystemInfo.sms))
+		.append("&display=").append(Util.encodeContentForUrl(SystemInfo.display))
+		.append("&product=").append(Util.encodeContentForUrl(SystemInfo.product))
+		.append("&brand=").append(Util.encodeContentForUrl(SystemInfo.brand))
+		.append("&model=").append(Util.encodeContentForUrl(SystemInfo.model))
+		.append("&language=").append(Util.encodeContentForUrl(SystemInfo.language))
+		.append("&operators=").append(SystemInfo.operators)
+		.append("&network=").append(SystemInfo.network)
+		.append("&vcode=").append(SystemInfo.vcode)
+		.append("&vname=").append(Util.encodeContentForUrl(SystemInfo.vname))
+		.append("&bid=").append(Util.encodeContentForUrl(SystemInfo.id))
+		.append("&board=").append(Util.encodeContentForUrl(SystemInfo.board))
+		.append("&abi=").append(Util.encodeContentForUrl(SystemInfo.abi))
+		.append("&device=").append(Util.encodeContentForUrl(SystemInfo.device))
+		.append("&mf=").append(Util.encodeContentForUrl(SystemInfo.mf))
+		.append("&tags=").append(Util.encodeContentForUrl(SystemInfo.tags))
+		.append("&user=").append(Util.encodeContentForUrl(SystemInfo.user))
+		.append("&btype=").append(Util.encodeContentForUrl(SystemInfo.type));
+
+		pw.setGetData(sb.toString());
 		return pw;
 	}
 }

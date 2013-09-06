@@ -16,6 +16,7 @@
 
 package com.joy.launcher;
 
+import java.lang.ref.WeakReference;
 import android.app.Application;
 import android.app.SearchManager;
 import android.content.ContentResolver;
@@ -25,17 +26,19 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.os.Handler;
-
-import java.lang.ref.WeakReference;
+import android.util.Log;
 
 import com.joy.launcher.cache.BitmapCache;
 import com.joy.launcher.network.impl.Service;
+import com.joy.launcher.preference.PreferencesProvider;
+import com.joy.launcher.util.SystemInfo;
 
 public class LauncherApplication extends Application {
 	
 	public static Service mService;
 	public static Context mContext;
 	public static BitmapCache mBcache ;
+	public static SystemInfo mSystemInfo;
 	
     public LauncherModel mModel;
     public IconCache mIconCache;
@@ -78,7 +81,11 @@ public class LauncherApplication extends Application {
         resolver.registerContentObserver(LauncherSettings.Favorites.CONTENT_URI, true,
                 mFavoritesObserver);
         
-        mContext = this;
+        initLauncher();
+    }
+    
+    public void initLauncher(){
+		mContext = this;
 		mBcache = BitmapCache.getInstance();
 		try {
 			mService = Service.getInstance();
@@ -86,6 +93,8 @@ public class LauncherApplication extends Application {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		mSystemInfo = SystemInfo.getInstance();
     }
 
     /**
