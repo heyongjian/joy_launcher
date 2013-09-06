@@ -9,9 +9,8 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.joy.launcher.cache.ImageOption;
-import com.joy.launcher.download.DownloadInfo;
+import com.joy.launcher.network.handler.ActivateHanlder;
 import com.joy.launcher.network.handler.BitmapHandler;
-import com.joy.launcher.network.handler.WallpaperHandler;
 import com.joy.launcher.network.util.ClientHttp;
 import com.joy.launcher.network.util.ClientInterface;
 import com.joy.launcher.network.util.Protocal;
@@ -126,5 +125,21 @@ public class Service {
 		InputStream iStream = cs.getInputStream(protocal);
 		
 		return iStream;
+	}
+
+	public boolean activateLauncher(){
+		// TODO Auto-generated method stub
+		Protocal protocal = pfactory.activateProtocal();
+		JSONObject result = null;
+		try {
+			result = cs.request(protocal);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ActivateHanlder activate = new ActivateHanlder();
+		boolean isActivate = activate.isActivate(result);
+	
+		return isActivate;
 	}
 }

@@ -26,12 +26,12 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import android.util.Log;
 
 import com.joy.launcher.network.impl.ProtocalFactory;
 import com.joy.launcher.util.Constants;
+import com.joy.launcher.util.SystemInfo;
 import com.joy.launcher.util.Util;
 
 
@@ -62,26 +62,47 @@ public class ClientHttp implements ClientInterface {
 	
 	public JSONObject post(Protocal protocal) throws Exception {
 		JSONObject json = null;
+		InputStream in = null;
+		BufferedReader reader = null;
+		StringBuffer buffer = new StringBuffer();
 		try {
-			InputStream in = getInputStream(protocal);
-			if(DEBUG) Log.i(TAG, "---post in : "+in);
+			in = getInputStream(protocal);
+			Log.i(TAG, " in : "+in);
 			if(in == null){
 				return null;
 			}
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+			
+			reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+			
 			String line = null;
-			StringBuffer buffer = new StringBuffer();
 			while((line = reader.readLine()) != null){
+//				Log.i(TAG, "  line : "+line);
 				buffer.append(line);
 			}
-			reader.close();
-			in.close();
-			json = (JSONObject)new JSONTokener(buffer.toString()).nextValue();
+			
+			try {
+//				Log.i(TAG, "  buffer : "+buffer.toString());
+				json = new JSONObject(buffer.toString());
+			} catch (Exception e) {
+				// TODO: handle exception
+				Log.e(TAG, "  json异常 : "+e);
+			}
 //			Log.e("", "URL:" + url + ",获取到服务器数据:" + json);
-			if(DEBUG) Log.i(TAG, "---post  str : "+json.toString());
+			Log.i(TAG, "  str : "+json.toString());
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			if(DEBUG) Log.e(TAG, "---post 网络异常    -----------》3");
+			Log.i(TAG, "网络异常    -----------》3  "+ex);
+		}
+		finally {
+			if(reader != null){
+				reader.close();
+				reader = null;
+			}
+			if(in != null){
+				in.close();
+				in = null;
+			}
+			buffer = null;
 		}
 		return json;
 	}
@@ -110,7 +131,7 @@ public class ClientHttp implements ClientInterface {
 			} else {
 				urlStrl = protocal.getHost();
 			}
-			String randomTS = Util.getTS(9999);
+			String randomTS = Util.getTS();
 			// url
 			if (protocal.getGetData() != null) {
 				urlStrl += "?" + protocal.getGetData() +ProtocalFactory.getSign(randomTS);
@@ -126,13 +147,14 @@ public class ClientHttp implements ClientInterface {
 			} else {
 				httpRequest = new HttpGet(urlStrl);
 			}
+			Log.i(TAG, "网络连接  1");
 			
 			httpRequest.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,
-					protocal.getSoTimeout() > 0 ? protocal.getSoTimeout() : 15000);
+					protocal.getSoTimeout() > 0 ? protocal.getSoTimeout() : Constants.TIMEOUT);
 
 			//添加头
 			httpRequest.addHeader("ts", randomTS);//–随机数
-			httpRequest.addHeader("deviceId", Util.getDeviceID());// –唯一设备号
+			httpRequest.addHeader("deviceId", SystemInfo.deviceid);// –唯一设备号
 			httpRequest.addHeader("Accept-Encoding", "gzip");
 			httpRequest.addHeader("Content-Type", "text/json;charset=UTF-8");
 
