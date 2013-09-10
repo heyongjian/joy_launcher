@@ -11,7 +11,7 @@ public class Constants {
 	//host
 		public static final String HOST = "http://www.baidu.com";
 		
-		public static final String BASE_URL = "http://www.baidu.com/img/bdlogo.gif";
+		public static final String BASE_URL = "http://192.168.164.134:8080/app/api.do";
 		
 		public static final String TEST_URL = "http://www.baidu.com";
 		
