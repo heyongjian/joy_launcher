@@ -15,7 +15,7 @@
 -->
 <ImageView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher"
+    android:id="@+id/paged_view_indicator"
     android:visibility="gone"
     android:alpha="0"
     android:scaleType="fitXY"

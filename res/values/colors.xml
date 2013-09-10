@@ -22,9 +22,7 @@
          over the delete target or the info target -->
     <color name="delete_target_hover_tint">#DAFF0000</color>
     <color name="info_target_hover_tint">#DA0099CC</color>
-
-    <!-- The alpha/color to apply to the drag image -->
-    <color name="drag_view_multiply_color">#CCFFFFFF</color>
+    <color name="edit_target_hover_tint">#DACCCC00</color>
 
     <color name="bubble_dark_background">#20000000</color>
 
@@ -32,12 +30,15 @@
 
     <color name="workspace_all_apps_and_delete_zone_text_color">#CCFFFFFF</color>
     <color name="workspace_all_apps_and_delete_zone_text_shadow_color">#A0000000</color>
-    <!-- add by wanghao -->
-    <color name="joy_preference_category_line_color">#FF7AB900</color>
-    <!-- colors added by huangming -->
-    <color name="yellow">#FFFFCC00</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="transparent">#00000000</color>
-    <color name="black">#FF000000</color>
-    <color name="translucent">#40FFFFFF</color>
+    <color name="workspace_icon_text_color">#FFF</color>
+    
+    <!-- add by xiong.chen for allAppView background at 2013-06-04 -->  
+    <color name="all_app_view_standar_color0">#fffee79b</color>
+    <color name="all_app_view_standar_color1">#ff91d101</color>
+    <color name="all_app_view_standar_color2">#ff9a59b5</color>
+    <color name="all_app_view_standar_color3">#fff6a0bb</color>
+    <color name="all_app_view_standar_color4">#ff34bc98</color>
+    <color name="all_app_view_standar_color5">#ff909e9f</color>
+    <!-- add end -->
+    <color name="appcustomize_app_backgrounds">#76000000</color>
 </resources>

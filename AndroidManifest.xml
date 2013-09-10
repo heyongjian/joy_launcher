@@ -19,66 +19,66 @@
 -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.joy.launcher"
+    package="com.joy.launcher2"
+    coreApp="true"
     android:versionName="@string/application_version">
 
+  <uses-sdk android:minSdkVersion="14"
+        android:targetSdkVersion="17" />
+
+    <permission
+        android:name="com.android.launcher.permission.PRELOAD_WORKSPACE"
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+        android:protectionLevel="system|signature" />
     <permission
         android:name="com.android.launcher.permission.INSTALL_SHORTCUT"
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="normal"
+        android:protectionLevel="dangerous"
         android:label="@string/permlab_install_shortcut"
         android:description="@string/permdesc_install_shortcut" />
     <permission
         android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="normal"
+        android:protectionLevel="dangerous"
         android:label="@string/permlab_uninstall_shortcut"
-        android:description="@string/permdesc_uninstall_shortcut"/>
+        android:description="@string/permdesc_uninstall_shortcut" />
     <permission
         android:name="com.android.launcher.permission.READ_SETTINGS"
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="normal"
         android:label="@string/permlab_read_settings"
-        android:description="@string/permdesc_read_settings"/>
+        android:description="@string/permdesc_read_settings" />
     <permission
         android:name="com.android.launcher.permission.WRITE_SETTINGS"
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
         android:protectionLevel="normal"
         android:label="@string/permlab_write_settings"
-        android:description="@string/permdesc_write_settings"/>
+        android:description="@string/permdesc_write_settings" />
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.BIND_APPWIDGET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
-    
-    <!-- new -->
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
- 	<uses-permission android:name="android.permission.INTERNET" />
- 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
- 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
- 	<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
-	<uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
- 	
- 	<uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
-    <uses-sdk android:minSdkVersion="14"
-        android:targetSdkVersion="17" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
+<!--         android:supportsRtl="true" -->
     <application
-        android:name="com.joy.launcher.LauncherApplication"
+        android:name="com.joy.launcher2.LauncherApplication"
+        android:persistent="true"
+        android:allowClearUserData="true"
         android:label="@string/application_name"
         android:icon="@drawable/ic_launcher_home"
-        android:hardwareAccelerated="@bool/config_hardwareAccelerated"
-        android:largeHeap="@bool/config_largeHeap">
+        android:hardwareAccelerated="true"
+        android:largeHeap="@bool/config_largeHeap"
+        >
         <activity
-            android:name="com.joy.launcher.Launcher"
+            android:name="com.joy.launcher2.Launcher"
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
             android:stateNotNeeded="true"
@@ -88,13 +88,13 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.MONKEY"/>
+                <category android:name="android.intent.category.MONKEY" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.joy.launcher.WallpaperChooser"
-            style="@style/Theme.WallpaperPicker"
+            android:name="com.joy.launcher2.WallpaperChooser"
+            android:theme="@style/Theme.WallpaperPicker"
             android:label="@string/pick_wallpaper"
             android:icon="@drawable/ic_launcher_wallpaper"
             android:finishOnCloseSystemDialogs="true"
@@ -107,28 +107,29 @@
                 android:resource="@xml/wallpaper_picker_preview" />
         </activity>
 
-        <activity android:name="com.joy.launcher.RocketLauncher"
-            android:label="@string/dream_name"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+        <!-- Intent received used to prepopulate the default workspace. -->
+        <receiver
+            android:name="com.joy.launcher2.PreloadReceiver"
+            android:permission="com.android.launcher.permission.PRELOAD_WORKSPACE">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.DREAM" />
+                <action android:name="com.android.launcher.action.PRELOAD_WORKSPACE" />
             </intent-filter>
-        </activity>
+        </receiver>
 
-        <activity android:name="com.joy.launcher.preference.Preferences"
-            android:label="@string/preferences_title"
-            android:theme="@style/joy_prefrences_type"
-            >
+        <activity android:name="com.joy.launcher2.preference.Preferences"
+            android:label="@string/preferences_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.cyanogenmod.category.LAUNCHER_PREFERENCES" />
             </intent-filter>
         </activity>
+
+        <activity android:name="com.joy.launcher2.preference.HiddenAppsActivity"
+            android:label="@string/hidden_apps_title" />
+
         <!-- Intent received used to install shortcuts from other applications -->
         <receiver
-            android:name="com.joy.launcher.InstallShortcutReceiver"
+            android:name="com.joy.launcher2.InstallShortcutReceiver"
             android:permission="com.android.launcher.permission.INSTALL_SHORTCUT">
             <intent-filter>
                 <action android:name="com.android.launcher.action.INSTALL_SHORTCUT" />
@@ -137,35 +138,31 @@
 
         <!-- Intent received used to uninstall shortcuts from other applications -->
         <receiver
-            android:name="com.joy.launcher.UninstallShortcutReceiver"
+            android:name="com.joy.launcher2.UninstallShortcutReceiver"
             android:permission="com.android.launcher.permission.UNINSTALL_SHORTCUT">
             <intent-filter>
                 <action android:name="com.android.launcher.action.UNINSTALL_SHORTCUT" />
             </intent-filter>
         </receiver>
 
+        <!-- New user initialization; set up initial wallpaper -->
+        <receiver
+            android:name="com.joy.launcher2.UserInitializeReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.USER_INITIALIZE" />
+            </intent-filter>
+        </receiver>
+
         <!-- The settings provider contains Home's data, like the workspace favorites -->
         <provider
-            android:name="com.joy.launcher.LauncherProvider"
-            android:authorities="com.joy.launcher.settings"
+            android:name="com.joy.launcher2.LauncherProvider"
+            android:authorities="com.joy.launcher2.settings"
             android:writePermission="com.android.launcher.permission.WRITE_SETTINGS"
+            android:exported="true"
             android:readPermission="com.android.launcher.permission.READ_SETTINGS" />
-        
-         <activity
-            android:name=".IconStyleActivity"
-            android:label="@string/icon_style_activity_title"
-            android:theme="@style/joy_prefrences_icon_style" >
-        </activity>
 
-        <service
-            android:name="com.baidu.location.f"
-            android:enabled="true"
-            android:permission="android.permission.BAIDU_LOCATION_SERVICE"
-            android:process=":remote" >
-            <intent-filter>
-                <action android:name="com.baidu.location.service_v2.4" >
-                </action>
-            </intent-filter>
-        </service>
+        <meta-data android:name="android.nfc.disable_beam_default"
+            android:value="true" />
     </application>
 </manifest>

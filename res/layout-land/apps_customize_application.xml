@@ -14,9 +14,9 @@
      limitations under the License.
 -->
 
-<com.joy.launcher.PagedViewIcon
+<com.joy.launcher2.PagedViewIcon
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher"
+    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher2"
 
     style="@style/WorkspaceIcon.Landscape.AppsCustomize"
 
@@ -24,9 +24,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-
-    launcher:blurColor="#FF6B8CF0"
-    launcher:outlineColor="#FF8CD2FF"
 
     android:focusable="true"
     android:background="@drawable/focusable_view_bg" />

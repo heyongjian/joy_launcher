@@ -21,6 +21,11 @@
     <!-- The offset for the text in the cling -->
     <dimen name="cling_text_block_offset_x">0dp</dimen>
     <dimen name="cling_text_block_offset_y">0dp</dimen>
+    <dimen name="reveal_radius">48dp</dimen>
+    <!-- entries for custom clings, will be set in overlays -->
+    <add-resource type="dimen" name="custom_cling_margin_top" />
+    <add-resource type="dimen" name="custom_cling_margin_right" />
+    <add-resource type="dimen" name="custom_cling_margin_left" />
 
 <!-- Workspace -->
     <!-- qsb_bar_height_inset represents qsb_bar_height minus the padding
@@ -31,13 +36,10 @@
     <dimen name="qsb_padding_left">0dp</dimen>
     <dimen name="qsb_padding_right">0dp</dimen>
     <dimen name="search_bar_height">40dp</dimen>
-    <dimen name="workspace_cell_width">80dp</dimen>
-    <dimen name="workspace_cell_height">100dp</dimen>
-    <dimen name="workspace_width_gap">-1dp</dimen>
-    <dimen name="workspace_height_gap">-1dp</dimen>
     <dimen name="workspace_max_gap">16dp</dimen>
     <dimen name="folder_cell_width">74dp</dimen>
     <dimen name="folder_cell_height">82dp</dimen>
+    <dimen name="folder_icon_padding_top">2dp</dimen>
     <dimen name="workspace_divider_padding_left">3dp</dimen>
     <dimen name="workspace_divider_padding_right">3dp</dimen>
     <dimen name="workspace_divider_padding_top">0dp</dimen>
@@ -47,7 +49,10 @@
     <dimen name="hotseat_width_gap">-1dp</dimen>
     <dimen name="hotseat_height_gap">-1dp</dimen>
     <dimen name="workspace_overscroll_drawable_padding">0dp</dimen>
+    <dimen name="workspace_icon_text_size">12sp</dimen>
 
+    <dimen name="app_icon_drawable_padding">6dp</dimen>
+    <dimen name="app_icon_drawable_padding_land">2dp</dimen>
     <dimen name="app_icon_padding_top">8dp</dimen>
 
 <!-- QSB -->
@@ -71,32 +76,19 @@
     <dimen name="apps_customize_max_gap">18dp</dimen>
     <dimen name="apps_customize_widget_cell_width_gap">10dp</dimen>
     <dimen name="apps_customize_widget_cell_height_gap">8dp</dimen>
-    <dimen name="title_texture_width">120px</dimen>
 
     <!-- height of the bottom row of controls -->
     <dimen name="button_bar_height">62dip</dimen>
     <!-- Because portal animations go beyond the bounds of an icon, we need
          to make the dock layout slightly larger than the button_bar_height -->
-    <dimen name="button_bar_height_top_padding">8dp</dimen>
+    <dimen name="button_bar_height_top_padding">0dp</dimen>
     <dimen name="button_bar_height_bottom_padding">0dp</dimen>
     <dimen name="button_bar_width_left_padding">0dp</dimen>
     <dimen name="button_bar_width_right_padding">0dp</dimen>
-    <dimen name="button_bar_height_plus_padding">70dp</dimen>
-
-    <!-- extra horizontal spacing between mini screen thumbnails ie. in all
-         apps and in customization mode -->
-    <dimen name="smallScreenExtraSpacing">0dip</dimen>
-
-    <!-- Vertical spacing between edge of screen and mini cell layouts when they
-         are minimized to the bottom in all apps -->
-    <dimen name="allAppsSmallScreenVerticalMarginLandscape">30dip</dimen>
-    <dimen name="allAppsSmallScreenVerticalMarginPortrait">60dip</dimen>
+    <dimen name="button_bar_height_plus_padding">62dp</dimen>
 
     <!-- Drag padding to add to the bottom of drop targets -->
     <dimen name="drop_target_drag_padding">14dp</dimen>
-
-    <!-- padding between the delete zone drawable and text -->
-    <dimen name="delete_zone_drawable_padding">8dip</dimen>
 
     <!-- roughly a status bar (for vertically centering the all apps
          home icon in landscape) -->
@@ -110,15 +102,23 @@
     <!-- When dragging items on the workspace, the number of dps by which the position of
      the drag view should be offset from the position of the original view. -->
     <dimen name="dragViewOffsetX">0dp</dimen>
-    <dimen name="dragViewOffsetY">-8dp</dimen>
+    <dimen name="dragViewOffsetY">0dp</dimen>
+    <!--  When dragging an item, how much bigger (fixed dps) the dragged view
+          should be. If 0, it will not be scaled at all. -->
+    <dimen name="dragViewScale">12dp</dimen>
 
-    <!-- Padding applied to AppWidgets -->
-    <dimen name="app_widget_padding_left">16dp</dimen>
-    <dimen name="app_widget_padding_right">16dp</dimen>
-    <dimen name="app_widget_padding_top">16dp</dimen>
-    <dimen name="app_widget_padding_bottom">16dp</dimen>
-    <dimen name="app_widget_preview_padding_left">8dp</dimen>
-    <dimen name="app_widget_preview_padding_top">8dp</dimen>
+    <!-- Padding applied to AppWidget previews -->
+    <dimen name="app_widget_preview_padding_left">16dp</dimen>
+    <dimen name="app_widget_preview_padding_right">16dp</dimen>
+    <dimen name="app_widget_preview_padding_top">32dp</dimen>
+    <dimen name="app_widget_preview_label_margin_top">4dp</dimen>
+    <dimen name="app_widget_preview_label_margin_left">2dp</dimen>
+    <dimen name="app_widget_preview_label_margin_right">2dp</dimen>
+
+    <!-- Padding applied to shortcut previews -->
+    <dimen name="shortcut_preview_padding_left">0dp</dimen>
+    <dimen name="shortcut_preview_padding_right">0dp</dimen>
+    <dimen name="shortcut_preview_padding_top">0dp</dimen>
 
 <!-- Folders -->
     <!-- The size of the image which sits behind the preview of the folder contents -->
@@ -128,48 +128,61 @@
     <dimen name="folder_name_padding">10dp</dimen>
     <dimen name="folder_width_gap">0dp</dimen>
     <dimen name="folder_height_gap">0dp</dimen>
-    
-<!--add by wanghao-->
-    
-    <dimen name="mylistprefrence_icon_width">42dp</dimen>
-	<dimen name="mylistprefrence_icon_height">42dp</dimen>
+    <dimen name="folder_padding">0dp</dimen>
 
-    <!-- online foldler view  ,add by wanghao-->
-    <dimen name="joyfolder_gridview_height">100dp</dimen>
-    <dimen name="joyfolder_gridview_horizontalSpacing">20dp</dimen>
-    <dimen name="joyfolder_layout_title">30dp</dimen>
-    <dimen name="joyfolder_title_icon_size">40dp</dimen>
+<!-- CellLayout padding -->
+    <dimen name="cell_layout_left_padding_port">0dp</dimen>
+    <dimen name="cell_layout_left_padding_land">0dp</dimen>
+    <dimen name="cell_layout_right_padding_port">0dp</dimen>
+    <dimen name="cell_layout_right_padding_land">0dp</dimen>
+    <dimen name="cell_layout_top_padding_port">6dp</dimen>
+    <dimen name="cell_layout_top_padding_land">0dp</dimen>
+    <dimen name="cell_layout_bottom_padding_port">0dp</dimen>
+    <dimen name="cell_layout_bottom_padding_land">0dp</dimen>
 
-    <integer name="joyfolder_content_size">16</integer>
+<!-- Workspace padding -->
+    <dimen name="workspace_left_padding_port">0dp</dimen>
+    <dimen name="workspace_left_padding_land">@dimen/qsb_bar_height</dimen>
+    <dimen name="workspace_right_padding_port">0dp</dimen>
+    <dimen name="workspace_right_padding_land">@dimen/button_bar_height</dimen>
+    <dimen name="workspace_top_padding_port">@dimen/qsb_bar_height_inset</dimen>
+    <dimen name="workspace_top_padding_land">0dp</dimen>
+    <dimen name="workspace_bottom_padding_port">@dimen/button_bar_height</dimen>
+    <dimen name="workspace_bottom_padding_land">0dp</dimen>
+
+    <dimen name="workspace_left_padding_port_qsb_hidden">0dp</dimen>
+    <dimen name="workspace_left_padding_land_qsb_hidden">0dp</dimen>
+    <dimen name="workspace_top_padding_port_qsb_hidden">0dp</dimen>
+    <dimen name="workspace_top_padding_land_qsb_hidden">0dp</dimen>
+    <dimen name="workspace_right_padding_port_hotseat_hidden">0dp</dimen>
+    <dimen name="workspace_right_padding_land_hotseat_hidden">0dp</dimen>
+    <dimen name="workspace_bottom_padding_port_hotseat_hidden">0dp</dimen>
+    <dimen name="workspace_bottom_padding_land_hotseat_hidden">0dp</dimen>
+
+<!-- Workspace cell size -->
+    <dimen name="workspace_cell_width_land">106dp</dimen>
+    <dimen name="workspace_cell_width_port">80dp</dimen>
+    <dimen name="workspace_cell_height_land">74dp</dimen>
+    <dimen name="workspace_cell_height_port">100dp</dimen>
+    <dimen name="workspace_width_gap_land">0dp</dimen>
+    <dimen name="workspace_width_gap_port">0dp</dimen>
+    <dimen name="workspace_height_gap_land">0dp</dimen>
+    <dimen name="workspace_height_gap_port">0dp</dimen>
+
+<!-- Preferences -->
+    <dimen name="header_icon_width">28dp</dimen>
+<!--add by xiong.chen for setting allAppView background -->
+    <dimen name="all_app_view_standard_color_land_width">35dp</dimen>
+    <dimen name="all_app_view_standard_color_port_width">35dp</dimen>
+    <dimen name="all_app_view_standard_color_land_margin">8dp</dimen>
+    <dimen name="all_app_view_standard_color_port_margin">5dp</dimen>
+    <dimen name="all_app_view_standard_color_land_margin_left">225dp</dimen>
     
-<!-- menu view added by huangming-->
-    <dimen name="menu_item_icon_size">30dip</dimen>
-    <dimen name="menu_item_text_size">18sp</dimen>
-    <dimen name="menu_item_padding_top">8dip</dimen>
-    <dimen name="menu_item_padding_bottom">8dip</dimen>
-    <dimen name="menu_item_padding_left">8dip</dimen>
-    <dimen name="menu_padding_left">40dip</dimen>
-    <dimen name="menu_padding_right">40dip</dimen>
-    <dimen name="menu_item_drawable_padding">8dip</dimen>
-    
-    <!-- add by huangming for icon size -->
-    <dimen name="cell_h_margin_new">8dp</dimen>
-    <dimen name="cell_v_margin_new">12dp</dimen>
-    <dimen name="icon_text_size_default">15px</dimen>
-    
-    <!-- add by huangming for app show or hide -->
-    <dimen name="header_padding_top">8dp</dimen>
-    <dimen name="header_padding_bottom">8dp</dimen>
-    <dimen name="header_padding_left">10dp</dimen>
-    <dimen name="header_padding_right">10dp</dimen>
-    <dimen name="header_child_margin_left">8dp</dimen>
-    <dimen name="header_child_margin_right">8dp</dimen>
-    <dimen name="header_child_text_size">20sp</dimen>
-    
-    <!-- add by huangming for installed apps show-->
-    <dimen name="installed_apps_margin_top">6dip</dimen>
-    <dimen name="installed_apps_margin_bottom">6dip</dimen>
-    <dimen name="installed_apps_margin_left">0dip</dimen>
-    <dimen name="installed_apps_margin_right">20dip</dimen>
-    
+<!-- all app button -->
+    <dimen name="all_app_button_padding_left">4dp</dimen>   
+    <dimen name="all_app_button_padding_top">@dimen/app_icon_padding_top</dimen>
+    <dimen name="all_app_button_padding_right">4dp</dimen>
+    <dimen name="all_app_button_padding_bottom">4dp</dimen>   
+<!-- add by ming.huang at 2013-4-9-->
+    <dimen name="smaller_size">-1dp</dimen>   
 </resources>

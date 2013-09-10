@@ -14,16 +14,29 @@
      limitations under the License.
 -->
 
-<com.joy.launcher.DragLayer
+<com.joy.launcher2.DragLayer
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher"
+    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher2"
 
     android:id="@+id/drag_layer"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Keep these behind the workspace so that they are not visible when
-         we go into AllApps -->
+    <!-- The workspace contains 5 screens of cells -->
+    <com.joy.launcher2.Workspace
+        android:id="@+id/workspace"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/workspace_left_padding"
+        android:paddingRight="@dimen/workspace_right_padding"
+        android:paddingTop="@dimen/workspace_top_padding"
+        android:paddingBottom="@dimen/workspace_bottom_padding"
+        launcher:cellCountX="@integer/target_cell_count_x"
+        launcher:cellCountY="@integer/target_cell_count_y"
+        launcher:pageSpacing="@dimen/workspace_page_spacing"
+        launcher:scrollIndicatorPaddingLeft="@dimen/workspace_divider_padding_left"
+        launcher:scrollIndicatorPaddingRight="@dimen/workspace_divider_padding_right" />
+
     <include
         android:id="@+id/dock_divider"
         layout="@layout/workspace_divider"
@@ -32,23 +45,26 @@
         android:layout_marginBottom="@dimen/button_bar_height"
         android:layout_gravity="bottom" />
     <include
-        android:id="@+id/paged_view_indicator"
+        android:id="@+id/paged_view_indicator_dock"
         layout="@layout/scroll_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginBottom="@dimen/button_bar_height" />
 
-    <!-- The workspace contains 5 screens of cells -->
-    <com.joy.launcher.Workspace
-        android:id="@+id/workspace"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="@dimen/qsb_bar_height_inset"
-        android:paddingBottom="@dimen/button_bar_height"
-        launcher:pageSpacing="@dimen/workspace_page_spacing"
-        launcher:scrollIndicatorPaddingLeft="@dimen/workspace_divider_padding_left"
-        launcher:scrollIndicatorPaddingRight="@dimen/workspace_divider_padding_right" />
+    <include
+        android:id="@+id/paged_view_indicator_top"
+        layout="@layout/scroll_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top" />
+
+    <include
+        android:id="@+id/paged_view_indicator_bottom"
+        layout="@layout/scroll_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
 
     <include layout="@layout/hotseat"
         android:id="@+id/hotseat"
@@ -59,6 +75,16 @@
     <include
         android:id="@+id/qsb_bar"
         layout="@layout/qsb_bar" />
+
+    <com.joy.launcher2.DrawableStateProxyView
+        android:id="@+id/voice_button_proxy"
+        android:layout_width="80dp"
+        android:layout_height="@dimen/qsb_bar_height"
+        android:layout_gravity="top|right"
+        android:clickable="true"
+        android:onClick="onClickVoiceButton"
+        launcher:sourceViewId="@+id/voice_button" />
+<!--         android:importantForAccessibility="no" -->
 
     <include layout="@layout/apps_customize_pane"
         android:id="@+id/apps_customize_pane"
@@ -77,10 +103,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
-    <include 
-        layout="@layout/menu_view"
-        android:id="@+id/menu_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
-</com.joy.launcher.DragLayer>
+</com.joy.launcher2.DragLayer>

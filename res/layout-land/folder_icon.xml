@@ -14,9 +14,8 @@
      limitations under the License.
 -->
 
-<com.joy.launcher.FolderIcon
+<com.joy.launcher2.FolderIcon
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -28,7 +27,7 @@
         android:layout_width="@dimen/folder_preview_size"
         android:layout_height="@dimen/folder_preview_size"
         android:src="@drawable/portal_ring_inner_holo"/>
-    <com.joy.launcher.BubbleTextView
+    <com.joy.launcher2.BubbleTextView
         android:id="@+id/folder_icon_name"
         style="@style/WorkspaceIcon.Landscape.Folder"/>
-</com.joy.launcher.FolderIcon>
+</com.joy.launcher2.FolderIcon>
