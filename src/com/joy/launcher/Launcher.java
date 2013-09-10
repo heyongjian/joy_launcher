@@ -117,6 +117,7 @@ import com.joy.launcher.DropTarget.DragObject;
 import com.joy.launcher.download.DownloadInfo;
 import com.joy.launcher.download.DownloadManager;
 import com.joy.launcher.download.DownloadManager.CallBack;
+import com.joy.launcher.network.impl.Service;
 import com.joy.launcher.preference.Preferences;
 import com.joy.launcher.preference.PreferencesProvider;
 import com.joy.launcher.util.Constants;
@@ -385,6 +386,36 @@ public final class Launcher extends Activity
         syncOrientation();
     }
 
+    /**
+     * to activate the launcher
+     * @return
+     */
+	public static boolean launcherisActive() {
+
+		boolean activate = PreferencesProvider.LauncherActivate.getLauncherIsActivate(LauncherApplication.mContext);
+		Log.i(TAG, "---launcherisActive-activate:"+activate);
+		Log.i(TAG, "---launcherisActive-toString:"+LauncherApplication.mSystemInfo.toString());
+		if (!activate) {
+			new Thread(new Runnable() {
+				boolean isok = false;
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					try {
+						isok = Service.getInstance().activateLauncher();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					PreferencesProvider.LauncherActivate.setLauncherIsActivate(LauncherApplication.mContext, isok);
+				}
+			}).start();
+		}
+		
+		return activate;
+	}
+
+    
     private void syncOrientation() {
         final UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
         if (mAutoRotate || uiModeManager.getCurrentModeType() != Configuration.UI_MODE_TYPE_NORMAL) {
@@ -1293,7 +1324,6 @@ public final class Launcher extends Activity
 
             closeFolder();
             exitSpringLoadedDragMode();
-            System.out.println("toStatetoState   11 : onNewIntent");
             showWorkspace(alreadyOnHome);
 
             final View v = getWindow().peekDecorView();
@@ -1898,7 +1928,6 @@ public final class Launcher extends Activity
     }
     public void updateVirtualShortcut(ShortcutInfo info){
     	boolean isHave = LauncherModel.checeItemInDatabase(info);
-    	System.out.println("aaaaadvdeg  isHave:"+isHave);
     	if (isHave) {
     		mModel.updateItemInDatabase(this, info);
 		}
@@ -2860,7 +2889,7 @@ public final class Launcher extends Activity
         	mWorkspace.changeState(Workspace.State.SPRING_LOADED, animated);
         }
 
-       System.out.println("toStatetoState   toState : "+toState);
+       Log.i(TAG, "----toState:"+toState);
         if (animated) {
         	
         	switch (appsCustomizeAnimType) {

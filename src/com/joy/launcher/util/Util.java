@@ -40,8 +40,7 @@ import android.util.Log;
 import com.joy.launcher.LauncherApplication;
 
 /**
- * 工具类 提供随机数生成（数字和字符），加密相关（mod5），字符串操作（追加和替换），图片操作（生成、缩放、裁剪）， 本机信息（id，mac，IME,
- * sd operate，network status ）这些分类方法。
+ * 工具类 提供随机数生成（数字和字符），加密相关（mod5），字符串操作（追加和替换），图片操作（生成、缩放、裁剪）这些分类方法。
  * 
  * @author hao.wang
  * 
@@ -59,8 +58,8 @@ public class Util {
 	 * 
 	 * @return
 	 */
-	public static String getTS(int n) {
-		String str = String.valueOf(mRandom.nextInt(n));
+	public static String getTS() {
+		String str = String.valueOf(mRandom.nextInt(9999));
 		return str;
 	}
 
@@ -380,25 +379,7 @@ public class Util {
 			}
 		}
 	}
-
-	/**
-	 * 获取本机唯一标识符
-	 * 
-	 * @return
-	 */
-	public static String getDeviceID() {
-		if (deviceid == null) {
-			String mac = getMac();
-			String imei = getImei();
-			String id = buildString(mac, imei, Build.BOARD, Build.BRAND,
-					Build.CPU_ABI, Build.DEVICE, Build.DISPLAY, Build.ID,
-					Build.MANUFACTURER, Build.MODEL, Build.PRODUCT, Build.TAGS,
-					Build.TYPE, Build.USER);
-			deviceid = md5Encode(id);
-		}
-		return deviceid;
-	}
-
+	
 	/**
 	 * get current API Versions
 	 * 
@@ -407,43 +388,7 @@ public class Util {
 	public static int getCurrentApiVersion() {
 		return Build.VERSION.SDK_INT;
 	}
-
-	/**
-	 * 获取mac地址
-	 * 
-	 * @return
-	 */
-	public static String getMac() {
-		WifiManager wifi = (WifiManager) LauncherApplication.mContext
-				.getSystemService(Context.WIFI_SERVICE);
-		WifiInfo info = wifi.getConnectionInfo();
-		return info.getMacAddress();
-	}
-
-	/**
-	 * 获取IMSI标识
-	 * 
-	 * @param context
-	 * @return
-	 */
-	public static String getImsi(Context context) {
-		TelephonyManager tm = (TelephonyManager) context
-				.getSystemService(Context.TELEPHONY_SERVICE);
-		return tm.getSubscriberId();
-	}
-
-	/**
-	 * 获取IMEI标识
-	 * 
-	 * @param context
-	 * @return
-	 */
-	public static String getImei() {
-		TelephonyManager tm = (TelephonyManager) LauncherApplication.mContext
-				.getSystemService(Context.TELEPHONY_SERVICE);
-		return tm.getDeviceId();
-	}
-
+ 
 	/**
 	 * 检测文件是否有重名 若重名则在名字后面加数字来区别 eg：a.txt --> a(1).txt --> a(2).txt
 	 * 
