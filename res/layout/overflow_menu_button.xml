@@ -15,7 +15,7 @@
 -->
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher"
+    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher2"
     style="@style/MarketButton"
     android:onClick="onClickOverflowMenuButton"
     android:drawableLeft="@drawable/ic_menu_overflow"

@@ -20,13 +20,18 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- General -->
     <skip />
+     <!-- added by huilin.wang for setting lockscreen wallpaper -->
+    <string name="pick_lockscreen_wallpaper">LockScreen Wallpaper</string>
+    <string name="menu_lockscreen_wallpaper">LockScreen Wallpaper</string>
+    <!-- end -->
     <!-- Application name -->
-    <string name="application_name" translatable="false">launcher</string>
+    <string name="application_name" translatable="false">JOY Launcher</string>
     <!-- Application copyright -->
-    <string name="application_copyright">Copyright \u00A9 JOY 2012</string>
+    <string name="application_copyright">Copyright \u00A9 JOY 2013</string>
     <!-- Application version -->
-    <string name="application_version">0.1</string>
-
+    <string name="application_version"> </string>
+    <!-- Accessibility-facing application name -->
+    <string name="home">Home</string>
     <!-- Name for all applications running as this uid. -->
     <string name="uid_name">Android Core Apps</string>
     <!-- Default folder name -->
@@ -45,7 +50,7 @@
     <!-- AppsCustomize pane -->
     <!-- Message to tell the user to press and hold on a widget to add it [CHAR_LIMIT=50] -->
     <string name="long_press_widget_to_add">Touch &amp; hold to pick up a widget.</string>
-    <!-- Market button text.  The market button text is removed in Launcher.java
+    <!-- Market button text.  The market button text is removed in Launcher.java 
          in the Phone UI. [CHAR LIMIT=32] -->
     <string name="market">Shop</string>
     <!-- Menu button text. -->
@@ -58,7 +63,7 @@
     <!-- External-drop widget error string.  This is the error that is shown
          when you drag and item into the homescreen and it is unable to fit,
          or an error is encountered. [CHAR_LIMIT=50] -->
-    <string name="external_drop_widget_error">Couldn\'t drop item onto this Home screen.</string>
+    <string name="external_drop_widget_error">Couldn\'t drop item on this Home screen.</string>
     <!-- External-drop widget pick title.  This is shown as the title of the
          dialog which allows you to pick which widgets to handle a particular
          drop if there are multiple choices. [CHAR_LIMIT=35] -->
@@ -88,8 +93,12 @@ s -->
     <string name="group_widgets">Widgets</string>
     <!-- Options in "Add to Home" dialog box; Title of the group containing the list of apps that can set the wallpaper-->
     <string name="group_wallpapers">Wallpapers</string>
-    <!-- Error message when user has filled a home screen, possibly not used -->
+    <!-- Error message when user has filled all their home screens -->
+    <string name="completely_out_of_space">No more room on your Home screens.</string>
+    <!-- Error message when user has filled a home screen -->
     <string name="out_of_space">No more room on this Home screen.</string>
+    <!-- Error message when user has filled the hotseat -->
+    <string name="hotseat_out_of_space">No more room on the hotseat.</string>
     <!-- Error message when user tries to drop an invalid item on the hotseat -->
     <string name="invalid_hotseat_item">This widget is too large for the hotseat.</string>
     <!-- Message displayed when a shortcut is created by an external application -->
@@ -100,7 +109,7 @@ s -->
     <string name="shortcut_duplicate">Shortcut \"<xliff:g id="name" example="Browser">%s</xliff:g>\" already exists.</string>
 
     <!-- Title of dialog when user is selecting shortcut to add to homescreen -->
-    <string name="title_select_shortcut">Select shortcut</string>
+    <string name="title_select_shortcut">Choose shortcut</string>
     <!-- Title of dialog when user is selecting an application to add to homescreen -->
     <string name="title_select_application">Choose app</string>
 
@@ -124,6 +133,8 @@ s -->
     <string name="delete_target_uninstall_label">Uninstall</string>
     <!-- Label for the info icon. [CHAR_LIMIT=30] -->
     <string name="info_target_label">App info</string>
+    <!-- Label for the info icon. [CHAR_LIMIT=30] -->
+    <string name="edit_target_label">Edit</string>
 
     <!-- Accessibility: Search button -->
     <string name="accessibility_search_button">Search</string>
@@ -144,8 +155,6 @@ s -->
     <string name="menu_add">Add</string>
     <!-- Menu item used to manage installed applications -->
     <string name="menu_manage_apps">Manage apps</string>
-    <!-- Menu item used to open the default market -->
-    <string name="menu_market">Play Store</string>
     <!-- Noun, menu item used to set the desktop's wallpaper -->
     <string name="menu_wallpaper">Wallpaper</string>
     <!-- Verb, menu item used to initiate global search -->
@@ -155,7 +164,7 @@ s -->
     <!-- Noun, menu item used to show the system settings -->
     <string name="menu_settings">System settings</string>
     <!-- Noun, menu item used to show the launcher preferences -->
-    <string name="menu_preferences">Trebuchet settings</string>
+    <string name="menu_preferences">JOYLauncher settings</string>
     <!-- Noun, menu item used to show help. [CHAR_LIMIT=none] -->
     <string name="menu_help">Help</string>
 
@@ -163,6 +172,13 @@ s -->
     <string name="menu_apps_sort_title">Name</string>
     <!-- Noun, menu item used to sort apps by install date -->
     <string name="menu_apps_sort_install_date">Install Date</string>
+    <!-- Noun, menu item used to show system apps -->
+    <string name="menu_apps_filter_system">System</string>
+    <!-- Noun, menu item used to show downloaded apps -->
+    <string name="menu_apps_filter_downloaded">Downloaded</string>
+
+    <!-- Noun, menu item used to reset hidden apps list -->
+    <string name="menu_hidden_apps_delete">Reset</string>
 
     <!-- URL pointing to help text. If empty, no link to help will be created [DO NOT TRANSLATE] -->
     <string name="help_url" translatable="false"></string>
@@ -194,21 +210,21 @@ s -->
     <!-- Permission short label -->
     <string name="permlab_uninstall_shortcut">uninstall shortcuts</string>
     <!-- Permission description -->
-    <string name="permdesc_uninstall_shortcut">Allows an app to remove
+    <string name="permdesc_uninstall_shortcut">Allows the app to remove
         shortcuts without user intervention.</string>
     <!-- Permission short label -->
     <string name="permlab_read_settings">read Home settings and shortcuts</string>
     <!-- Permission description -->
-    <string name="permdesc_read_settings">Allows an app to read the settings and
+    <string name="permdesc_read_settings">Allows the app to read the settings and
         shortcuts in Home.</string>
     <!-- Permission short label -->
     <string name="permlab_write_settings">write Home settings and shortcuts</string>
     <!-- Permission description -->
-    <string name="permdesc_write_settings">Allows an app to change the settings and
+    <string name="permdesc_write_settings">Allows the app to change the settings and
         shortcuts in Home.</string>
 
     <!-- Widgets: -->
-    <skip />
+    <skip />    
 
     <!-- Text to show user in place of a gadget when we can't display it properly -->
     <string name="gadget_error_text">Problem loading widget</string>
@@ -225,10 +241,13 @@ s -->
     <!-- Accessibility -->
     <skip />
 
+    <!-- The format string for Workspace descriptions [CHAR_LIMIT=none] -->
+    <string name="workspace_description_format">Home screen %1$d</string>
+
     <!-- The format string for default page scroll text [CHAR_LIMIT=none] -->
     <string name="default_scroll_format">Page %1$d of %2$d</string>
     <!-- The format string for Workspace page scroll text [CHAR_LIMIT=none] -->
-    <string name="workspace_scroll_format">Workspace %1$d of %2$d</string>
+    <string name="workspace_scroll_format">Home screen %1$d of %2$d</string>
     <!-- The format string for AppsCustomize Apps page scroll text [CHAR_LIMIT=none] -->
     <string name="apps_customize_apps_scroll_format">Apps page %1$d of %2$d</string>
     <!-- The format string for AppsCustomize Apps page scroll text [CHAR_LIMIT=none] -->
@@ -257,21 +276,38 @@ s -->
     <string name="folder_cling_create_folder">To make a new folder on your Home screen, stack one app on top of another.</string>
     <!-- The text on the button to dismiss a cling [CHAR_LIMIT=none] -->
     <string name="cling_dismiss">OK</string>
+    <!-- Error message on dummy custom cling layout [DO NOT TRANSLATE] -->
+    <string name="dummy_custom_cling_error_message">Error: custom workspace layout passed in but custom cling was not overwritten</string>
     <add-resource type="string" name="default_folder_name" />
 
     <!-- Folder accessibility -->
     <!-- The format string for when a folder is opened, speaks the dimensions -->
-    <string name="folder_opened">Folder opened, %1$d by %2$d</string>
+    <string name="folder_opened">Folder opened, <xliff:g id="width" example="5">%1$d</xliff:g> by <xliff:g id="height" example="3">%2$d</xliff:g></string>
     <!-- Instruction that clicking outside will close folder -->
-    <string name="folder_tap_to_close">Tap to close folder</string>
+    <string name="folder_tap_to_close">Touch to close folder</string>
     <!-- Instruction that clicking outside will commit folder rename -->
-    <string name="folder_tap_to_rename">Tap to commit rename</string>
+    <string name="folder_tap_to_rename">Touch to save rename</string>
     <!-- Indication that folder closed -->
     <string name="folder_closed">Folder closed</string>
     <!-- Folder renamed format -->
-    <string name="folder_renamed">Folder renamed to %1$s</string>
+    <string name="folder_renamed">Folder renamed to <xliff:g id="name" example="Games">%1$s</xliff:g></string>
     <!-- Folder name format -->
-    <string name="folder_name_format">Folder: %1$s</string>
+    <string name="folder_name_format">Folder: <xliff:g id="name" example="Games">%1$s</xliff:g></string>
+
+    <!-- Strings used in device overlays -->
+
+    <!-- Clings -->
+    <!-- Dummy string [CHAR_LIMIT=40] -->
+    <string name="custom_workspace_cling_title_1"></string>
+    <!-- Dummy string [CHAR_LIMIT=60] -->
+    <string name="custom_workspace_cling_description_1"></string>
+    <!-- Dummy string [CHAR_LIMIT=40] -->
+    <string name="custom_workspace_cling_title_2"></string>
+    <!-- Dummy string [CHAR_LIMIT=60] -->
+    <string name="custom_workspace_cling_description_2"></string>
+
+    <!-- Hidden apps -->
+    <string name="hidden_apps_title">Hidden Apps</string>
 
     <skip />
     <!--             -->
@@ -286,58 +322,50 @@ s -->
     <!-- UI -->
     <!-- Homescreen -->
     <string name="preferences_interface_homescreen_title">Homescreen</string>
+    <string name="preferences_interface_homescreen_summary">Screens and wallpaper</string>
     <string name="preferences_interface_homescreen_general_category">General</string>
     <string name="preferences_interface_homescreen_general_screens_title">Homescreens</string>
     <string name="preferences_interface_homescreen_general_screens_summary">Number of screens on the homescreen</string>
     <string name="preferences_interface_homescreen_general_default_screen_title">Default screen</string>
     <string name="preferences_interface_homescreen_general_default_screen_summary">Choose the default homescreen</string>
-    <string name="preferences_interface_homescreen_general_grid_title">Grid Size</string>
+    <string name="preferences_interface_homescreen_general_search_title">Search bar</string>
+    <string name="preferences_interface_homescreen_general_search_summary">Enable persistent search bar</string>
+    <string name="preferences_interface_homescreen_general_grid_title">Grid size</string>
     <string name="preferences_interface_homescreen_general_grid_summary">Choose the number of rows/columns on the homescreen</string>
     <string name="preferences_interface_homescreen_general_grid_rows_title">Rows</string>
     <string name="preferences_interface_homescreen_general_grid_columns_title">Columns</string>
-    <string name="preferences_interface_homescreen_general_screen_padding_vertical_title">Vertical Padding</string>
-    <string name="preferences_interface_homescreen_general_screen_padding_vertical_summary">Extra vertical spacing on the homescreen</string>
-    <string name="preferences_interface_homescreen_general_screen_padding_horizontal_title">Horizontal Padding</string>
-    <string name="preferences_interface_homescreen_general_screen_padding_horizontal_summary">Extra horizontal spacing on the homescreen</string>
-    <string name="preferences_interface_homescreen_general_search_title">Search bar</string>
-    <string name="preferences_interface_homescreen_general_search_summary">Enable persistent search bar</string>
-    <string name="preferences_interface_homescreen_general_resize_any_widget_title">Resize any widget</string>
-    <string name="preferences_interface_homescreen_general_resize_any_widget_summary">Allow resizing of widgets that normally aren\'t resizeable</string>
+    <string name="preferences_interface_homescreen_general_stretch_screens_title">Stretch screens</string>
+    <string name="preferences_interface_homescreen_general_stretch_screens_summary">Expand homescreens to fill the size of display</string>
     <string name="preferences_interface_homescreen_general_hide_icon_labels_title">Hide icon labels</string>
     <string name="preferences_interface_homescreen_general_hide_icon_labels_summary">Hide homescreen icon labels</string>
     <string name="preferences_interface_homescreen_scrolling_category">Scrolling</string>
     <string name="preferences_interface_homescreen_scrolling_transition_effect_title">Transition effect</string>
     <string name="preferences_interface_homescreen_scrolling_transition_effect_summary">Scrolling effect when scrolling homescreens</string>
-    <string name="preferences_interface_homescreen_scrolling_fade_adjacent_screens_title">Fade side pages</string>
-    <string name="preferences_interface_homescreen_scrolling_fade_adjacent_screens_summary">Fade the side pages when scrolling homescreens</string>
     <string name="preferences_interface_homescreen_scrolling_scroll_wallpaper_title">Scroll wallpaper</string>
     <string name="preferences_interface_homescreen_scrolling_scroll_wallpaper_summary">Scroll wallpaper when scrolling homescreens</string>
+    <string name="preferences_interface_homescreen_scrolling_wallpaper_hack_title">Wallpaper quick render</string>
+    <string name="preferences_interface_homescreen_scrolling_wallpaper_hack_summary">Use wallpaper hack that increases smoothness on static image wallpapers</string>
+    <string name="preferences_interface_homescreen_scrolling_wallpaper_size_title">Wallpaper size</string>
+    <string name="preferences_interface_homescreen_scrolling_wallpaper_size_summary">How many screens wide the wallpaper should be</string>
+    <string name="preferences_interface_homescreen_scrolling_fade_adjacent_screens_title">Fade side screens</string>
+    <string name="preferences_interface_homescreen_scrolling_fade_adjacent_screens_summary">Fade the side screens when scrolling homescreens</string>
+    <string name="preferences_interface_homescreen_scrolling_show_outlines_title">Show outlines</string>
+    <string name="preferences_interface_homescreen_scrolling_show_outlines_summary">Show screen outlines when scrolling homescreens</string>
     <string name="preferences_interface_homescreen_indicator_category">Indicator</string>
     <string name="preferences_interface_homescreen_indicator_enable_title">Show page indicator</string>
-    <string name="preferences_interface_homescreen_indicator_enable_summary">Show current page indicator at the bottom of the screen</string>
+    <string name="preferences_interface_homescreen_indicator_enable_summary">Show current page indicator on the screen</string>
     <string name="preferences_interface_homescreen_indicator_fade_title">Fade indicator</string>
-    <string name="preferences_interface_homescreen_indicator_fade_summary">Fade the indicator after the homescreen has changed</string>
-    <string name="preferences_interface_homescreen_indicator_background_title">Show dock divider</string>
-    <string name="preferences_interface_homescreen_indicator_background_summary">Show the background behind the indicator</string>
+    <string name="preferences_interface_homescreen_indicator_fade_summary">Fade away the indicator after the homescreen has changed</string>
+    <string name="preferences_interface_homescreen_indicator_position_title">Indicator position</string>
+    <string name="preferences_interface_homescreen_indicator_position_summary">Choose where to show the indicator on the screen</string>
 
-    <!-- add by huangming for Desktop appearance  -->
-    <string name="preferences_interface_homescreen_appearance_category">Desktop appearance</string>
-    <string name="preferences_interface_homescreen_icon_size_summary">Show current icon size</string>
-    <string name="preferences_interface_homescreen_icon_size_title">Icon size</string>
-    <string name="preferences_interface_homescreen_row_column_num_title">Desktop ranks number</string>
-    <string name="preferences_interface_homescreen_row_column_num_summary">Show the desktop ranks number</string>
-    <string name="preferences_interface_homescreen_icon_text_size_summary">Show current icon text size</string>
-    <string name="preferences_interface_homescreen_icon_text_size_title">Icon text size</string>
-    <string name="icon_style_activity_title">Icon style</string>
-    <string name="preferences_interface_homescreen_icon_style_title">Icon style</string>
-    <string name="preferences_interface_homescreen_icon_style_summary">Show the icon style</string>
-    <string name="icon_text_style_prompt">Select the icon text style.</string>
-    <string name="icon_style_sure">OK</string>
-    <string name="icon_style_cancel">Cancel</string>
-    
-    
     <!-- Drawer -->
     <string name="preferences_interface_drawer_title">Drawer</string>
+    <string name="preferences_interface_drawer_summary">Apps and widgets drawer</string>
+    <string name="preferences_interface_drawer_orientation_title">Orientation</string>
+    <string name="preferences_interface_drawer_orientation_summary">Choose which way the drawer scrolls</string>
+    <string name="preferences_interface_drawer_hidden_apps_title">Hidden apps</string>
+    <string name="preferences_interface_drawer_hidden_apps_summary">Hide apps from the drawer</string>
     <string name="preferences_interface_drawer_widgets_category">Widgets</string>
     <string name="preferences_interface_drawer_widgets_join_apps_title">Join with apps</string>
     <string name="preferences_interface_drawer_widgets_join_apps_summary">Swipe from apps drawer to widgets drawer without changing tabs</string>
@@ -350,62 +378,70 @@ s -->
     <string name="preferences_interface_drawer_indicator_enable_title">Show page indicator</string>
     <string name="preferences_interface_drawer_indicator_enable_summary">Show current page indicator at the bottom of the screen</string>
     <string name="preferences_interface_drawer_indicator_fade_title">Fade indicator</string>
-    <string name="preferences_interface_drawer_indicator_fade_summary">Fade the indicator after the page has changed</string>
-	<!-- add by wanghao -->
-    <string name="preferences_interface_drawer_setting_title">drawer setting</string>
-    <string name="preferences_interface_drawer_setting_row_column_num_title">drawer row and column</string>
-    <string name="preferences_interface_drawer_setting_transparency_title">transparency</string>
+    <string name="preferences_interface_drawer_indicator_fade_summary">Fade away the indicator after the page has changed</string>
+    <string name="preferences_interface_drawer_indicator_position_title">Indicator position</string>
+    <string name="preferences_interface_drawer_indicator_position_summary">Choose where to show the indicator on the screen</string>
 
     <!-- Dock -->
     <string name="preferences_interface_dock_title">Dock</string>
+    <string name="preferences_interface_dock_summary">Show the details of dock  </string>
+    <string name="preferences_interface_dock_enabled_title">Show dock</string>
+    <string name="preferences_interface_dock_enabled_summary">Show the dock underneath the homescreen</string>
+    <string name="preferences_interface_dock_pages_title">Pages</string>
+    <string name="preferences_interface_dock_pages_summary">Number of pages in the dock</string>
+    <string name="preferences_interface_dock_default_page_title">Default page</string>
+    <string name="preferences_interface_dock_default_page_summary">Choose the default page</string>
+    <string name="preferences_interface_dock_icons_title">Icons</string>
+    <string name="preferences_interface_dock_icons_summary">Number of icons/columns in the dock</string>
+    <string name="preferences_interface_dock_icon_scale_title">Icon scale</string>
+    <string name="preferences_interface_dock_icon_scale_summary">Scale of icons in the dock</string>
+    <string name="preferences_interface_dock_divider_title">Show dock divider</string>
+    <string name="preferences_interface_dock_divider_summary">Show divider between homescreen and dock</string>
 
     <!-- Icons -->
     <string name="preferences_interface_icons_title">Icons</string>
 
     <!-- General -->
     <string name="preferences_interface_general_title">General</string>
-    <string name="preferences_interface_general_orientation_title">Auto-rotate screen</string>
+    <string name="preferences_interface_general_orientation_title">Follow system screen</string>
+    <string name="preferences_interface_general_orientation_summary">Follow system screen orientation to change</string>
+    <string name="preferences_interface_general_fullscreen_title">Fullscreen mode</string>
+    <string name="preferences_interface_general_fullscreen_summary">Hide the status bar to extend the homescreen</string>
     
-   <!-- bakcup & recover   add by wanghao-->
-   <string name="preferences_bakcup_recover_title">bakcup and recover</string>
-    <string name="preferences_bakcup_title">bakcup</string>
-    <string name="preferences_recover_title">recover</string>
-
-    <!-- online Folder  ,add by wanghao -->
-    <string name="joy_game_folder">game folder</string>
-    <string name="joy_application_folder">application folder</string>
-    <string name="joy_foler_more_app">more</string>
-    <string name="joy_foler_refresh">refreshr</string>
-    <string name="joy_foler_hot_app">[hot app]</string>
-    <string name="menu_add_folder">add</string>
-    <string name="online_folder">online folder</string>
-    <string name="add_to_desktop">add to desktop</string>
-    <string name="add_widget_to_desktop">add widget to desktop</string>
-	<string name="add_folder_to_desktop">add online folder to desktop</string>
-	<string name="tip">tip</string>
-	<string name="tip_message">download the application?</string>
-	<string name="tip_confirm">confirm</string>
-	<string name="tip_cancle">cancle</string>
- 	<string name="virtualshortcut_test">virtual shortcut test</string>
- 	<string name="network_not_connected">please set up the network</string>
- 	<string name="download_error">after the network is not to force, please set up the network again</string>
- 	
-    <!-- menu view added by huangming. -->
-    <string name="menu_edit_screen">Edit screen</string>
-    <string name="menu_desktop_settings">Desktop settings</string>
-    <string name="menu_mainmenu_edit">Main menu edit</string>
-    <string name="menu_icon_sort">Icon sort</string>
-    <string name="menu_show_apps">Show applications</string>
-    <string name="menu_hide_apps">Hide applications</string>
-    <string name="menu_mainmenu_settings">Main menu settings</string>
-
-    <!-- add by huangming for screen cycle -->
-    <string name="preferences_interface_general_screen_cycle_title">Screen circulation slide</string>
+    <!-- add by xiong.chen for cycle scroll -->   
+    <string name="preferences_interface_general_cycle_scroll_title">cycle scroll</string>
+    <string name="preferences_interface_general_cycle_scroll_summary">for cycle scroll</string>
     
-    <!-- add by huangming for app show or hide -->
-    <string name="header_selected">Selected: </string>
-    <string name="header_sure">Sure</string>
-    <string name="header_cancel">Cancel</string>
-    <!-- add by huangming for installed apps show -->
-    <string name="header_installed_app_text">Installed Applications</string>
+    <!-- add for app background setting -->
+    <string name="all_app_view_background_title">Set background order</string>
+    <string name="all_app_view_background_title_summary">"set the app background"</string>
+    <string name="all_app_view_background_color_title">colorPicker</string>
+    <string name="press_color_to_apply">Standar Color</string>
+    <string name="press_color_to_apply_port">→</string>
+    <string name="press_color_to_apply_land">↓</string>
+    <string name="dialog_color_picker">Color Picker</string>
+    <string name="all_app_view_background_submit">submit</string>
+    <string name="all_app_view_background_cancle">cancle</string>
+    <string name="set_all_app_view_background_success">successful</string>
+
+    <!-- add by xiong.chen for bug WXY-99 -->
+    <string-array name="unicom_apps_package_name">
+           <item>com.android.BrowserQuick</item>
+           <item>com.android.qrdreader</item>
+           <item>com.infinit.wostore.ui</item>
+           <item>com.sinovatech.unicom.ui</item>
+           <item>com.asiainfo.android</item>
+	       <item>com.neusoft.td.android.wo116114</item>
+     </string-array>
+    <string name="unicom_title">warning</string>
+    <string name="unicom_message">It is China Unicom\'s own business, so recommended to use China Unicom USIM card data connection</string>
+    <string name="unicom_cancel">Cancel</string>
+    <string name="unicom_continue">Continue</string>
+    
+     <!-- add by yongjian.he for set app background-->
+    <string name="preferences_interface_general_appbg_title">app background</string>
+    <string name="preferences_interface_general_appbg_summary">setting and show an unite background for not system app.</string>
+    
+    <string name="menu_themes">Themes</string>
+    
 </resources>

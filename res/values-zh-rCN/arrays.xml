@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /*
+* Copyright (C) 2013 The CyanogenMod Project
 * Copyright (C) 2008 The Android Open Source Project
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,42 +19,56 @@
 -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="preferences_interface_homescreen_indicator_position_entries">
+        <item>底座上方</item>
+        <item>顶部</item>
+        <item>底部</item>
+    </string-array>
     <string-array name="preferences_interface_homescreen_scrolling_transition_effect_entries">
         <item>标准</item>
-        <item>平板</item>
-        <item>放大</item>
-        <item>缩小</item>
-        <item>向上旋转</item>
-        <item>向下旋转</item>
-        <item>立方飞出</item>
-        <item>堆叠</item>
-        <item>手风琴</item>
+<!--         <item>平板</item> -->
+<!--         <item>放大</item> -->
+<!--         <item>缩小</item> -->
+<!--         <item>向上转动</item> -->
+        <item>向下转动</item>
+        <item>圆柱凹入</item>
+<!--         <item>圆柱凸出</item> -->
+<!--         <item>立方凹入</item> -->
+        <item>立方凸出</item>
         <item>旋转</item>
+<!--         <item>翻动</item> -->
+        <item>堆叠</item>
+<!--         <item>手风琴</item> -->
     </string-array>
-
     <string-array name="preferences_interface_drawer_scrolling_transition_effect_entries">
         <item>标准</item>
-        <item>平板</item>
-        <item>放大</item>
-        <item>缩小</item>
-        <item>向上旋转</item>
-        <item>向下旋转</item>
-        <item>立方飞出</item>
-        <item>堆叠</item>
-        <item>手风琴</item>
+<!--         <item>平板</item> -->
+<!--         <item>放大</item> -->
+<!--         <item>缩小</item> -->
+<!--         <item>向上转动</item> -->
+        <item>向下转动</item>
+        <item>圆柱凹入</item>
+<!--         <item>圆柱凸出</item> -->
+<!--         <item>立方凹入</item> -->
+        <item>立方凸出</item>
         <item>旋转</item>
+<!--         <item>翻动</item> -->
+        <item>堆叠</item>
+<!--         <item>手风琴</item> -->
     </string-array>
-    
-     <!-- add by huangming for Desktop appearance  -->
-    <string-array name="preferences_interface_homescreen_icon_szie_entries">
-        <item>大图标</item>
-        <item>中图标</item>
-        <item>小图标</item>
+    <string-array name="preferences_interface_drawer_indicator_position_entries">
+        <item>上方/左方</item>
+        <item>下方/右方</item>
     </string-array>
-    <string-array name="preferences_interface_homescreen_icon_text_szie_entries">
-        <item>大文字</item>
-        <item>中文字</item>
-        <item>小文字</item>
+    <string-array name="preferences_interface_drawer_orientation_entries">
+        <item>横向</item>
+        <item>竖向</item>
     </string-array>
-
+    <!--add by xiong.chen for background setting -->
+    <string-array name="app_background_order_entries">
+        <item>当前主题背景</item>
+        <item>自定义背景图</item>
+        <item>设置背景颜色</item>
+    </string-array>
+    <!--add end -->
 </resources>

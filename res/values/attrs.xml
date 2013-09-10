@@ -17,6 +17,23 @@
 -->
 
 <resources>
+    <!-- Orientation of a widget. -->
+    <attr name="direction">
+        <!-- Vertical widget. -->
+        <enum name="vertical" value="0" />
+        <!-- Horizontal widget. -->
+        <enum name="horizontal" value="1" />
+    </attr>
+
+    <skip />
+
+    <!-- DrawableStateProxyView specific attributes. These attributes are used to customize
+         a DrawableStateProxyView view in XML files. -->
+    <declare-styleable name="DrawableStateProxyView">
+        <!-- The source view to delegate touch presses events to. -->
+        <attr name="sourceViewId" format="integer" />
+    </declare-styleable>
+
     <!-- Cling specific attributes. These attributes are used to customize
          the cling in XML files. -->
     <declare-styleable name="Cling">
@@ -36,10 +53,8 @@
     <!-- Hotseat specific attributes. These attributes are used to customize
          the hotseat in XML files. -->
     <declare-styleable name="Hotseat">
-        <!-- The number of horizontal cells in the CellLayout -->
-        <attr name="cellCountX" />
-        <!-- The number of vertical cells in the CellLayout -->
-        <attr name="cellCountY" />
+        <!-- The number of cells in the CellLayout -->
+        <attr name="cellCount" format="integer"  />
     </declare-styleable>
 
     <!-- CellLayout specific attributes. These attributes are used to customize
@@ -58,28 +73,20 @@
         <attr name="maxGap" format="dimension" />
     </declare-styleable>
 
+    <!-- StrokedTextView specific attributes. -->
+    <declare-styleable name="StrokedTextView">
+        <!-- The color of the stroke outline -->
+        <attr name="strokeColor" format="color" />
+        <!-- The color of the text -->
+        <attr name="strokeTextColor" format="color" />
+        <!-- The width of the stroke -->
+        <attr name="strokeWidth" format="float" />
+    </declare-styleable>
+
     <!-- HolographicLinearLayout specific attributes. -->
     <declare-styleable name="HolographicLinearLayout">
         <!-- The source view to generate and apply the drawable states to/from -->
         <attr name="sourceImageViewId" format="integer" />
-    </declare-styleable>
-
-    <!-- PagedViewIcon specific attributes. These attributes are used to customize
-         a PagedViewIcon view in XML files. -->
-    <declare-styleable name="PagedViewIcon">
-        <!-- The blur color of the holographic outline -->
-        <attr name="blurColor" format="color" />
-        <!-- The outline color of the holographic outline -->
-        <attr name="outlineColor" format="color" />
-    </declare-styleable>
-
-    <!-- PagedViewWidget specific attributes. These attributes are used to
-         customize a PagedViewWidget view in XML files. -->
-    <declare-styleable name="PagedViewWidget">
-        <!-- The blur color of the holographic outline -->
-        <attr name="blurColor" />
-        <!-- The outline color of the holographic outline -->
-        <attr name="outlineColor" />
     </declare-styleable>
 
     <!-- PagedView specific attributes. These attributes are used to customize
@@ -97,7 +104,9 @@
         <attr name="pageSpacing" format="dimension" />
         <!-- The padding for the scroll indicator area -->
         <attr name="scrollIndicatorPaddingLeft" format="dimension" />
+        <attr name="scrollIndicatorPaddingTop" format="dimension" />
         <attr name="scrollIndicatorPaddingRight" format="dimension" />
+        <attr name="scrollIndicatorPaddingBottom" format="dimension" />
     </declare-styleable>
 
     <!-- AppsCustomizePagedView specific attributes.  These attributes are used to
@@ -126,7 +135,6 @@
         <attr name="className" format="string" />
         <attr name="packageName" format="string" />
         <attr name="container" format="string" />
-        <attr name="natureId" format="string" />
         <attr name="screen" format="string" />
         <attr name="x" format="string" />
         <attr name="y" format="string" />
@@ -135,6 +143,16 @@
         <attr name="icon" format="reference" />  
         <attr name="title" format="reference" />
         <attr name="uri" format="string" />
+    </declare-styleable>
+    <declare-styleable name="Extra">
+        <attr name="key" format="string" />
+        <attr name="value" format="string" />
+    </declare-styleable>
+
+    <!-- Only used in the device overlays -->
+    <declare-styleable name="CustomClingTitleText">
+    </declare-styleable>
+    <declare-styleable name="CustomClingText">
     </declare-styleable>
 
     <declare-styleable name="NumberPickerPreference">
@@ -158,17 +176,54 @@
         <attr name="pickerTitle1" format="string" />
         <attr name="pickerTitle2" format="string" />
     </declare-styleable>
-    <!-- add by wanghao -->
-    <declare-styleable name="MyListPrefrence">
-        <attr name="entries" format="string" />
-        <attr name="entryValues" format="string" />
-        <attr name="entryDrawables" format="string" />
-        <attr name="defaultValue" format="string" />
-        </declare-styleable>
+
     <declare-styleable name="SeekBarDialogPreference">
         <attr name="max" />
         <attr name="min" />
         <attr name="prefix" format="string" />
         <attr name="suffix" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="EcoGallery">
+        <attr name="gravity" format="integer" />
+        <attr name="animationDuration" format="integer" />
+        <attr name="unselectedAlpha" format="float" />
+        <attr name="spacing" format="dimension" />
+    </declare-styleable>
+    <attr name="ecoGalleryStyle" format="reference" />
+
+    <declare-styleable name="CustomAbsSpinner">
+        <attr name="entries" format="reference" />
+    </declare-styleable>
+    <attr name="customAbsSpinnerStyle" format="reference" />
+    <array name="system_icon_array" translatable="false">
+        <item>com.android.browser</item>
+        <item>com.android.calculator2</item>
+        <item>com.android.camera</item>
+        <item>com.android.contacts</item>
+        <item>com.android.email</item>
+        <item>com.android.gallery3d</item>
+        <item>com.android.mms</item>
+        <item>com.android.providers.downloads.ui</item>
+        <item>com.android.qrdfileexplorer</item>
+        <item>com.android.quicksearchbox</item>
+        <item>com.android.soundrecorder</item>
+        <item>com.android.calendar</item>
+        <item>com.android.music</item>
+        <item>com.quicinc.fmradio</item>
+        <item>com.android.deskclock</item>
+        <item>com.android.settings</item>
+        <item>com.android.stoptimer</item>
+        <item>com.android.profile</item>
+        <item>com.feixun.notes</item>
+        <item>com.android.stk</item>
+		<item>com.android.qworldclock</item>
+	    <item>com.geoai.zlibrary.ui.android.duzhereader</item>
+    </array>
+    <!-- add by xiong.chen for bug wxy-572 
+    when add a item below, we should also modify the sIconDrawableIds array in Utilities.java-->
+    <array name="replace_apk_icon_array" translatable="false">
+	    <item>com.geoai.zlibrary.ui.android.duzhereader</item>
+        <item>com.fxm.appstore</item>
+    </array>
 </resources>

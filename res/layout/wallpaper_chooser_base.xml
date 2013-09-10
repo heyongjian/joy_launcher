@@ -21,7 +21,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <fragment class="com.joy.launcher.WallpaperChooserDialogFragment"
+    <fragment class="com.joy.launcher2.WallpaperChooserDialogFragment"
         android:id="@+id/wallpaper_chooser_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
