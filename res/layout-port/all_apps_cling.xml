@@ -13,9 +13,9 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<com.joy.launcher.Cling
+<com.joy.launcher2.Cling
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher"
+    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher2"
     launcher:drawIdentifier="all_apps_portrait">
     <FrameLayout
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
                 android:text="@string/all_apps_cling_title" />
             <TextView
                 style="@style/ClingText"
-                android:id="@+id/all_apps_cling_add_item" 
+                android:id="@+id/all_apps_cling_add_item"
                 android:layout_width="285dp"
                 android:layout_height="wrap_content"
                 android:text="@string/all_apps_cling_add_item" />
@@ -45,4 +45,4 @@
         android:layout_marginRight="10dp"
         android:layout_gravity="bottom|right"
         android:onClick="dismissAllAppsCling" />
-</com.joy.launcher.Cling>
+</com.joy.launcher2.Cling>

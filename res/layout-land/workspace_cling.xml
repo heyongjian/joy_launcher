@@ -13,9 +13,11 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<com.joy.launcher.Cling
+<com.joy.launcher2.Cling
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher"
+    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     launcher:drawIdentifier="workspace_landscape">
     <FrameLayout
         android:layout_width="match_parent"
@@ -28,11 +30,11 @@
             android:orientation="vertical">
             <TextView
                 style="@style/ClingTitleText"
-                android:id="@+id/workspace_cling_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/workspace_cling_title" />
             <TextView
                 style="@style/ClingText"
-                android:id="@+id/workspace_cling_move_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/workspace_cling_move_item" />
@@ -40,7 +42,6 @@
     </FrameLayout>
     <TextView
         style="@style/ClingText"
-        android:id="@+id/workspace_cling_open_all_apps"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="130dp"
@@ -49,9 +50,10 @@
         android:text="@string/workspace_cling_open_all_apps" />
     <Button
         style="@style/ClingButton"
-        android:id="@+id/cling_dismiss"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
         android:layout_marginRight="10dp"
         android:layout_gravity="bottom|right"
         android:onClick="dismissWorkspaceCling" />
-</com.joy.launcher.Cling>
+</com.joy.launcher2.Cling>

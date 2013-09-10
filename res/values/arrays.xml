@@ -18,151 +18,107 @@
 -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="preferences_interface_homescreen_indicator_position_entries">
+        <item>Above Dock</item>
+        <item>Top</item>
+        <item>Bottom</item>
+    </string-array>
+    <string-array name="preferences_interface_homescreen_indicator_position_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
     <string-array name="preferences_interface_homescreen_scrolling_transition_effect_entries">
         <item>Standard</item>
-        <item>Tablet</item>
-        <item>ZoomIn</item>
-        <item>ZoomOut</item>
-        <item>RotateUp</item>
-        <item>RotateDown</item>
-        <item>CubeOut</item>
-        <item>Stack</item>
-        <item>Accordion</item>
+<!--         <item>Tablet</item> -->
+<!--         <item>Zoom In</item> -->
+<!--         <item>Zoom Out</item> -->
+<!--         <item>Rotate Up</item> -->
+        <item>Rotate Down</item>
+        <item>Cylinder In</item>
+<!--         <item>Cylinder Out</item> -->
+<!--         <item>Cube In</item> -->
+        <item>Cube Out</item>
         <item>Spin</item>
+        <!-- <item>Flip</item> -->
+        <item>Stack</item>
+<!--         <item>Accordian</item> -->
     </string-array>
     <string-array name="preferences_interface_homescreen_scrolling_transition_effect_values" translatable="false">
         <item>Standard</item>
-        <item>Tablet</item>
-        <item>ZoomIn</item>
-        <item>ZoomOut</item>
-        <item>RotateUp</item>
+<!--         <item>Tablet</item> -->
+<!--         <item>ZoomIn</item> -->
+<!--         <item>ZoomOut</item> -->
+<!--         <item>RotateUp</item> -->
         <item>RotateDown</item>
+        <item>CylinderIn</item>
+<!--         <item>CylinderOut</item> -->
+<!--         <item>CubeIn</item> -->
         <item>CubeOut</item>
-        <item>Stack</item>
-        <item>Accordion</item>
         <item>Spin</item>
+        <!-- <item>Flip</item> -->
+        <item>Stack</item>
+<!--         <item>Accordian</item> -->
     </string-array>
-        <integer-array name="preferences_interface_homescreen_scrolling_transition_effect_drawables">
-        <item>@drawable/pref_transition_effect_standard</item>
-        <item>@drawable/pref_transition_effect_tablet</item>
-        <item>@drawable/pref_transition_effect_zoomout</item>
-        <item>@drawable/pref_transition_effect_zoomin</item>
-        <item>@drawable/pref_transition_effect_rotate_down</item>
-        <item>@drawable/pref_transition_effect_rotate_up</item>
-        <item>@drawable/pref_transition_effect_boxout</item>
-        <item>@drawable/pref_transition_effect_stack</item>
-        <item>@drawable/pref_transition_effect_accordion</item>
-        <item>@drawable/pref_transition_effect_spin</item>
-    </integer-array>
     <string-array name="preferences_interface_drawer_scrolling_transition_effect_entries">
-        <item>Standard</item>
-        <item>Tablet</item>
-        <item>ZoomIn</item>
-        <item>ZoomOut</item>
-        <item>RotateUp</item>
-        <item>RotateDown</item>
-        <item>CubeOut</item>
-        <item>Stack</item>
-        <item>Accordion</item>
+       <item>Standard</item>
+<!--         <item>Tablet</item> -->
+<!--         <item>Zoom In</item> -->
+<!--         <item>Zoom Out</item> -->
+<!--         <item>Rotate Up</item> -->
+        <item>Rotate Down</item>
+        <item>Cylinder In</item>
+<!--         <item>Cylinder Out</item> -->
+<!--         <item>Cube In</item> -->
+        <item>Cube Out</item>
         <item>Spin</item>
+<!--         <item>Flip</item> -->
+        <item>Stack</item>
+<!--         <item>Accordian</item> -->
     </string-array>
     <string-array name="preferences_interface_drawer_scrolling_transition_effect_values" translatable="false">
-       <item>Standard</item>
-        <item>Tablet</item>
-        <item>ZoomIn</item>
-        <item>ZoomOut</item>
-        <item>RotateUp</item>
+         <item>Standard</item>
+<!--         <item>Tablet</item> -->
+<!--         <item>ZoomIn</item> -->
+<!--         <item>ZoomOut</item> -->
+<!--         <item>RotateUp</item> -->
         <item>RotateDown</item>
+        <item>CylinderIn</item>
+<!--         <item>CylinderOut</item> -->
+<!--         <item>CubeIn</item> -->
         <item>CubeOut</item>
-        <item>Stack</item>
-        <item>Accordion</item>
         <item>Spin</item>
+<!--         <item>Flip</item> -->
+        <item>Stack</item>
+<!--         <item>Accordian</item> -->
     </string-array>
-    <!-- add by huangming for Desktop appearance  -->
-    <string-array name="preferences_interface_homescreen_icon_szie_entries">
-        <item>Large Icon</item>
-        <item>Medium Icon</item>
-        <item>Small Icon</item>
+    <string-array name="preferences_interface_drawer_indicator_position_entries">
+        <item>Top/Left</item>
+        <item>Bottom/Right</item>
     </string-array>
-    <string-array name="preferences_interface_homescreen_icon_size_values">
-        <item>Large</item>
-        <item>Medium</item>
-        <item>Small</item>
+    <string-array name="preferences_interface_drawer_indicator_position_values" translatable="false">
+        <item>1</item>
+        <item>0</item>
     </string-array>
-    <string-array name="preferences_interface_homescreen_icon_text_szie_entries">
-        <item>Large Text</item>
-        <item>Medium Text</item>
-        <item>Small Text</item>
+    <string-array name="preferences_interface_drawer_orientation_entries">
+        <item>Horizontal</item>
+        <item>Vertical</item>
     </string-array>
-    <string-array name="preferences_interface_homescreen_icon_text_size_values">
-        <item>Large</item>
-        <item>Medium</item>
-        <item>Small</item>
+    <string-array name="preferences_interface_drawer_orientation_values" translatable="false">
+        <item>horizontal</item>
+        <item>vertical</item>
     </string-array>
-    <string-array name="icon_bg_names">
-        <item>joy_desktop_bg_1</item>
-        <item>joy_desktop_bg_2</item>
-        <item>joy_desktop_bg_3</item>
-        <item>joy_desktop_bg_4</item>
-        <item>joy_desktop_bg_5</item>
-        <item>joy_desktop_bg_6</item>
-        <item>joy_desktop_bg_7</item>
-        <item>joy_desktop_bg_8</item>
-        <item>joy_desktop_bg_9</item>
-        <item>joy_desktop_bg_10</item>
-        <item>joy_desktop_bg_11</item>
-        <item>joy_desktop_bg_12</item>
-        <item>joy_desktop_bg_13</item>
-        <item>joy_desktop_bg_14</item>
-        <item>joy_desktop_bg_15</item>
-        <item>joy_desktop_bg_16</item>
-        <item>joy_desktop_bg_17</item>
-        <item>joy_desktop_bg_18</item>
-        <item>joy_desktop_bg_19</item>
-        <item>joy_desktop_bg_20</item>
-        <item>joy_desktop_bg_21</item>
-        <item>joy_desktop_bg_22</item>
+    
+    <!--add by xiong.chen for background setting -->
+    <string-array name="app_background_order_entries">
+        <item>current them background</item>
+        <item>Custom background</item>
+        <item> back ground color</item>
     </string-array>
-    <string-array name="system_icon_array">
-        <!-- <item>com.android.browser</item>
-        <item>com.android.calculator2</item>
-        <item>com.android.camera</item>
-        <item>com.android.contacts</item>
-        <item>com.android.email</item>
-        <item>com.android.gallery3d</item>
-        <item>com.android.mms</item>
-        <item>com.android.providers.downloads.ui</item>
-        <item>com.android.qrdfileexplorer</item>
-        <item>com.android.quicksearchbox</item>
-        <item>com.android.soundrecorder</item>
-        <item>com.android.calendar</item>
-        <item>com.android.music</item>
-        <item>com.android.deskclock</item>
-        <item>com.android.settings</item>
-        <item>com.android.stoptimer</item>
-        <item>com.android.profile</item>
-        <item>com.android.stk</item> -->
+    <string-array name="app_background_order_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
-    <string-array name="system_icons_filter">
-        <item>browser_browser</item>
-        <item>calculator_calculator</item>
-        <item>camera_camera</item>
-        <item>email_email</item>
-        <item>gallery_gallery</item>
-        <item>mms_mms</item>
-        <item>downloads_downloads</item>
-        <item>file_file</item>
-        <item>quicksearchbox_quicksearchbox</item>
-        <item>soundrecorder_soundrecorder</item>
-        <item>calendar_calendar</item>
-        <item>music_music</item>
-        <item>deskclock_deskclock</item>
-        <item>settings_settings</item>
-        <item>stoptimer_stoptimer</item>
-        <item>stk_stk</item>
-        <item>contacts_dialtacts</item>
-        <item>contacts_people</item>
-        <item>video_video</item>
-        <item>fm_fm</item>
-    </string-array>
+    <!--add end -->
 </resources>

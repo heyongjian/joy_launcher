@@ -14,22 +14,22 @@
      limitations under the License.
 -->
 
-<com.joy.launcher.Folder
+<com.joy.launcher2.Folder
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher"
+    xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher2"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/portal_container_holo">
 
-    <com.joy.launcher.CellLayout
+    <com.joy.launcher2.CellLayout
         android:id="@+id/folder_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="0dip"
-        android:paddingRight="0dip"
-        android:paddingTop="0dip"
-        android:paddingBottom="0dip"
+        android:paddingLeft="@dimen/folder_padding"
+        android:paddingRight="@dimen/folder_padding"
+        android:paddingTop="@dimen/folder_padding"
+        android:paddingBottom="@dimen/folder_padding"
         android:cacheColorHint="#ff333333"
         android:hapticFeedbackEnabled="false"
         launcher:widthGap="@dimen/folder_width_gap"
@@ -37,7 +37,7 @@
         launcher:cellWidth="@dimen/folder_cell_width"
         launcher:cellHeight="@dimen/folder_cell_height" />
 
-    <com.joy.launcher.FolderEditText
+    <com.joy.launcher2.FolderEditText
         android:id="@+id/folder_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,9 +47,9 @@
         android:background="#00000000"
         android:hint="@string/folder_hint_text"
         android:textSize="14sp"
-        android:textColor="@android:color/holo_blue_light"
+        android:textColor="#ff33b5e5"
         android:textColorHighlight="#ff333333"
         android:gravity="center_horizontal"
         android:singleLine="true"
         android:imeOptions="flagNoExtractUi"/>
-</com.joy.launcher.Folder>
+</com.joy.launcher2.Folder>

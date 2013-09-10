@@ -15,16 +15,16 @@
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:launcher="http://schemas.android.com/apk/res/com.cyanogenmod.trebuchet"
-    style="@style/SearchDropTargetBar"
     android:layout_width="@dimen/qsb_bar_height"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
    <!-- Global search icon -->
-   <com.joy.launcher.HolographicImageView
+   <com.joy.launcher2.HolographicImageView
         style="@style/SearchButton"
         android:id="@+id/search_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:src="@drawable/ic_home_search_normal_holo"
         android:adjustViewBounds="true"
         android:onClick="onClickSearchButton"
@@ -32,20 +32,13 @@
         android:clickable="true"
         android:contentDescription="@string/accessibility_search_button" />
 
-    <ImageView
-        style="@style/SearchButtonDivider"
-        android:id="@+id/search_divider"
-        android:src="@drawable/divider_launcher_holo"
-        android:onClick="onClickSearchButton"
-        android:focusable="false"
-        android:clickable="true" />
-
     <!-- Voice search icon -->
-    <com.joy.launcher.HolographicImageView
+    <com.joy.launcher2.HolographicImageView
         style="@style/SearchButton"
         android:id="@+id/voice_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:src="@drawable/ic_home_voice_search_holo"
         android:adjustViewBounds="true"
         android:onClick="onClickVoiceButton"

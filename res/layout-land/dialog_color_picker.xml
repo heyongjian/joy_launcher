@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2010 joy
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<FrameLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:orientation="horizontal">
+		
+	<com.joy.launcher2.widget.ColorPickerView
+		android:id="@+id/color_picker_view"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:tag="landscape"
+		android:layerType="software"
+	/>
+		
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_marginLeft="@dimen/all_app_view_standard_color_land_margin_left"
+		android:layout_marginBottom="10dp">
+		
+		<TextView
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"	
+			android:text="@string/press_color_to_apply"
+			android:gravity="center"
+			android:layout_marginTop="6dp"
+			android:layout_marginLeft="6dp"
+			android:layout_marginRight="6dp"
+			android:layout_marginBottom="5dp"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+		/>
+
+		<!-- the standard colors -->
+		<LinearLayout
+		    android:layout_width="wrap_content"
+		    android:layout_height="35dp"
+		    android:orientation="horizontal"
+		    android:layout_marginTop="5dp">
+		
+		    <Button 
+		        android:id="@+id/standard_color_first" 
+			    android:layout_width="@dimen/all_app_view_standard_color_land_width"
+			    android:layout_height="match_parent"
+		        android:layout_weight="1"
+		        android:layout_marginLeft="@dimen/all_app_view_standard_color_land_margin"
+		        android:layout_marginRight="@dimen/all_app_view_standard_color_land_margin"
+                android:background="@color/all_app_view_standar_color0"
+		    />
+		    <Button 
+		        android:id="@+id/standard_color_second" 
+			    android:layout_width="@dimen/all_app_view_standard_color_land_width"
+			    android:layout_height="match_parent"
+		        android:layout_weight="1"
+		        android:layout_marginLeft="@dimen/all_app_view_standard_color_land_margin"
+		        android:layout_marginRight="@dimen/all_app_view_standard_color_land_margin"
+                android:background="@color/all_app_view_standar_color1"
+		    />
+		    <Button 
+		        android:id="@+id/standard_color_third" 
+			    android:layout_width="@dimen/all_app_view_standard_color_land_width"
+			    android:layout_height="match_parent"
+		        android:layout_weight="1"
+		        android:layout_marginLeft="@dimen/all_app_view_standard_color_land_margin"
+		        android:layout_marginRight="@dimen/all_app_view_standard_color_land_margin"
+                android:background="@color/all_app_view_standar_color2"
+		    />
+		</LinearLayout>
+		
+		<LinearLayout
+		    android:layout_width="wrap_content"
+		    android:layout_height="35dp"
+		    android:orientation="horizontal"
+		    android:layout_marginTop="10dp">
+		
+		    <Button 
+		        android:id="@+id/standard_color_fourth" 
+			    android:layout_width="@dimen/all_app_view_standard_color_land_width"
+			    android:layout_height="match_parent"
+		        android:layout_weight="1"
+		        android:layout_marginLeft="@dimen/all_app_view_standard_color_land_margin"
+		        android:layout_marginRight="@dimen/all_app_view_standard_color_land_margin"
+                android:background="@color/all_app_view_standar_color3"
+		    />
+		    <Button 
+		        android:id="@+id/standard_color_fifth" 
+		    	android:layout_width="@dimen/all_app_view_standard_color_land_width"
+		    	android:layout_height="match_parent"
+		        android:layout_weight="1"
+		        android:layout_marginLeft="@dimen/all_app_view_standard_color_land_margin"
+		        android:layout_marginRight="@dimen/all_app_view_standard_color_land_margin"
+                android:background="@color/all_app_view_standar_color4"
+		    />
+		    <Button 
+		        android:id="@+id/standard_color_sixth" 
+		    	android:layout_width="@dimen/all_app_view_standard_color_land_width"
+		    	android:layout_height="match_parent"
+		        android:layout_weight="1"
+		        android:layout_marginLeft="@dimen/all_app_view_standard_color_land_margin"
+		        android:layout_marginRight="@dimen/all_app_view_standard_color_land_margin"
+                android:background="@color/all_app_view_standar_color5"
+		    />
+		</LinearLayout>
+		
+		
+		
+		<com.joy.launcher2.widget.ColorPickerPanelView
+			android:id="@+id/old_color_panel"
+			android:layout_width="fill_parent"
+			android:layout_height="40dp"
+			android:layout_weight="0.5"
+			android:visibility="gone"
+		/>
+	
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"	
+			android:text="@string/press_color_to_apply_land"
+			android:textSize="15sp"
+			android:gravity="center"
+			android:layout_marginTop="5dp"
+			android:layout_marginBottom="5dp"
+			android:visibility="gone"
+		/>
+	
+		<com.joy.launcher2.widget.ColorPickerPanelView
+			android:id="@+id/new_color_panel"
+			android:layout_width="fill_parent"
+			android:layout_height="40dp"
+			android:layout_weight="0.5"
+			android:visibility="gone"
+		/>
+		<Button 
+	        android:id="@+id/btn_color_submit"
+	        android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_marginTop="10dp"
+		    android:layout_weight="0.5"
+		    android:text="@string/all_app_view_background_submit"
+	        />
+	    <Button 
+	        android:id="@+id/btn_color_cancle"
+	        android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="0.5"
+		    android:text="@string/all_app_view_background_cancle"
+	        />
+	
+	</LinearLayout>
+	
+</FrameLayout>
