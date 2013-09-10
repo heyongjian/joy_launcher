@@ -58,6 +58,23 @@ public final class PreferencesProvider {
     }
     //end
 
+    //activate launcher add by wanghao
+    public static class LauncherActivate{
+    	
+    	private final static String LAUNCHER_ACTIVATE = "launcher_activate";
+    	private final static String LAUNCHER_ACTIVATE_KEY = "launcher_activate_key";
+    	
+    	public static boolean getLauncherIsActivate(Context context){
+    		final SharedPreferences preferences = context.getSharedPreferences(LAUNCHER_ACTIVATE, 0);
+        	return preferences.getBoolean(LAUNCHER_ACTIVATE_KEY, false);
+    	}
+    	public static void setLauncherIsActivate(Context context, boolean value){
+    		final SharedPreferences preferences = context.getSharedPreferences(LAUNCHER_ACTIVATE, 0);
+    		SharedPreferences.Editor editor = preferences.edit();
+        	editor.putBoolean(LAUNCHER_ACTIVATE_KEY, value);
+        	editor.commit();
+    	}
+    }
     public static class Interface {
         public static class Homescreen {
         	//add by huangming for desktop appearance
