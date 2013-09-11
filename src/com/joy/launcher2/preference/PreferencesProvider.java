@@ -30,6 +30,23 @@ public final class PreferencesProvider {
     public static final String PREFERENCES_CHANGED = "preferences_changed";
 
     private static Map<String, ?> sKeyValues;
+    
+    //add by huangming for main menu show or hide.
+    private final static String APPS_HIDE_PREFERENCES = "apps_hide_preferences";
+    public static boolean getAppIsHide(Context context, String key)
+    {
+    	final SharedPreferences preferences = context.getSharedPreferences(APPS_HIDE_PREFERENCES, 0);
+    	return preferences.getBoolean(key, false);
+    }
+    
+    public final static void putAppHide(Context context, String key, boolean value)
+    {
+    	final SharedPreferences preferences = context.getSharedPreferences(APPS_HIDE_PREFERENCES, 0);
+    	SharedPreferences.Editor editor = preferences.edit();
+    	editor.putBoolean(key, value);
+    	editor.commit();
+    }
+    //end
 
     public static void load(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
