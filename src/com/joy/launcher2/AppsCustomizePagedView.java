@@ -284,6 +284,11 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private TextView mSureSelectedText;
     private View mTabs;
     //end
+    //add by huangming for installed apps show
+    private FrameLayout mInstalledAppsHeader;
+    private ImageView mExitInstalledImage;
+    protected static boolean mIsShowInstalledApps = false;
+    //end
     
     //add by xiong.chen for bug WXY-99
     private String[] mPreClassArray = null;
@@ -760,6 +765,16 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     			exitAppShowOrHideMode();
     		}
     		return;
+    	}
+    	//end
+    	//add by huangming for installed apps show
+    	if(mIsShowInstalledApps)
+    	{
+    		if(v == mExitInstalledImage)
+    		{
+    			exitShowInstalledApps();
+    			return;
+    		}
     	}
     	//end
         // When we have exited all apps or are in transition, disregard clicks
@@ -2428,6 +2443,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mIsAppsHide = false;
         mIsShowOrHideEidt = false;
         //end
+        //add by huangming for installed apps show
+        mInstalledAppsHeader = (FrameLayout)host.findViewById(R.id.installed_apps_header);
+        mExitInstalledImage = (ImageView)host.findViewById(R.id.exit_installed_apps_image);
+        mExitInstalledImage.setOnClickListener(this);
+        mIsShowInstalledApps = false;
+        //end
     }
 
     /**
@@ -2539,6 +2560,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     		if(mIsAppsHide == info.isHide)
     		{
     			mApps.add(info);
+    			//add by huangming for installed apps show
+    			if(mIsShowInstalledApps && info.flags == 0)
+        		{
+        			mApps.remove(info);
+        		}
+    			//end
     		}
     	}
     	
@@ -2610,6 +2637,42 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     		return host.getCurrentTabTag().equals(host.getTabTagForContentType(ContentType.Applications));
     	}
     	return false;
+    }
+    //end
+    
+    //add by huangming for installed apps show
+    public void enterShowInstalledApps()
+    {
+    	mIsShowInstalledApps = true;
+    	mJoinWidgetsApps = false;
+    	setContentType(ContentType.Applications);
+    	AppsCustomizeTabHost host = getTabHost();
+    	if(host != null)
+    	{
+    		host.setCurrentTabByTag(host.getTabTagForContentType(ContentType.Applications));
+    	}
+    	showInstalledAppsHeader();
+    	setApps();
+    }
+    
+    public void exitShowInstalledApps()
+    {
+    	mIsShowInstalledApps = false;
+    	mJoinWidgetsApps = PreferencesProvider.Interface.Drawer.getJoinWidgetsApps();
+    	hideInstalledAppsHeader();
+    	setApps();
+    }
+    
+    private void showInstalledAppsHeader()
+    {
+    	mInstalledAppsHeader.setVisibility(View.VISIBLE);
+    	mTabs.setVisibility(View.GONE);
+    }
+    
+    private void hideInstalledAppsHeader()
+    {
+    	mInstalledAppsHeader.setVisibility(View.GONE);
+    	mTabs.setVisibility(View.VISIBLE);
     }
     //end
 

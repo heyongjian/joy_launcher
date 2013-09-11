@@ -1859,6 +1859,18 @@ public final class Launcher extends Activity
     	content.enterAppShowOrHideMode(isShowOrHide);
     }
 	
+    //add by huangming for installed apps show
+    public void onClickInstalledAppsButton(View v)
+    {
+        int id = v.getId();
+        if(id == R.id.enter_instaled_apps_image)
+        {
+        	final AppsCustomizePagedView content = 
+            		(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+        	content.enterShowInstalledApps();
+        }
+    }
+    
     public boolean isHideAppsEmpty()
     {
     	final AppsCustomizePagedView content = 
@@ -1877,7 +1889,7 @@ public final class Launcher extends Activity
 	//added by huangming for menu.
 	public boolean onMenuOpened(int featureId, Menu menu) 
 	{
-		if(AppsCustomizePagedView.mIsShowOrHideEidt)
+		if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
 		{
 			return false;
 		}
@@ -2220,11 +2232,19 @@ public final class Launcher extends Activity
     @Override
     public void onBackPressed() {
     	//modify by huangming for app show or hide
-    	if(AppsCustomizePagedView.mIsShowOrHideEidt)
+    	if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
     	{
     		final AppsCustomizePagedView content = 
     				(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
-    		content.exitAppShowOrHideMode();
+    		//content.exitAppShowOrHideMode();
+    		if(AppsCustomizePagedView.mIsShowOrHideEidt)
+    	    {
+    			    content.exitAppShowOrHideMode();
+    		}
+    		if(AppsCustomizePagedView.mIsShowInstalledApps)
+    		{
+    			    content.exitShowInstalledApps();
+    		}
     	}
     	else if(menuView != null && menuView.getVisibility() != View.GONE)
     	{
@@ -3769,7 +3789,7 @@ public final class Launcher extends Activity
             sAppMarketIcon[coi] = updateTextButtonWithIconFromExternalActivity(
                     R.id.market_button, activityName, R.drawable.ic_launcher_market_holo,
                     TOOLBAR_ICON_METADATA_NAME);
-            marketButton.setVisibility(View.VISIBLE);
+            //marketButton.setVisibility(View.VISIBLE);
             //BEGIN: by yongjian.he on 20130625
             marketButton.setEnabled(true);
             //END for IWB-127
