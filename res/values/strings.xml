@@ -457,4 +457,7 @@ s -->
     <string name="header_sure">Sure</string>
     <string name="header_cancel">Cancel</string>
     
+     <!-- add by huangming for installed apps show -->
+    <string name="header_installed_app_text">Installed Applications</string>
+    
 </resources>

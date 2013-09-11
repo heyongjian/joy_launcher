@@ -272,5 +272,6 @@
     <string name="header_selected">已选择: </string>
     <string name="header_sure">确定</string>
     <string name="header_cancel">取消</string>
-    
+    <!-- add by huangming for installed apps show -->
+    <string name="header_installed_app_text">已下载应用程序</string>
 </resources>
