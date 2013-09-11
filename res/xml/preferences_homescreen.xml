@@ -18,7 +18,8 @@
     xmlns:launcher="http://schemas.android.com/apk/res/com.joy.launcher2"
     android:key="ui_homescreen"
     android:title="@string/preferences_interface_homescreen_title">
-    <PreferenceCategory android:title="@string/preferences_interface_homescreen_general_category">
+    <PreferenceCategory android:title="@string/preferences_interface_homescreen_general_category"
+        android:layout="@layout/joy_preference_category">
         <com.joy.launcher2.preference.DoubleNumberPickerPreference android:key="ui_homescreen_grid"
             android:title="@string/preferences_interface_homescreen_general_grid_title"
             android:summary="@string/preferences_interface_homescreen_general_grid_summary"
@@ -54,7 +55,8 @@
 <!--             android:title="@string/preferences_interface_homescreen_general_hide_icon_labels_title" -->
 <!--             android:summary="@string/preferences_interface_homescreen_general_hide_icon_labels_summary" /> -->
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/preferences_interface_homescreen_scrolling_category">
+    <PreferenceCategory android:title="@string/preferences_interface_homescreen_scrolling_category"
+        android:layout="@layout/joy_preference_category">
         <ListPreference android:key="ui_homescreen_scrolling_transition_effect"
             android:title="@string/preferences_interface_homescreen_scrolling_transition_effect_title"
             android:summary="@string/preferences_interface_homescreen_scrolling_transition_effect_summary"

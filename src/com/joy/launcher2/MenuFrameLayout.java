@@ -28,6 +28,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.joy.launcher2.preference.Preferences;
+
 //import com.joy.launcher.preference.Preferences;
 
 public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
@@ -208,10 +210,9 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	        itemInfo.iconId = R.drawable.menu_desktop_settings;
 	        
 	        //open desktop settings
-	        /*Intent preferences = new Intent().setClass(launcher, Preferences.class);
+	        Intent preferences = new Intent().setClass(launcher, Preferences.class);
 	        preferences.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-	                | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);*/
-	        Intent preferences = null;
+	                | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 	        itemInfo.intent = preferences;
 	        itemInfo.selectId = MENU_DESKTOP_SETTINGS;
 	        itemsAll.add(itemInfo);
