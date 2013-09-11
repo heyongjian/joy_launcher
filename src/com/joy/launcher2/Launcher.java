@@ -230,6 +230,8 @@ public final class Launcher extends Activity
 
     private LayoutInflater mInflater;
 
+    //added by huangming for menu.
+    private MenuFrameLayout menuView;
     private Workspace mWorkspace;
     private View mQsbDivider;
     private View mDockDivider;
@@ -1143,6 +1145,9 @@ public final class Launcher extends Activity
         if (mSearchDropTargetBar != null) {
             mSearchDropTargetBar.setup(this, dragController);
         }
+        //added by huangming for menu.
+        menuView = (MenuFrameLayout)mDragLayer.findViewById(R.id.menu_view);
+        menuView.setLauncher(this);
     }
 
     /**
@@ -1421,6 +1426,8 @@ public final class Launcher extends Activity
                 mDragLayer.clearAllResizeFrames();
                 updateRunning();
 
+                //add by huangming for menu.
+                closeMenu();
                 // Reset AllApps to its initial state only if we are not in the middle of
                 // processing a multi-step drop
                 if (mAppsCustomizeTabHost != null && mPendingAddInfo.container == com.joy.launcher2.ItemInfo.NO_ID) {
@@ -1843,6 +1850,78 @@ public final class Launcher extends Activity
             Log.e(TAG, "Global search activity not found: " + globalSearchActivity);
         }
     }
+	
+	//add by huangming for apps show or hide.
+    public void setAppsShowOrHide(boolean isShowOrHide)
+    {
+    	final AppsCustomizePagedView content = 
+    			(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    	content.enterAppShowOrHideMode(isShowOrHide);
+    }
+	
+    //add by huangming for installed apps show
+    public void onClickInstalledAppsButton(View v)
+    {
+        int id = v.getId();
+        if(id == R.id.enter_instaled_apps_image)
+        {
+        	final AppsCustomizePagedView content = 
+            		(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+        	content.enterShowInstalledApps();
+        }
+    }
+    
+    public boolean isHideAppsEmpty()
+    {
+    	final AppsCustomizePagedView content = 
+    			(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    	return content.isHideAppsEmpty();
+    }
+    
+    public boolean isShowAppsView()
+    {
+    	final AppsCustomizePagedView content = 
+    			(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    	return content.isShowAppsView();
+    }
+    //end
+	
+	//added by huangming for menu.
+	public boolean onMenuOpened(int featureId, Menu menu) 
+	{
+		if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
+		{
+			return false;
+		}
+	    if(menuView != null)
+    	{
+				int visible = menuView.getVisibility();
+				if(visible == View.GONE)
+				{
+					menuView.show(true, isAllAppsVisible());
+				}
+				else if(visible == View.VISIBLE)
+				{
+					menuView.dismiss(true);
+				}
+				
+		}
+	
+		return false;
+	}
+	    
+	private void closeMenu()
+    {
+		if(menuView != null)
+		{
+			menuView.dismiss(false);
+		}
+	}
+	   
+	void startWallpaper(Intent intent)
+	{
+	    startActivityForResult(intent, REQUEST_PICK_WALLPAPER);
+	}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -2152,7 +2231,26 @@ public final class Launcher extends Activity
 
     @Override
     public void onBackPressed() {
-        if (isAllAppsVisible()) {
+    	//modify by huangming for app show or hide
+    	if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
+    	{
+    		final AppsCustomizePagedView content = 
+    				(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    		//content.exitAppShowOrHideMode();
+    		if(AppsCustomizePagedView.mIsShowOrHideEidt)
+    	    {
+    			    content.exitAppShowOrHideMode();
+    		}
+    		if(AppsCustomizePagedView.mIsShowInstalledApps)
+    		{
+    			    content.exitShowInstalledApps();
+    		}
+    	}
+    	else if(menuView != null && menuView.getVisibility() != View.GONE)
+    	{
+    		menuView.dismiss(true);
+    	}
+    	else if (isAllAppsVisible()) {
             showWorkspace(true);
         } else if (mWorkspace.getOpenFolder() != null) {
             Folder openFolder = mWorkspace.getOpenFolder();
@@ -3691,7 +3789,7 @@ public final class Launcher extends Activity
             sAppMarketIcon[coi] = updateTextButtonWithIconFromExternalActivity(
                     R.id.market_button, activityName, R.drawable.ic_launcher_market_holo,
                     TOOLBAR_ICON_METADATA_NAME);
-            marketButton.setVisibility(View.VISIBLE);
+            //marketButton.setVisibility(View.VISIBLE);
             //BEGIN: by yongjian.he on 20130625
             marketButton.setEnabled(true);
             //END for IWB-127

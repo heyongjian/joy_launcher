@@ -61,9 +61,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.joy.launcher2.R;
@@ -267,6 +271,24 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private ArrayList<ApplicationInfo> mFilteredApps;
     private ArrayList<ComponentName> mHiddenApps;
     private ArrayList<Object> mWidgets;
+    //add by huangming for main menu show or hide.
+    private ArrayList<ApplicationInfo> mAllApps;
+    private ArrayList<PagedViewIcon> mReadyShowOrHideApps;
+    private boolean mIsAppsHide = false;
+    protected static boolean mIsShowOrHideEidt = false;
+    private FrameLayout mShowOrHideHeader;
+    private ImageView mExitImage;
+    private TextView mSelectedNumText;
+    private int mSelectedNum;
+    private TextView mCancelSelectedText;
+    private TextView mSureSelectedText;
+    private View mTabs;
+    //end
+    //add by huangming for installed apps show
+    private FrameLayout mInstalledAppsHeader;
+    private ImageView mExitInstalledImage;
+    protected static boolean mIsShowInstalledApps = false;
+    //end
     
     //add by xiong.chen for bug WXY-99
     private String[] mPreClassArray = null;
@@ -374,6 +396,10 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mPackageManager = context.getPackageManager(); 
         mContentType = ContentType.Applications;
         mApps = new ArrayList<ApplicationInfo>();
+        //add by huangming for main menu show or hide.
+        mAllApps = new ArrayList<ApplicationInfo>();
+        mReadyShowOrHideApps = new ArrayList<PagedViewIcon>();
+        //end
         mFilteredApps = new ArrayList<ApplicationInfo>();
         mHiddenApps = new ArrayList<ComponentName>();
         mWidgets = new ArrayList<Object>();
@@ -693,6 +719,64 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
     @Override
     public void onClick(View v) {
+    	//add by huangming for app show or hide
+    	if(mIsShowOrHideEidt)
+    	{
+    		//do something
+    		if(v instanceof PagedViewIcon)
+    		{
+    			PagedViewIcon icon = (PagedViewIcon)v;
+    			boolean isSelected = icon.getSelected();
+    			if(isSelected)
+    			{
+    				mReadyShowOrHideApps.remove(icon);
+    				mSelectedNum--;
+    			}
+    			else
+    			{
+    				mReadyShowOrHideApps.add(icon);
+    				mSelectedNum++;
+    			}
+    			mSelectedNumText.setText(mSelectedNum +"");
+    			icon.setSelected(!isSelected);
+    		}
+    		else if(v == mCancelSelectedText)
+    		{
+    			for(PagedViewIcon pi : mReadyShowOrHideApps)
+    			{
+    				pi.setSelected(false);
+    			}
+    			mSelectedNum = 0;
+    			mSelectedNumText.setText(mSelectedNum +"");
+    			mReadyShowOrHideApps.clear();
+    		}
+    		else if(v == mSureSelectedText)
+    		{
+    			for(PagedViewIcon pi : mReadyShowOrHideApps)
+    			{
+    				ApplicationInfo info = (ApplicationInfo)pi.getTag();
+    				info.isHide = !mIsAppsHide;
+    				PreferencesProvider.putAppHide(getContext(), info.componentName.toShortString(), !mIsAppsHide);
+    			}
+    			exitAppShowOrHideMode();
+    		}
+    		else if(v == mExitImage)
+    		{
+    			exitAppShowOrHideMode();
+    		}
+    		return;
+    	}
+    	//end
+    	//add by huangming for installed apps show
+    	if(mIsShowInstalledApps)
+    	{
+    		if(v == mExitInstalledImage)
+    		{
+    			exitShowInstalledApps();
+    			return;
+    		}
+    	}
+    	//end
         // When we have exited all apps or are in transition, disregard clicks
         if (!mLauncher.isAllAppsVisible() ||
                 mLauncher.getWorkspace().isSwitchingState()) return;
@@ -2345,6 +2429,26 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     public void setup(Launcher launcher, DragController dragController) {
         mLauncher = launcher;
         mDragController = dragController;
+        //add by huangming for app show or hide.
+        final AppsCustomizeTabHost host = getTabHost();
+        mShowOrHideHeader = (FrameLayout)host.findViewById(R.id.show_or_hide_apps_header);
+        mExitImage = (ImageView)host.findViewById(R.id.exit_show_or_hide_image);
+        mExitImage.setOnClickListener(this);
+        mSelectedNumText = (TextView)host.findViewById(R.id.selected_num_text);
+        mCancelSelectedText = (TextView)host.findViewById(R.id.cancel_selected_text);
+        mCancelSelectedText.setOnClickListener(this);
+        mSureSelectedText = (TextView)host.findViewById(R.id.sure_selected_text);
+        mSureSelectedText.setOnClickListener(this);
+        mTabs = host.findViewById(R.id.tabs_container);
+        mIsAppsHide = false;
+        mIsShowOrHideEidt = false;
+        //end
+        //add by huangming for installed apps show
+        mInstalledAppsHeader = (FrameLayout)host.findViewById(R.id.installed_apps_header);
+        mExitInstalledImage = (ImageView)host.findViewById(R.id.exit_installed_apps_image);
+        mExitInstalledImage.setOnClickListener(this);
+        mIsShowInstalledApps = false;
+        //end
     }
 
     /**
@@ -2403,9 +2507,190 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     public boolean getShowDownloadedApps() {
         return (mFilterApps & FILTER_APPS_DOWNLOADED_FLAG) != 0;
     }
+    
+  //add by huangming for app show or hide
+    public void enterAppShowOrHideMode(boolean isAppsHide)
+    {
+    	if(mAllApps.size() == mApps.size() && isAppsHide)
+    	{
+    		//do something
+    		return;
+    	}
+    	
+    	//step 1:
+        mIsShowOrHideEidt = true;
+        //mCurrentPage = 0;
+        
+        //step 2:
+        mJoinWidgetsApps = false;
+        
+        //step 3:
+        mIsAppsHide = isAppsHide;
+        
+        //step 4:
+        showHeader();
+        
+        //step 5:
+        setApps();
+    }
+    
+    public void exitAppShowOrHideMode()
+    {
+    	//step 1:
+        mIsShowOrHideEidt = false;
+        
+        //step 2:
+        mJoinWidgetsApps = PreferencesProvider.Interface.Drawer.getJoinWidgetsApps();
+        
+        //step 3:
+        mIsAppsHide = false;
+        
+        //step 4:
+        hideHeader();
+       
+        //step 5:
+        setApps();
+    }
+    
+    private void setApps()
+    {
+    	mApps.clear();
+    	for(ApplicationInfo info: mAllApps)
+    	{
+    		if(mIsAppsHide == info.isHide)
+    		{
+    			mApps.add(info);
+    			//add by huangming for installed apps show
+    			if(mIsShowInstalledApps && info.flags == 0)
+        		{
+        			mApps.remove(info);
+        		}
+    			//end
+    		}
+    	}
+    	
+    	/*if (mSortMode == SortMode.Title) {
+            Collections.sort(mApps, LauncherModel.APP_NAME_COMPARATOR);
+        } else if (mSortMode == SortMode.InstallDate) {
+            Collections.sort(mApps, LauncherModel.APP_INSTALL_TIME_COMPARATOR);
+        }
+    	*/
+    	filterAppsWithoutInvalidate();
+    	updatePageCounts();
+    	
+    	invalidatePageData(0, false);
+    	
+    	//animation
+    	if(getChildAt(getChildCount() - 1) instanceof PagedViewCellLayout)
+		{
+			PagedViewCellLayout layout = (PagedViewCellLayout)getChildAt(getChildCount() - 1);
+			
+			for(int j = 0; j < layout.getPageChildCount(); j++)
+			{
+				ScaleAnimation scale = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, 
+						Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f); 
+				scale.setFillAfter(true);
+				scale.setRepeatCount(0);
+				scale.setDuration(300);
+				scale.start();
+				layout.getChildOnPageAt(j).setAnimation(scale);
+			}
+		}
+    }
+    
+    public void showHeader()
+    {
+    	 mReadyShowOrHideApps.clear();
+         mSelectedNum = 0;
+         mShowOrHideHeader.setVisibility(View.VISIBLE);
+         mSelectedNumText.setText(mSelectedNum +"");
+         mTabs.setVisibility(View.GONE);
+         
+    }
+    
+    public void hideHeader()
+    {
+    	mShowOrHideHeader.setVisibility(View.GONE);
+    	mTabs.setVisibility(View.VISIBLE);
+    }
+    
+    @Override
+    public boolean onLongClick(View v) {
+    	if(mIsShowOrHideEidt)return false;
+    	return super.onLongClick(v);
+    }
+    
+    public boolean isHideAppsEmpty()
+    {
+    	if(mAllApps != null && mApps != null)
+    	{
+    		return mAllApps.size() == mApps.size();
+    	}
+    	return true;
+    }
+    
+    public boolean isShowAppsView()
+    {
+    	AppsCustomizeTabHost host = getTabHost();
+    	if(host != null)
+    	{
+    		return host.getCurrentTabTag().equals(host.getTabTagForContentType(ContentType.Applications));
+    	}
+    	return false;
+    }
+    //end
+    
+    //add by huangming for installed apps show
+    public void enterShowInstalledApps()
+    {
+    	mIsShowInstalledApps = true;
+    	mJoinWidgetsApps = false;
+    	setContentType(ContentType.Applications);
+    	AppsCustomizeTabHost host = getTabHost();
+    	if(host != null)
+    	{
+    		host.setCurrentTabByTag(host.getTabTagForContentType(ContentType.Applications));
+    	}
+    	showInstalledAppsHeader();
+    	setApps();
+    }
+    
+    public void exitShowInstalledApps()
+    {
+    	mIsShowInstalledApps = false;
+    	mJoinWidgetsApps = PreferencesProvider.Interface.Drawer.getJoinWidgetsApps();
+    	hideInstalledAppsHeader();
+    	setApps();
+    }
+    
+    private void showInstalledAppsHeader()
+    {
+    	mInstalledAppsHeader.setVisibility(View.VISIBLE);
+    	mTabs.setVisibility(View.GONE);
+    }
+    
+    private void hideInstalledAppsHeader()
+    {
+    	mInstalledAppsHeader.setVisibility(View.GONE);
+    	mTabs.setVisibility(View.VISIBLE);
+    }
+    //end
 
     public void setApps(ArrayList<ApplicationInfo> list) {
-        mApps = list;
+    	//modify by huangming for main menu show or hide.
+    	mApps.clear();
+    	mAllApps.clear();
+    	mAllApps = list;
+    	for(ApplicationInfo info: mAllApps)
+    	{
+    		info.isHide = PreferencesProvider.getAppIsHide(getContext(), info.componentName.toShortString());
+    		if(mIsAppsHide == info.isHide)
+    		{
+    			mApps.add(info);
+    		}
+    	}
+        //mApps = list;
+    	//end
         //add by xiong.chen for bug WXY-99
         if (CHINA_UNICOM == getContext().getResources().getInteger(
         		R.integer.config_carrier)) {
@@ -2444,6 +2729,14 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private void addAppsWithoutInvalidate(ArrayList<ApplicationInfo> list) {
         // We add it in place, in alphabetical order
         for (ApplicationInfo info : list) {
+        	//add by huangming for app show or hide
+        	mAllApps.add(info);
+        	info.isHide = PreferencesProvider.getAppIsHide(getContext(), info.componentName.toShortString());
+        	if(info.isHide != mIsAppsHide)
+        	{
+        		break;
+        	}
+        	//end
             int index = Collections.binarySearch(mApps, info, LauncherModel.getAppNameComparator());
             if (index < 0) {
                 mApps.add(-(index + 1), info);
@@ -2497,6 +2790,13 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private void removeAppsWithoutInvalidate(ArrayList<ApplicationInfo> list) {
         // loop through all the apps and remove apps that have the same component
         for (ApplicationInfo info : list) {
+        	//add by huangming for app show or hide
+        	int index =  findAppByComponent(mAllApps, info);
+        	if(index > -1)
+        	{
+        		mAllApps.remove(index);
+        	}
+        	//end
             int removeIndex = findAppByComponent(mApps, info);
             if (removeIndex > -1) {
                 mApps.remove(removeIndex);

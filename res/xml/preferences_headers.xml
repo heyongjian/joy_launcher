@@ -15,30 +15,48 @@
 -->
 
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <header android:id="@+id/preferences_homescreen_section"
+    <header android:id="@+id/preferences_application_section"
+            android:title="@string/preferences_interface_title" />
+    
+    <header android:id="@+id/preferences_interface_section"
             android:fragment="com.joy.launcher2.preference.Preferences$HomescreenFragment"
             android:title="@string/preferences_interface_homescreen_title"
-            android:summary="@string/preferences_interface_homescreen_summary" />
+            android:summary="@string/preferences_interface_homescreen_summary"
+            android:icon="@drawable/preference_set_homescreen" />
 
     <header android:id="@+id/preferences_drawer_section"
             android:fragment="com.joy.launcher2.preference.Preferences$DrawerFragment"
             android:title="@string/preferences_interface_drawer_title"
-            android:summary="@string/preferences_interface_drawer_summary" />
+            android:summary="@string/preferences_interface_drawer_summary"
+            android:icon="@drawable/preference_set_drawer" />
 
     <header android:id="@+id/preferences_dock_section"
             android:fragment="com.joy.launcher2.preference.Preferences$DockFragment"
             android:title="@string/preferences_interface_dock_title"
-            android:summary="@string/preferences_interface_dock_summary" />
+            android:summary="@string/preferences_interface_dock_summary" 
+            android:icon="@drawable/preference_set_dock"/>
 
     <header android:id="@+id/preferences_general_section"
             android:fragment="com.joy.launcher2.preference.Preferences$GeneralFragment"
-            android:title="@string/preferences_interface_general_title" />
-
+            android:title="@string/preferences_interface_general_title" 
+            android:icon="@drawable/preference_set_general"/>
+    <header android:id="@+id/preferences_backupandrestore_section"
+            android:title="@string/preferences_backup_recover_title" />
+    
+    <header android:id="@+id/preferences_backup_section"
+           
+            android:title="@string/preferences_backup_title" 
+            android:icon="@drawable/preference_backup"/> 
+            
+    <header android:id="@+id/preferences_recover_section"
+        
+            android:title="@string/preferences_recover_title" 
+            android:icon="@drawable/preference_recover"/> 
     <header android:id="@+id/preferences_application_section"
             android:title="@string/preferences_application_title" />
 
     <header android:id="@+id/preferences_application_version"
-            android:summary="@string/application_copyright" />
+            android:summary="@string/application_copyright" 
+            android:icon="@drawable/preference_aboutme"/>
 
 </preference-headers>

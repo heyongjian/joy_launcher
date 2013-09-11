@@ -41,4 +41,11 @@
     <color name="all_app_view_standar_color5">#ff909e9f</color>
     <!-- add end -->
     <color name="appcustomize_app_backgrounds">#76000000</color>
+    <!-- colors added by huangming -->
+    <color name="yellow">#FFFFCC00</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="black">#FF000000</color>
+    <color name="translucent">#40FFFFFF</color>
+    <color name="joy_preference_category_line_color">#FF7AB900</color>
 </resources>

@@ -185,4 +185,28 @@
     <dimen name="all_app_button_padding_bottom">4dp</dimen>   
 <!-- add by ming.huang at 2013-4-9-->
     <dimen name="smaller_size">-1dp</dimen>   
+    <!-- menu view added by huangming-->
+    <dimen name="menu_item_icon_size">30dip</dimen>
+    <dimen name="menu_item_text_size">18sp</dimen>
+    <dimen name="menu_item_padding_top">8dip</dimen>
+    <dimen name="menu_item_padding_bottom">8dip</dimen>
+    <dimen name="menu_item_padding_left">8dip</dimen>
+    <dimen name="menu_padding_left">40dip</dimen>
+    <dimen name="menu_padding_right">40dip</dimen>
+    <dimen name="menu_item_drawable_padding">8dip</dimen>
+    
+    <!-- add by huangming for app show or hide -->
+    <dimen name="header_padding_top">8dp</dimen>
+    <dimen name="header_padding_bottom">8dp</dimen>
+    <dimen name="header_padding_left">10dp</dimen>
+    <dimen name="header_padding_right">10dp</dimen>
+    <dimen name="header_child_margin_left">8dp</dimen>
+    <dimen name="header_child_margin_right">8dp</dimen>
+    <dimen name="header_child_text_size">20sp</dimen>
+    
+     <!-- add by huangming for installed apps show-->
+    <dimen name="installed_apps_margin_top">6dip</dimen>
+    <dimen name="installed_apps_margin_bottom">6dip</dimen>
+    <dimen name="installed_apps_margin_left">0dip</dimen>
+    <dimen name="installed_apps_margin_right">20dip</dimen>
 </resources>
