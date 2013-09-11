@@ -452,4 +452,9 @@ s -->
     <string name="menu_hide_apps">Hide applications</string>
     <string name="menu_mainmenu_settings">Main menu settings</string>
     
+    <!-- add by huangming for app show or hide -->
+    <string name="header_selected">Selected: </string>
+    <string name="header_sure">Sure</string>
+    <string name="header_cancel">Cancel</string>
+    
 </resources>

@@ -1851,9 +1851,36 @@ public final class Launcher extends Activity
         }
     }
 	
+	//add by huangming for apps show or hide.
+    public void setAppsShowOrHide(boolean isShowOrHide)
+    {
+    	final AppsCustomizePagedView content = 
+    			(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    	content.enterAppShowOrHideMode(isShowOrHide);
+    }
+	
+    public boolean isHideAppsEmpty()
+    {
+    	final AppsCustomizePagedView content = 
+    			(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    	return content.isHideAppsEmpty();
+    }
+    
+    public boolean isShowAppsView()
+    {
+    	final AppsCustomizePagedView content = 
+    			(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    	return content.isShowAppsView();
+    }
+    //end
+	
 	//added by huangming for menu.
 	public boolean onMenuOpened(int featureId, Menu menu) 
 	{
+		if(AppsCustomizePagedView.mIsShowOrHideEidt)
+		{
+			return false;
+		}
 	    if(menuView != null)
     	{
 				int visible = menuView.getVisibility();
@@ -2192,7 +2219,14 @@ public final class Launcher extends Activity
 
     @Override
     public void onBackPressed() {
-    	if(menuView != null && menuView.getVisibility() != View.GONE)
+    	//modify by huangming for app show or hide
+    	if(AppsCustomizePagedView.mIsShowOrHideEidt)
+    	{
+    		final AppsCustomizePagedView content = 
+    				(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
+    		content.exitAppShowOrHideMode();
+    	}
+    	else if(menuView != null && menuView.getVisibility() != View.GONE)
     	{
     		menuView.dismiss(true);
     	}

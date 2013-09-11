@@ -47,8 +47,9 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	private final static int MENU_ITEM_IN_ALLAPP = 1;
 	private final static int MENU_ITEM_IN_BOTH = 2;
 	
-	private final static int MENU_ADD_TO_DESKTOP = 0;
-	private final static int MENU_WALLPAPER = MENU_ADD_TO_DESKTOP+1;
+	/*private final static int MENU_ADD_TO_DESKTOP = 0;
+	private final static int MENU_WALLPAPER = MENU_ADD_TO_DESKTOP+1;*/
+	private final static int MENU_WALLPAPER = 0;
 	private final static int MENU_MANAGE_APPLICATION = MENU_WALLPAPER + 1;
 	private final static int MENU_EDIT_SCREEN = MENU_MANAGE_APPLICATION + 1;
 	private final static int MENU_DESKTOP_SETTINGS = MENU_EDIT_SCREEN + 1;
@@ -122,10 +123,8 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 
 	private void setItemsEnable()
 	{
-		//boolean isHideAppsEmpty = launcher.isHideAppsEmpty();
-		//boolean isShowAppsView = launcher.isShowAppsView();
-		boolean isHideAppsEmpty = true;
-		boolean isShowAppsView = true;
+		boolean isHideAppsEmpty = launcher.isHideAppsEmpty();
+		boolean isShowAppsView = launcher.isShowAppsView();
 		for(int i = 0; i < itemsAll.size(); i++)
 		{
 			MenuItemInfo info = itemsAll.get(i);
@@ -519,9 +518,9 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 		Intent data = menuInfo.intent;
 		switch(selectId)
 		{
-		case MENU_ADD_TO_DESKTOP:
+		/*case MENU_ADD_TO_DESKTOP:
 			//launcher.showAddToDesktop();
-			break;
+			break;*/
 		case MENU_WALLPAPER:
 			if(data != null && launcher != null)
 			{
@@ -549,13 +548,13 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 		case MENU_SHOW_APPS:
 			if(launcher != null)
 			{
-				//launcher.setAppsShowOrHide(true);
+				launcher.setAppsShowOrHide(true);
 			}
 			break;
 		case MENU_HIDE_APPS:
 			if(launcher != null)
 			{
-				//launcher.setAppsShowOrHide(false);
+				launcher.setAppsShowOrHide(false);
 			}
 			break;
 		case MENU_MAINMENU_SETTINGS:

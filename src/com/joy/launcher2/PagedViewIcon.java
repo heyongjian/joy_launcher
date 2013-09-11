@@ -17,7 +17,11 @@
 package com.joy.launcher2;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -39,6 +43,12 @@ public class PagedViewIcon extends TextView {
     private boolean mLockDrawableState = false;
 
     private Bitmap mIcon;
+    //add for huangming for app show or hide
+    private Rect mDeleteRect;
+    private Drawable mSelectedDrawable;
+    private Drawable mUnSelectedDrawable;
+    private boolean mSelected = false;
+    //end
 
     public PagedViewIcon(Context context) {
         this(context, null);
@@ -50,6 +60,12 @@ public class PagedViewIcon extends TextView {
 
     public PagedViewIcon(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        //add for huangming for app show or hide
+        final Resources r = context.getResources();
+        mDeleteRect = new Rect();
+        mSelectedDrawable = r.getDrawable(R.drawable.app_selected_on);
+        mUnSelectedDrawable = r.getDrawable(R.drawable.app_selected_off);
+        //end
     }
 
     public void applyFromApplicationInfo(ApplicationInfo info, boolean scaleUp,
@@ -89,4 +105,51 @@ public class PagedViewIcon extends TextView {
             setAlpha(1f);
         }
     }
+    
+    //add by huangming for app show or hide.
+    
+    @Override
+    protected void onDraw(Canvas canvas) {
+    	super.onDraw(canvas);
+    	if(AppsCustomizePagedView.mIsShowOrHideEidt)
+        {
+        	Drawable d = null;
+        	if(mSelected)
+        	{
+        		d = mSelectedDrawable;
+        	}
+        	else
+        	{
+        		d = mUnSelectedDrawable;
+        	}
+        	if(d == null)return;
+            int width = canvas.getWidth();
+            int height = canvas.getHeight();
+            int drawableWidth = d.getIntrinsicWidth();
+            int drawableHeight = d.getIntrinsicHeight();
+            mDeleteRect.set(width - drawableWidth, 0, width, drawableHeight);
+            canvas.save();
+            canvas.translate(mScrollX, mScrollY);
+            d.setBounds(mDeleteRect);
+            d.draw(canvas);
+            canvas.translate(-mScrollX,- mScrollY);
+            canvas.restore();
+        } 
+    }
+    
+    public void setSelected(boolean selected)
+    {
+    	if(mSelected != selected)
+    	{
+    		mSelected = selected;
+    		invalidate();
+    	}
+    }
+    
+    public boolean getSelected()
+    {
+    	return mSelected;
+    }
+    //end
+    
 }
