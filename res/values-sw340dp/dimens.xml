@@ -42,4 +42,7 @@
     
 <!-- add by ming.huang at 2013-4-9-->
     <dimen name="smaller_size">90dp</dimen>
+    <!-- menu view added by huangming-->
+    <dimen name="menu_item_icon_size">35dip</dimen>
+    <dimen name="menu_item_text_size">20sp</dimen>
 </resources>
