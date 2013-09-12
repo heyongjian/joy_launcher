@@ -834,6 +834,11 @@ public final class Launcher extends Activity
                 addAppWidgetImpl(appWidgetId, mPendingAddInfo, null, mPendingAddWidgetInfo);
             }
             return;
+        }//add widget by wanghao
+        else if((requestCode == REQUEST_PICK_APPWIDGET||requestCode == REQUEST_CREATE_APPWIDGET)&&resultCode == RESULT_OK){
+        	addAppWidget(requestCode,data);
+        	mWaitingForResult = false;
+        	return;
         }
         boolean delayExitSpringLoadedMode = false;
         boolean isWidgetDrop = (requestCode == REQUEST_PICK_APPWIDGET ||
@@ -2257,9 +2262,6 @@ public final class Launcher extends Activity
         pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
         startActivityForResult(pickIntent, REQUEST_PICK_APPWIDGET);
-        
-        mPendingAddInfo.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
-        mPendingAddInfo.screen = getCurrentWorkspaceScreen();
     }
     /**
      * 弹出添加在线文件的窗�?
