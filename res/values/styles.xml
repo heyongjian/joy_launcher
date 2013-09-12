@@ -189,4 +189,9 @@
     </style>
      <style name="joy_prefrences_type" parent="android:Theme.Holo.Light">
 	</style>
+	
+     <style name="joy_prefrences_icon_style" parent="android:Theme.Holo.Light">
+	    <item name="android:windowShowWallpaper">true</item>
+	    <item name="android:windowBackground">@android:color/transparent</item>
+	</style>
 </resources>

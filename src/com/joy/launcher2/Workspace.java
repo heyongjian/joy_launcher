@@ -66,7 +66,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.preference.PreferencesProvider.Size;
 import com.joy.launcher2.R;
 import com.joy.launcher2.FolderIcon.FolderRingAnimator;
 import com.joy.launcher2.LauncherSettings.Favorites;
@@ -319,6 +320,13 @@ public class Workspace extends PagedView
     private static final int SCROLLING_INDICATOR_TOP = 1;
     private static final int SCROLLING_INDICATOR_BOTTOM = 2;
     private static final int VERSION_CODES_JELLY_BEAN = 16;
+    
+    //add by huangming for icon size    
+    private int mPaddingLeft = Integer.MAX_VALUE;
+    private int mPaddingTop = Integer.MAX_VALUE;
+    private int mPaddingRight = Integer.MAX_VALUE;
+    private int mPaddingBottom = Integer.MAX_VALUE;
+    private Size mIconSize;
 
     /**
      * Used to inflate the Workspace from XML.
@@ -516,6 +524,11 @@ public class Workspace extends PagedView
         setChildrenDrawnWithCacheEnabled(true);
 
         final Resources res = getResources();
+        //add by huangming for icon size
+        Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+        		context, 
+        		res.getString(R.string.config_defaultSize));
+        mIconSize = iconSize;
 
         LayoutInflater inflater =
                 (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -780,6 +793,38 @@ public class Workspace extends PagedView
         if (spanX < 0 && spanY < 0) {
             lp.isLockedToGrid = false;
         }
+        //add by huangming for hotseat adaptation.
+        if(child instanceof BubbleTextView && mPaddingLeft == Integer.MAX_VALUE)
+        {
+        	mPaddingLeft = child.getPaddingLeft();
+        	mPaddingTop = child.getPaddingTop();
+        	mPaddingRight = child.getPaddingRight();
+        	mPaddingBottom = child.getPaddingBottom();
+        }
+        if(container == LauncherSettings.Favorites.CONTAINER_HOTSEAT)
+        {
+        	
+        	if(child instanceof BubbleTextView && mIconSize == Size.Large)
+        	{
+        		BubbleTextView btv = (BubbleTextView)child;
+        		btv.setPadding(mPaddingLeft, 
+        				mPaddingTop/ 4, 
+        				mPaddingRight, 
+        				mPaddingBottom);
+        	}
+        	
+        }else if(container == LauncherSettings.Favorites.CONTAINER_DESKTOP)
+        {
+        	if(child instanceof BubbleTextView)
+        	{
+        		BubbleTextView btv = (BubbleTextView)child;
+        		btv.setPadding(mPaddingLeft, 
+        				mPaddingTop, 
+        				mPaddingRight, 
+        				mPaddingBottom);
+        	}
+        }
+        //end
 
         // Get the canonical child id to uniquely represent this view in this screen
         int childId = LauncherModel.getCellLayoutChildId(container, screen, x, y);

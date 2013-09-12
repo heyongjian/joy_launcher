@@ -197,5 +197,11 @@
                 </action>
             </intent-filter>
         </service>
+        
+        <activity
+            android:name=".IconStyleActivity"
+            android:label="@string/icon_style_activity_title"
+            android:theme="@style/joy_prefrences_icon_style" >
+        </activity>
     </application>
 </manifest>
