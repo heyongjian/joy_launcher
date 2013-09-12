@@ -40,12 +40,15 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/preferences_interface_drawer_scrolling_category"
         android:layout="@layout/joy_preference_category">
-        <ListPreference android:key="ui_drawer_scrolling_transition_effect"
+        <com.joy.launcher2.preference.iconlistpreference.IconListPreference android:key="ui_drawer_scrolling_transition_effect"
             android:title="@string/preferences_interface_drawer_scrolling_transition_effect_title"
             android:summary="@string/preferences_interface_drawer_scrolling_transition_effect_summary"
-            android:entries="@array/preferences_interface_drawer_scrolling_transition_effect_entries"
-            android:entryValues="@array/preferences_interface_drawer_scrolling_transition_effect_values"
-            android:defaultValue="@string/config_drawerDefaultTransitionEffect" />
+            launcher:list_entries="@array/preferences_interface_drawer_scrolling_transition_effect_entries"
+            launcher:list_entryValues="@array/preferences_interface_drawer_scrolling_transition_effect_values"
+            launcher:list_entryDrawables="@array/preferences_interface_drawer_scrolling_transition_effect_drawables"
+            launcher:list_defaultValue="@string/config_drawerDefaultTransitionEffect"   >
+        </com.joy.launcher2.preference.iconlistpreference.IconListPreference>
+
 <!--         <CheckBoxPreference android:key="ui_drawer_scrolling_fade_adjacent_screens" -->
 <!--             android:title="@string/preferences_interface_drawer_scrolling_fade_adjacent_screens_title" -->
 <!--             android:summary="@string/preferences_interface_drawer_scrolling_fade_adjacent_screens_summary" /> -->
@@ -68,6 +71,25 @@
 <!--             android:defaultValue="0" -->
 <!--             android:dependency="ui_drawer_indicator_enable" /> -->
 <!--     </PreferenceCategory> -->
+
+ <!-- add by wanghao  -->
+ 	<PreferenceCategory
+        android:key="ui_drawer_setting"
+        android:layout="@layout/joy_preference_category"
+        android:title="@string/preferences_interface_drawer_setting_title" >
+        <com.joy.launcher2.preference.DoubleNumberPickerPreference
+            android:key="ui_drawer_grid"
+            android:summary="@string/preferences_interface_drawer_setting_row_column_num_summary"
+            android:title="@string/preferences_interface_drawer_setting_row_column_num_title"
+            launcher:defaultValue1="@integer/config_drawer_Rows"
+            launcher:defaultValue2="@integer/config_drawer_Columns"
+            launcher:max1="6"
+            launcher:max2="5"
+            launcher:min1="3"
+            launcher:min2="3"
+            launcher:pickerTitle1="@string/preferences_interface_homescreen_general_grid_rows_title"
+            launcher:pickerTitle2="@string/preferences_interface_homescreen_general_grid_columns_title" />
+    </PreferenceCategory>
 
 <!-- add by xiong.chen for app background -->
     <PreferenceCategory android:title="@string/all_app_view_background_title"

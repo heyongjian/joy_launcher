@@ -20,7 +20,7 @@
     android:title="@string/preferences_interface_homescreen_title">
     <PreferenceCategory android:title="@string/preferences_interface_homescreen_general_category"
         android:layout="@layout/joy_preference_category">
-        <!-- <com.joy.launcher2.preference.DoubleNumberPickerPreference android:key="ui_homescreen_grid"
+        <com.joy.launcher2.preference.DoubleNumberPickerPreference android:key="ui_homescreen_grid"
             android:title="@string/preferences_interface_homescreen_general_grid_title"
             android:summary="@string/preferences_interface_homescreen_general_grid_summary"
             launcher:pickerTitle1="@string/preferences_interface_homescreen_general_grid_rows_title"
@@ -30,7 +30,7 @@
             launcher:max1="5"
             launcher:min1="3"
             launcher:max2="5"
-            launcher:min2="3" /> -->
+            launcher:min2="3" />
         <com.joy.launcher2.preference.NumberPickerPreference android:key="ui_homescreen_screens"
             android:title="@string/preferences_interface_homescreen_general_screens_title"
             android:summary="@string/preferences_interface_homescreen_general_screens_summary"
@@ -57,12 +57,18 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/preferences_interface_homescreen_scrolling_category"
         android:layout="@layout/joy_preference_category">
-        <ListPreference android:key="ui_homescreen_scrolling_transition_effect"
-            android:title="@string/preferences_interface_homescreen_scrolling_transition_effect_title"
+		<com.joy.launcher2.preference.iconlistpreference.IconListPreference
+		    android:key="ui_homescreen_scrolling_transition_effect"
             android:summary="@string/preferences_interface_homescreen_scrolling_transition_effect_summary"
-            android:entries="@array/preferences_interface_homescreen_scrolling_transition_effect_entries"
-            android:entryValues="@array/preferences_interface_homescreen_scrolling_transition_effect_values"
-            android:defaultValue="@string/config_workspaceDefaultTransitionEffect" />
+            android:title="@string/preferences_interface_homescreen_scrolling_transition_effect_title"
+            launcher:list_defaultValue="@string/config_workspaceDefaultTransitionEffect"
+            launcher:list_entries="@array/preferences_interface_homescreen_scrolling_transition_effect_entries"
+            launcher:list_entryValues="@array/preferences_interface_homescreen_scrolling_transition_effect_values"
+            launcher:list_entryDrawables="@array/preferences_interface_homescreen_scrolling_transition_effect_drawables"
+             >
+        </com.joy.launcher2.preference.iconlistpreference.IconListPreference>
+
+
         <CheckBoxPreference android:key="ui_homescreen_scrolling_scroll_wallpaper"
             android:title="@string/preferences_interface_homescreen_scrolling_scroll_wallpaper_title"
             android:summary="@string/preferences_interface_homescreen_scrolling_scroll_wallpaper_summary"
