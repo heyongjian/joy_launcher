@@ -16,12 +16,17 @@
 
 package com.joy.launcher2;
 
+import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.preference.PreferencesProvider.Size;
+import com.joy.launcher2.preference.PreferencesProvider.TextStyle;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -65,6 +70,41 @@ public class PagedViewIcon extends TextView {
         mDeleteRect = new Rect();
         mSelectedDrawable = r.getDrawable(R.drawable.app_selected_on);
         mUnSelectedDrawable = r.getDrawable(R.drawable.app_selected_off);
+        //end
+        
+      //add by huangming for Desktop appearance
+        Size textSize = PreferencesProvider.Interface.Homescreen.getIconTextSize(
+        		context, 
+        		context.getResources().getString(R.string.config_defaultSize));
+        int defaultSize = context.getResources().getDimensionPixelSize(R.dimen.icon_text_size_default);
+        if(textSize == Size.Large)
+        {
+        	defaultSize = (int)(defaultSize * Utilities.LARGE_RATIO);
+        }
+        else if(textSize == Size.Small)
+        {
+        	defaultSize = (int)(defaultSize * Utilities.SMALL_RATIO);
+        }
+        setTextSize(defaultSize);
+        
+        TextStyle textStyle = PreferencesProvider.Interface.Homescreen.getIconTextStyle(
+        		getContext(), 
+        		TextStyle.Marquee.toString());
+        if(textStyle == TextStyle.Marquee)
+        {
+        	setSingleLine();
+        	setEllipsize(TruncateAt.MARQUEE);
+        }
+        else if(textStyle == TextStyle.Ellipsis)
+        {
+        	setSingleLine();
+        	setEllipsize(TruncateAt.END);
+        }
+        else if(textStyle == TextStyle.TwoLines)
+        {
+        	setSingleLine(false);
+        	setMaxLines(2);
+        }
         //end
     }
 

@@ -57,6 +57,7 @@ import com.joy.launcher2.R;
 import com.joy.launcher2.FolderIcon.FolderRingAnimator;
 import com.joy.launcher2.Workspace.TransitionEffect;
 import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.preference.PreferencesProvider.Size;
 
 public class CellLayout extends ViewGroup {
     private static final String TAG = "Joy.CellLayout";
@@ -358,6 +359,33 @@ public class CellLayout extends ViewGroup {
 
         requestLayout();
     }
+    
+    //add by huangming for folder adaptation.
+    public void setCellDimensionsChanged()
+    {
+    	Context context = getContext();
+    	if(context != null)
+    	{
+    		Resources res = context.getResources();
+    		if(res != null)
+    		{
+    			Size textSize = PreferencesProvider.Interface.Homescreen.getIconTextSize(
+    	        		context, 
+    	        		res.getString(R.string.config_defaultSize));
+    			Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+    	        		context, 
+    	        		res.getString(R.string.config_defaultSize));
+    			float radio = 1.0f;
+    			if((textSize == Size.Large || iconSize == Size.Large) && iconSize != Size.Small)
+    	        {
+    	        	radio *= Utilities.LARGE_RATIO;
+    	        } 	    	
+    	        mOriginalCellHeight =
+    	                mCellHeight = (int)(mCellHeight * radio);
+    		}
+    	}
+    }
+    //end
 
     private void invalidateBubbleTextView(BubbleTextView icon) {
         final int padding = icon.getPressedOrFocusedBackgroundPadding();

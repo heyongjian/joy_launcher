@@ -363,6 +363,21 @@ s -->
     <string name="preferences_interface_homescreen_indicator_position_title">Indicator position</string>
     <string name="preferences_interface_homescreen_indicator_position_summary">Choose where to show the indicator on the screen</string>
 
+    <!-- add by huangming for Desktop appearance  -->
+    <string name="preferences_interface_homescreen_appearance_category">Desktop appearance</string>
+    <string name="preferences_interface_homescreen_icon_size_summary">Show current icon size</string>
+    <string name="preferences_interface_homescreen_icon_size_title">Icon size</string>
+    <string name="preferences_interface_homescreen_row_column_num_title">Desktop ranks number</string>
+    <string name="preferences_interface_homescreen_row_column_num_summary">Show the desktop ranks number</string>
+    <string name="preferences_interface_homescreen_icon_text_size_summary">Show current icon text size</string>
+    <string name="preferences_interface_homescreen_icon_text_size_title">Icon text size</string>
+    <string name="icon_style_activity_title">Icon style</string>
+    <string name="preferences_interface_homescreen_icon_style_title">Icon style</string>
+    <string name="preferences_interface_homescreen_icon_style_summary">Show the icon style</string>
+    <string name="icon_text_style_prompt">Select the icon text style.</string>
+    <string name="icon_style_sure">OK</string>
+    <string name="icon_style_cancel">Cancel</string>
+    
     <!-- Drawer -->
     <string name="preferences_interface_drawer_title">Drawer</string>
     <string name="preferences_interface_drawer_summary">Apps and widgets drawer</string>

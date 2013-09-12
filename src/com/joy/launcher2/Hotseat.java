@@ -20,7 +20,9 @@ package com.joy.launcher2;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -31,6 +33,7 @@ import android.view.ViewGroup;
 
 import com.joy.launcher2.R;
 import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.preference.PreferencesProvider.Size;
 
 public class Hotseat extends PagedView {
     private int mCellCount;
@@ -151,11 +154,27 @@ public class Hotseat extends PagedView {
     		{
     			CellLayout cl = (CellLayout)child;
     			cl.removeAllViewsInLayout();
+    			//modify by huangming for icon size
     			BubbleTextView allAppsButton = (BubbleTextView)
     	                inflater.inflate(R.layout.application, cl, false);
-    			allAppsButton.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+    	        Drawable d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
+    	        Bitmap b = Utilities.createIconBitmap(d, context);
     	        allAppsButton.setCompoundDrawablesWithIntrinsicBounds(null,
-    	                context.getResources().getDrawable(R.drawable.all_apps_button_icon), null, null);
+    	                new FastBitmapDrawable(b), null, null);
+    	        //add by huangming for hotseat adaptation.
+    	        Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+    	        		context, 
+    	        		context.getResources().getString(R.string.config_defaultSize));
+    	        if(iconSize == Size.Large)
+    	        {
+    	        	allAppsButton.setPadding(allAppsButton.getPaddingLeft(), 
+    	        			allAppsButton.getPaddingTop() / 4, 
+    	        			allAppsButton.getPaddingRight(), 
+    	        			allAppsButton.getPaddingBottom());
+    	        }
+    			//allAppsButton.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+    	       /* allAppsButton.setCompoundDrawablesWithIntrinsicBounds(null,
+    	                context.getResources().getDrawable(R.drawable.all_apps_button_icon), null, null);*/
     	        allAppsButton.setContentDescription(context.getString(R.string.all_apps_button_label));
     	        allAppsButton.setOnTouchListener(new View.OnTouchListener() {
     	            @Override
