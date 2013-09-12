@@ -464,4 +464,25 @@ s -->
      <!-- add by huangming for installed apps show -->
     <string name="header_installed_app_text">Installed Applications</string>
     
+    <!-- online Folder  ,add by wanghao -->
+    <string name="joy_game_folder">game folder</string>
+    <string name="joy_application_folder">application folder</string>
+    <string name="joy_foler_more_app">more</string>
+    <string name="joy_foler_refresh">refreshr</string>
+    <string name="joy_foler_hot_app">[hot app]</string>
+    <string name="menu_add_folder">add</string>
+    <string name="online_folder">online folder</string>
+    <string name="add_to_desktop">add to desktop</string>
+    <string name="add_widget_to_desktop">add widget to desktop</string>
+	<string name="add_folder_to_desktop">add online folder to desktop</string>
+	<string name="tip">tip</string>
+	<string name="tip_message">download the application?</string>
+	<string name="tip_confirm">confirm</string>
+	<string name="tip_cancle">cancle</string>
+ 	<string name="virtualshortcut_test">virtual shortcut test</string>
+ 	<string name="network_not_connected">please set up the network</string>
+ 	<string name="download_error">after the network is not to force, please set up the network again</string>
+ 	<string name="loading">loading...</string>
+ 	
+ 	
 </resources>

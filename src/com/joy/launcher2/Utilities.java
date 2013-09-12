@@ -101,6 +101,13 @@ final class Utilities {
         }
     }
 
+    //add by huangming for icon size
+    static Bitmap createIconBitmap(Drawable icon, Context context)
+    {
+    	return createIconBitmap(icon, context, null);
+    }
+    //end
+    
     /**
      * Returns a bitmap suitable for the all apps view.
      */

@@ -50,6 +50,7 @@ import android.widget.TextView;
 
 import com.joy.launcher2.R;
 import com.joy.launcher2.FolderInfo.FolderListener;
+import com.joy.launcher2.download.DownloadInfo;
 import com.joy.launcher2.preference.PreferencesProvider;
 
 /**
@@ -98,7 +99,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     private boolean mDeleteFolderOnDropCompleted = false;
     private boolean mSuppressFolderDeletion = false;
     private boolean mItemAddedBackToSelfViaIcon = false;
-    FolderEditText mFolderName;
+    public FolderEditText mFolderName;
     private float mFolderIconPivotX;
     private float mFolderIconPivotY;
 
@@ -201,13 +202,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         Object tag = v.getTag();
         if (tag instanceof ShortcutInfo) {
             // refactor this code from Folder
-            ShortcutInfo item = (ShortcutInfo) tag;
-            int[] pos = new int[2];
-            v.getLocationOnScreen(pos);
-            item.intent.setSourceBounds(new Rect(pos[0], pos[1],
-                    pos[0] + v.getWidth(), pos[1] + v.getHeight()));
-
-            mLauncher.startActivitySafely(v, item.intent, item);
+        	mLauncher.OpenShortcut(v);
         }
     }
 
@@ -305,7 +300,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         mDragController = dragController;
     }
 
-    void setFolderIcon(FolderIcon icon) {
+    public void setFolderIcon(FolderIcon icon) {
         mFolderIcon = icon;
     }
 
@@ -357,7 +352,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         }
     }
 
-    void bind(FolderInfo info) {
+    public void bind(FolderInfo info) {
         mInfo = info;
         ArrayList<ShortcutInfo> children = info.contents;
         ArrayList<ShortcutInfo> overflow = new ArrayList<ShortcutInfo>();
@@ -567,6 +562,12 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         boolean insert = false;
         textView.setOnKeyListener(new FolderKeyEventListener());
         mContent.addViewToCellLayout(textView, insert ? 0 : -1, (int)item.id, lp, true);
+        
+      //add by wanghao
+        DownloadInfo downinfo = item.getDownLoadInfo();
+        if(downinfo != null){
+        	downinfo.setView(textView);
+        }
         return true;
     }
 
@@ -765,7 +766,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return null;
     }
 
-    private void setupContentDimensions(int count) {
+    protected void setupContentDimensions(int count) {
         ArrayList<View> list = getItemsInReadingOrder();
 
         int countX = mContent.getCountX();
@@ -798,12 +799,19 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return getItemCount() >= mMaxNumItems;
     }
 
+    protected int getFolderWidth(){
+    	int width = getPaddingLeft() + getPaddingRight() + mContent.getDesiredWidth();
+    	return width;
+    }
+    protected int getFolderHeight(){
+    	 int height = getPaddingTop() + getPaddingBottom() + mContent.getDesiredHeight() + mFolderNameHeight;
+    	return height;
+    }
     private void centerAboutIcon() {
-        DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
 
-        int width = getPaddingLeft() + getPaddingRight() + mContent.getDesiredWidth();
-        int height = getPaddingTop() + getPaddingBottom() + mContent.getDesiredHeight()
-                + mFolderNameHeight;
+        int width = getFolderWidth();
+        int height = getFolderHeight();
+
         DragLayer parent = (DragLayer) mLauncher.findViewById(R.id.drag_layer);
 
         float scale = parent.getDescendantRectRelativeToSelf(mFolderIcon, mTempRect);
@@ -847,11 +855,16 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         mFolderIconPivotY = (int) (mFolderIcon.getMeasuredHeight() *
                 (1.0f * folderPivotY / height));
 
-        lp.width = width;
+        setFolderLayoutParams(left, top, width, height);
+    }
+    protected void setFolderLayoutParams(int left,int top,int width,int height) {
+    	
+    	DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
+    	lp.width = width;
         lp.height = height;
         lp.x = left;
         lp.y = top;
-    }
+	}
 
     float getPivotXForIconAnimation() {
         return mFolderIconPivotX;
@@ -860,7 +873,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return mFolderIconPivotY;
     }
 
-    private void setupContentForNumItems(int count) {
+    protected void setupContentForNumItems(int count) {
         setupContentDimensions(count);
 
         DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
@@ -873,9 +886,11 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     }
 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width = getPaddingLeft() + getPaddingRight() + mContent.getDesiredWidth();
-        int height = getPaddingTop() + getPaddingBottom() + mContent.getDesiredHeight()
-                + mFolderNameHeight;
+//        int width = getPaddingLeft() + getPaddingRight() + mContent.getDesiredWidth();
+//        int height = getPaddingTop() + getPaddingBottom() + mContent.getDesiredHeight()
+//                + mFolderNameHeight;
+    	int width = getFolderWidth();
+    	int height = getFolderHeight();
 
         int contentWidthSpec = MeasureSpec.makeMeasureSpec(mContent.getDesiredWidth(),
                 MeasureSpec.EXACTLY);
@@ -943,7 +958,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         mSuppressFolderDeletion = false;
     }
 
-    private void replaceFolderWithFinalItem() {
+    protected void replaceFolderWithFinalItem() {
         // Add the last remaining child to the workspace in place of the folder
         Runnable onCompleteRunnable = new Runnable() {
             @Override

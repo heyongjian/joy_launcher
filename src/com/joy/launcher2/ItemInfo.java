@@ -28,7 +28,11 @@ import android.util.Log;
 /**
  * Represents an item in the launcher.
  */
-class ItemInfo {
+public class ItemInfo {
+    public static final int LOCAL = -1;
+    public static final int ONLINE = LOCAL+1;
+    public static final int ONLINE_1 = ONLINE+1;
+    public int natureId = LOCAL;
 
     static final int NO_ID = -1;
 
@@ -96,7 +100,7 @@ class ItemInfo {
     /**
      * Title of the item
      */
-    CharSequence title;
+    public CharSequence title;
 
     /**
      * The position of the item in a drag-and-drop operation.
@@ -142,6 +146,7 @@ class ItemInfo {
     void onAddToDatabase(ContentValues values) { 
         values.put(LauncherSettings.BaseLauncherColumns.ITEM_TYPE, itemType);
         values.put(LauncherSettings.Favorites.CONTAINER, container);
+        values.put(LauncherSettings.Favorites.NATURE_ID, natureId);
         values.put(LauncherSettings.Favorites.SCREEN, screen);
         values.put(LauncherSettings.Favorites.CELLX, cellX);
         values.put(LauncherSettings.Favorites.CELLY, cellY);
