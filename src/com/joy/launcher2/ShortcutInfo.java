@@ -25,10 +25,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.joy.launcher2.download.DownloadInfo;
 /**
  * Represents a launchable icon on the workspaces and in folders.
  */
-class ShortcutInfo extends ItemInfo {
+public class ShortcutInfo extends ItemInfo {
 
     /**
      * The intent used to start the application.
@@ -63,7 +64,7 @@ class ShortcutInfo extends ItemInfo {
      * The application icon.
      */
     private Bitmap mIcon;
-
+    private DownloadInfo mDownloadInfo;
     /**
      * Title change listener
      */
@@ -103,6 +104,13 @@ class ShortcutInfo extends ItemInfo {
             updateIcon(iconCache);
         }
         return mIcon;
+    }
+    public void setDownLoadInfo(DownloadInfo info){
+    	mDownloadInfo = info;
+    }
+    
+    public DownloadInfo getDownLoadInfo(){
+    	return mDownloadInfo;
     }
 
     /** Returns the package name that the shortcut's intent will resolve to, or an empty string if

@@ -243,6 +243,20 @@ public class LauncherModel extends BroadcastReceiver {
     }
 
     /**
+     * add by wanghao
+     * @param item
+     */
+    static boolean checeItemInDatabase(final ItemInfo item){
+    	final long itemId = item.id;
+    	ItemInfo modelItem = sBgItemsIdMap.get(itemId);
+        if (modelItem != null) {
+        	if (item == modelItem) {
+        		return true;
+			}
+        }
+        return false;
+    }
+    /**
      * Adds an item to the DB if it was not created previously, or move it to a new
      * <container, screen, cellX, cellY>
      */
@@ -386,6 +400,7 @@ public class LauncherModel extends BroadcastReceiver {
 
         final ContentValues values = new ContentValues();
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
+        values.put(LauncherSettings.Favorites.NATURE_ID, item.natureId);
         values.put(LauncherSettings.Favorites.CELLX, item.cellX);
         values.put(LauncherSettings.Favorites.CELLY, item.cellY);
         values.put(LauncherSettings.Favorites.SCREEN, item.screen);
@@ -419,6 +434,7 @@ public class LauncherModel extends BroadcastReceiver {
 
         final ContentValues values = new ContentValues();
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
+        values.put(LauncherSettings.Favorites.NATURE_ID, item.natureId);
         values.put(LauncherSettings.Favorites.CELLX, item.cellX);
         values.put(LauncherSettings.Favorites.CELLY, item.cellY);
         values.put(LauncherSettings.Favorites.SPANX, item.spanX);
@@ -464,12 +480,13 @@ public class LauncherModel extends BroadcastReceiver {
         ArrayList<ItemInfo> items = new ArrayList<ItemInfo>();
         final ContentResolver cr = context.getContentResolver();
         Cursor c = cr.query(LauncherSettings.Favorites.CONTENT_URI, new String[] {
-                LauncherSettings.Favorites.ITEM_TYPE, LauncherSettings.Favorites.CONTAINER,
+                LauncherSettings.Favorites.ITEM_TYPE, LauncherSettings.Favorites.CONTAINER,LauncherSettings.Favorites.NATURE_ID,
                 LauncherSettings.Favorites.SCREEN, LauncherSettings.Favorites.CELLX, LauncherSettings.Favorites.CELLY,
                 LauncherSettings.Favorites.SPANX, LauncherSettings.Favorites.SPANY }, null, null, null);
 
         final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
         final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
+        final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
         final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
         final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
         final int cellYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLY);
@@ -484,6 +501,7 @@ public class LauncherModel extends BroadcastReceiver {
                 item.spanX = c.getInt(spanXIndex);
                 item.spanY = c.getInt(spanYIndex);
                 item.container = c.getInt(containerIndex);
+                item.natureId = c.getInt(natureIdIndex);//wanghao
                 item.itemType = c.getInt(itemTypeIndex);
                 item.screen = c.getInt(screenIndex);
 
@@ -513,6 +531,7 @@ public class LauncherModel extends BroadcastReceiver {
                 final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
                 final int titleIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.TITLE);
                 final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
+                final int natuareidIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
                 final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
                 final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
                 final int cellYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLY);
@@ -528,6 +547,7 @@ public class LauncherModel extends BroadcastReceiver {
                     folderInfo.title = c.getString(titleIndex);
                     folderInfo.id = id;
                     folderInfo.container = c.getInt(containerIndex);
+                    folderInfo.natureId = c.getInt(natuareidIndex);
                     folderInfo.screen = c.getInt(screenIndex);
                     folderInfo.cellX = c.getInt(cellXIndex);
                     folderInfo.cellY = c.getInt(cellYIndex);
@@ -1315,6 +1335,8 @@ public class LauncherModel extends BroadcastReceiver {
                             LauncherSettings.Favorites.ICON_RESOURCE);
                     final int containerIndex = c.getColumnIndexOrThrow(
                             LauncherSettings.Favorites.CONTAINER);
+                final int natureidIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.NATURE_ID);
                     final int itemTypeIndex = c.getColumnIndexOrThrow(
                             LauncherSettings.Favorites.ITEM_TYPE);
                     final int appWidgetIdIndex = c.getColumnIndexOrThrow(
@@ -1350,9 +1372,13 @@ public class LauncherModel extends BroadcastReceiver {
                                 } catch (URISyntaxException e) {
                                     continue;
                                 }
+                            int shortcutType = (Integer)intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
 
-                            case LauncherSettings.Favorites.ITEM_TYPE_ALLAPPS:
-
+                            if(shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL||
+                            		shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL){
+                            	//load from db
+                            	info = getShortcutInfo(c, context, iconIndex, titleIndex);
+                            } else 
                                 if (itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
                                     info = getShortcutInfo(manager, intent, context, c, iconIndex,
                                             titleIndex, mLabelCache);
@@ -1384,6 +1410,7 @@ public class LauncherModel extends BroadcastReceiver {
                                     info.id = c.getLong(idIndex);
                                     container = c.getInt(containerIndex);
                                     info.container = container;
+                                info.natureId = c.getInt(natureidIndex);
                                     info.screen = c.getInt(screenIndex);
                                     info.cellX = c.getInt(cellXIndex);
                                     info.cellY = c.getInt(cellYIndex);
@@ -1430,6 +1457,7 @@ public class LauncherModel extends BroadcastReceiver {
                                 folderInfo.id = id;
                                 container = c.getInt(containerIndex);
                                 folderInfo.container = container;
+                                folderInfo.natureId = c.getInt(natureidIndex);//wanghao
                                 folderInfo.screen = c.getInt(screenIndex);
                                 folderInfo.cellX = c.getInt(cellXIndex);
                                 folderInfo.cellY = c.getInt(cellYIndex);
@@ -1473,6 +1501,8 @@ public class LauncherModel extends BroadcastReceiver {
                                     appWidgetInfo.cellY = c.getInt(cellYIndex);
                                     appWidgetInfo.spanX = c.getInt(spanXIndex);
                                     appWidgetInfo.spanY = c.getInt(spanYIndex);
+                                    appWidgetInfo.natureId = c.getInt(natureidIndex);
+
                                     int[] minSpan = Launcher.getMinSpanForWidget(context, provider);
                                     appWidgetInfo.minSpanX = minSpan[0];
                                     appWidgetInfo.minSpanY = minSpan[1];
@@ -2205,6 +2235,63 @@ public class LauncherModel extends BroadcastReceiver {
         return info;
     }
 
+    /**
+     * add by wanghao
+     * @param c
+     * @param context
+     * @param iconIndex
+     * @param titleIndex
+     * @return
+     */
+    public ShortcutInfo getShortcutInfo(Cursor c,Context context,int iconIndex,int titleIndex){
+    	Bitmap icon = null;
+    	final ShortcutInfo info = new ShortcutInfo();
+    	info.itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
+        info.title = c.getString(titleIndex);
+
+    	icon = getIconFromCursor(c, iconIndex, context);
+        if (icon == null) {
+            icon = getFallbackIcon();
+            info.customIcon = false;
+            info.usingFallbackIcon = true;
+        } else {
+            info.customIcon = true;
+        }
+        info.setIcon(icon);
+        return info;
+    }
+    /**
+     * add by wanghao
+     * @param context
+     * @param icon
+     * @param title
+     * @param cn
+     * @return
+     */
+    public ShortcutInfo getShortcutInfo(Context context,Bitmap icon,String title,ComponentName cn){
+    	final ShortcutInfo info = new ShortcutInfo();
+    	 Intent intent = new Intent();
+         intent.setComponent(cn);
+         intent.setComponent(cn);
+         intent.putExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL);
+         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                 Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        info.intent = intent;
+    	info.itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
+        info.title = title;
+
+        if (icon == null) {
+            icon = getFallbackIcon();
+            info.customIcon = false;
+            info.usingFallbackIcon = true;
+        } else {
+            info.customIcon = true;
+        }
+        info.setIcon(icon);
+        return info;
+    }
+
+    
     /**
      * Returns the set of workspace ShortcutInfos with the specified intent.
      */

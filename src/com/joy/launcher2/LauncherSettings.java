@@ -129,6 +129,10 @@ class LauncherSettings {
         }
 
         /**
+         *应用类型，是否为在线
+         */
+        static final String NATURE_ID = "natureId";
+        /**
          * The container holding the favorite
          * <P>Type: INTEGER</P>
          */

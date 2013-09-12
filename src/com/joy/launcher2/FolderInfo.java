@@ -23,7 +23,7 @@ import android.content.ContentValues;
 /**
  * Represents a folder containing shortcuts or apps.
  */
-class FolderInfo extends ItemInfo {
+public class FolderInfo extends ItemInfo {
 
     /**
      * Whether this folder has been opened
@@ -80,7 +80,7 @@ class FolderInfo extends ItemInfo {
         values.put(LauncherSettings.Favorites.TITLE, title.toString());
     }
 
-    void addListener(FolderListener listener) {
+    public void addListener(FolderListener listener) {
         listeners.add(listener);
     }
 

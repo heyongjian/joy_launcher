@@ -31,7 +31,16 @@ import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.os.Handler;
 
+import com.joy.launcher2.cache.BitmapCache;
+import com.joy.launcher2.network.impl.Service;
+import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.util.SystemInfo;
 public class LauncherApplication extends Application {
+	public static Service mService;
+	public static Context mContext;
+	public static BitmapCache mBcache ;
+	public static SystemInfo mSystemInfo;
+	
     public LauncherModel mModel;
     public IconCache mIconCache;
     private static boolean sIsScreenLarge;
@@ -82,6 +91,20 @@ public class LauncherApplication extends Application {
         ContentResolver resolver = getContentResolver(); 
         resolver.registerContentObserver(LauncherSettings.Favorites.CONTENT_URI, true,
                 mFavoritesObserver);
+        initLauncher();
+    }
+    
+    public void initLauncher(){
+		mContext = this;
+		mBcache = BitmapCache.getInstance();
+		try {
+			mService = Service.getInstance();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		mSystemInfo = SystemInfo.getInstance();
     }
 
     /**

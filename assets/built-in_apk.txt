@@ -1,0 +1,21 @@
+﻿{
+
+    "example":
+     [
+        {
+            "apkName":"tianqi.apk",
+            "packageName":"com.gau.go.launcherex.gowidget.weatherwidget",
+            "className":"com.gau.go.launcherex.gowidget.weather.systemwidget.AppWidget42Provider"
+        },
+        {
+            "apkName":"growaway.apk",
+            "packageName":"com.soco.growaway_10086",
+            "className":"cn.emagsoftware.gamebilling.activity.GameOpenActivity"
+        }
+    ]
+    
+    "apkList":
+    [
+        
+    ]
+}

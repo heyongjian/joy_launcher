@@ -70,6 +70,7 @@ import android.widget.TextView;
 import com.joy.launcher2.R;
 import com.joy.launcher2.FolderIcon.FolderRingAnimator;
 import com.joy.launcher2.LauncherSettings.Favorites;
+import com.joy.launcher2.joyfolder.JoyFolderIcon;
 import com.joy.launcher2.preference.PreferencesProvider;
 
 /**
@@ -2513,6 +2514,10 @@ public class Workspace extends PagedView
                 ((FolderIcon) v).setTextVisible(true);
             }
         }
+        //add by wanghao
+        if (v instanceof BubbleTextView) {
+			((BubbleTextView)v).getCompoundDrawable(destCanvas,clipRect.left, clipRect.top);
+		}
         destCanvas.restore();
     }
 
@@ -3794,8 +3799,13 @@ public class Workspace extends PagedView
                         (ShortcutInfo) info);
                 break;
             case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
-                view = FolderIcon.fromXml(R.layout.folder_icon, mLauncher, cellLayout,
-                        (FolderInfo) info);
+            	if (info.natureId == ItemInfo.ONLINE||info.natureId == ItemInfo.ONLINE_1) {
+					view = JoyFolderIcon.fromXml(R.layout.joy_folder_icon,
+							mLauncher, cellLayout, (FolderInfo) info);
+				} else {
+					view = FolderIcon.fromXml(R.layout.folder_icon, mLauncher,
+							cellLayout, (FolderInfo) info);
+				}
                 if (mHideIconLabels) {
                     ((FolderIcon) view).setTextVisible(false);
                 }
@@ -4460,7 +4470,39 @@ public class Workspace extends PagedView
             }
         }
     }
+    //add by wanghao
+    void updateVirtualShortcuts(ArrayList<ApplicationInfo> apps) {
+    	ArrayList<ShortcutAndWidgetContainer> childrenLayouts = getAllShortcutAndWidgetContainers();
+        for (ShortcutAndWidgetContainer layout: childrenLayouts) {
+            int childCount = layout.getChildCount();
+            for (int j = 0; j < childCount; j++) {
+                final View view = layout.getChildAt(j);
+                Object tag = view.getTag();
+                if (tag instanceof ShortcutInfo) {
+                    ShortcutInfo info = (ShortcutInfo)tag;
 
+                    final Intent intent = info.intent;
+                    final ComponentName name = intent.getComponent();
+                    int shortcutType = (Integer) intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
+                    boolean isVirtualToNormal = (shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL);
+                    
+                    if (isVirtualToNormal && name != null) {
+                        final int appCount = apps.size();
+                        for (ApplicationInfo app : apps) {
+                            if (app.componentName.equals(name)) {
+                            	info.title = app.title;
+                                info.setIcon(mIconCache.getIcon(info.intent));
+                                ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(null,
+                                        new FastBitmapDrawable(info.getIcon(mIconCache)),
+                                        null, null);
+                                mLauncher.updateVirtualShortcut(info);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     void moveToDefaultScreen(boolean animate) {
         if (!isSmall()) {
             if (animate) {
