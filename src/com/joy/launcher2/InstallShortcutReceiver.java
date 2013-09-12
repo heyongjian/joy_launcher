@@ -231,7 +231,7 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
         return false;
     }
 
-    private static boolean findEmptyCell(ArrayList<ItemInfo> items, int[] xy,
+    public static boolean findEmptyCell(ArrayList<ItemInfo> items, int[] xy,
             int screen) {
         final int xCount = LauncherModel.getWorkspaceCellCountX();
         final int yCount = LauncherModel.getWorkspaceCellCountY();

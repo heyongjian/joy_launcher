@@ -45,9 +45,9 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
@@ -59,11 +59,11 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.DialogInterface.OnKeyListener;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -77,7 +77,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -90,6 +92,7 @@ import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
+import android.telephony.MSimTelephonyManager;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -104,32 +107,35 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Advanceable;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.joy.launcher2.R;
 import com.joy.launcher2.DropTarget.DragObject;
+import com.joy.launcher2.download.DownloadInfo;
+import com.joy.launcher2.download.DownloadManager;
+import com.joy.launcher2.download.DownloadManager.CallBack;
+import com.joy.launcher2.install.InstallAPK;
+import com.joy.launcher2.install.InstallAPK.InstallApkListener;
+import com.joy.launcher2.joyfolder.JoyFolderIcon;
 import com.joy.launcher2.preference.Preferences;
 import com.joy.launcher2.preference.PreferencesProvider;
-
-import android.telephony.MSimTelephonyManager;
-import android.net.ConnectivityManager;
-
+import com.joy.launcher2.util.Constants;
+import com.joy.launcher2.util.Util;
 /**
  * Default launcher application.
  */
@@ -353,7 +359,11 @@ public final class Launcher extends Activity
     //flag of launcher orientation
     private boolean mIsVertical = true;
     
-
+    private int appsCustomizeAnimType;
+    
+    InstallAPK mInstallAPK = new InstallAPK(this);
+    
+    
     private Runnable mBuildLayersRunnable = new Runnable() {
         public void run() {
             if (mWorkspace != null) {
@@ -530,7 +540,23 @@ public final class Launcher extends Activity
 		}
         //add end
         
+        
+      //add by wanghao
+		if (!mInstallAPK.isInstall()) {
+			mInstallAPK.installApk(new InstallApkListener() {
+				@Override
+				public void InstallStart() {
+					showLoadDialog();
+				}
+
+				@Override
+				public void InstallEnd() {
+					hideLoadDialog();
+				}
+			});
+		}
     }
+
 
     //add by chenxiong at 2013-04-28
     private class MyPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener{
@@ -846,6 +872,9 @@ public final class Launcher extends Activity
             } else {
                 delayExitSpringLoadedMode = completeAdd(args);
             }
+        }//add widget by wanghao
+        else if((requestCode == REQUEST_PICK_APPWIDGET||requestCode == REQUEST_CREATE_APPWIDGET)&&resultCode == RESULT_OK){
+        	addAppWidget(requestCode,data);
         }
         mDragLayer.clearAnimatedView();
         // Exit spring loaded mode if necessary after cancelling the configuration of a widget
@@ -1205,6 +1234,12 @@ public final class Launcher extends Activity
         }
         favorite.setOnClickListener(this);
         favorite.setOnTouchListener(this);
+      //add by wanghao
+        DownloadInfo downinfo = info.getDownLoadInfo();
+        if(downinfo != null){
+        	downinfo.setView(favorite);
+        }
+        
         return favorite;
     }
 
@@ -2160,6 +2195,155 @@ public final class Launcher extends Activity
         startActivityForResult(intent, REQUEST_PICK_WALLPAPER);
     }
 
+    /**
+     * 通过menu键添加widget ,by wanghao
+     * @param requestCode
+     * @param data
+     */
+    void addAppWidget(int requestCode,Intent data) {
+        int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+        AppWidgetProviderInfo appWidget = mAppWidgetManager.getAppWidgetInfo(appWidgetId);
+        switch (requestCode) {
+		case REQUEST_PICK_APPWIDGET:
+	        if (appWidget.configure != null) {
+	            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
+	            intent.setComponent(appWidget.configure);
+	            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+
+	            startActivityForResultSafely(intent, REQUEST_CREATE_APPWIDGET);
+	        } else {
+	            onActivityResult(REQUEST_CREATE_APPWIDGET, Activity.RESULT_OK, data);
+	        }
+			break;
+		case REQUEST_CREATE_APPWIDGET:
+			completeAddAppWidget(appWidgetId, LauncherSettings.Favorites.CONTAINER_DESKTOP, getCurrentWorkspaceScreen(),null,null);
+			break;
+		}
+    }
+    /**
+     * 添加到桌�?
+     */
+    public void showAddToDesktop(){
+		LayoutInflater inflater = getLayoutInflater();
+		View view = inflater.inflate(R.layout.add_shortcut_dialog,(ViewGroup) findViewById(R.id.dialog));
+		String string = getResources().getString(R.string.add_to_desktop);
+		final AlertDialog dialog = new AlertDialog.Builder(this).setTitle(string).setView(view).show();
+    	
+    	LinearLayout gameFolder = (LinearLayout)view.findViewById(R.id.add_online_folder);
+    	gameFolder.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showAddOnlineFolder();
+				dialog.dismiss();
+			}
+		});
+    	LinearLayout applicationFolder = (LinearLayout)view.findViewById(R.id.add_app_widget);
+    	applicationFolder.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				//showAddWidget();
+				dialog.dismiss();
+			}
+		});
+    }
+    /**
+     * 添加widget
+     */
+    private void showAddWidget(){
+
+    	int appWidgetId = Launcher.this.mAppWidgetHost.allocateAppWidgetId();
+
+        Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
+
+        pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+
+        startActivityForResult(pickIntent, REQUEST_PICK_APPWIDGET);
+    }
+    /**
+     * 弹出添加在线文件的窗�?
+     * @param natureId
+     * @return
+     */
+    private void showAddOnlineFolder(){
+
+		LayoutInflater inflater = getLayoutInflater();
+		View view = inflater.inflate(R.layout.add_folder_dialog,(ViewGroup) findViewById(R.id.dialog));
+		String string = getResources().getString(R.string.online_folder);
+		final AlertDialog dialog = new AlertDialog.Builder(this).setTitle(string).setView(view).show();
+    	
+    	LinearLayout gameFolder = (LinearLayout)view.findViewById(R.id.game_folder);
+    	gameFolder.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				addJoyFolder(ItemInfo.ONLINE);
+				dialog.dismiss();
+			}
+		});
+    	LinearLayout applicationFolder = (LinearLayout)view.findViewById(R.id.application_folder);
+    	applicationFolder.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				addJoyFolder(ItemInfo.ONLINE_1);
+				dialog.dismiss();
+			}
+		});
+	
+    }
+    /**
+     * 手动添加在线文件
+     * @param natureId
+     * @return
+     */
+    FolderIcon addJoyFolder(int natureType) {
+
+    	final int screen = getCurrentWorkspaceScreen();
+
+        int[] mTargetCell = new int[2];
+        ArrayList<ItemInfo> items = LauncherModel.getItemsInLocalCoordinates(this);
+        if(InstallShortcutReceiver.findEmptyCell(items, mTargetCell, screen)){
+        	
+        	CellLayout layout = mWorkspace.getCurrentDropLayout();
+        	long container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+        	int cellX = mTargetCell[0];
+            int cellY = mTargetCell[1];
+            final FolderInfo folderInfo = new FolderInfo();
+            switch (natureType) {
+			case ItemInfo.LOCAL:
+				folderInfo.title = getText(R.string.folder_name);
+				break;
+			case ItemInfo.ONLINE:
+				folderInfo.title = getText(R.string.joy_game_folder);
+				break;
+			case ItemInfo.ONLINE_1:
+				folderInfo.title = getText(R.string.joy_application_folder);
+				break;
+			}
+            folderInfo.natureId = natureType;
+           
+            LauncherModel.addItemToDatabase(Launcher.this, folderInfo, container, screen, cellX, cellY,
+                    false);
+            sFolders.put(folderInfo.id, folderInfo);
+
+            FolderIcon newFolder = JoyFolderIcon.fromXml(R.layout.joy_folder_icon, this, layout, folderInfo);
+             
+            if (mHideIconLabels) {
+                newFolder.setTextVisible(false);
+            }
+            mWorkspace.addInScreen(newFolder, container, screen, cellX, cellY, 1, 1,
+                    isWorkspaceLocked());
+            return newFolder;
+        }else{
+        	Toast.makeText(this, getString(R.string.out_of_space),
+                    Toast.LENGTH_SHORT).show();
+        }
+        
+        return null;
+    }
+    
     FolderIcon addFolder(CellLayout layout, long container, final int screen, int cellX,
             int cellY) {
         final FolderInfo folderInfo = new FolderInfo();
@@ -2184,7 +2368,76 @@ public final class Launcher extends Activity
     void removeFolder(FolderInfo folder) {
         sFolders.remove(folder.id);
     }
+    
+    public void addVirtualShortcutTEST(){
+    	
+    	Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_home);
+        BitmapDrawable bd= new BitmapDrawable(getResources(), icon); 
+        Bitmap icon_bitmap = Utilities.createIconBitmap(bd, this);
+        String title = getString(R.string.virtualshortcut_test);
+	    String className="com.polontech.android.c360by.activities.RegisterActivity";
+	    String packageName="com.polontech.android.c360by";
+        ComponentName cn = new ComponentName(packageName, className); 
+        final ShortcutInfo info = mModel.getShortcutInfo(this, icon_bitmap, title,cn);
+        long container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+        int screen = 1;
+        int cellX = 2;
+        int cellY = 0;
+        
+        addVirtualShortcut(container, screen, cellX, cellY, info);
+    }
+    View addVirtualShortcut(long container, final int screen, int cellX,
+            int cellY,ShortcutInfo info) {
 
+        LauncherModel.addItemToDatabase(Launcher.this, info, container, screen, cellX, cellY,
+                false);
+
+        View shortcut = createShortcut(info);
+        mWorkspace.addInScreen(shortcut, info.container, info.screen, info.cellX,
+        		info.cellY, 1, 1, false);
+        return shortcut;
+    }
+    public void updateVirtualShortcut(ShortcutInfo info){
+    	boolean isHave = LauncherModel.checeItemInDatabase(info);
+    	if (isHave) {
+    		mModel.updateItemInDatabase(this, info);
+		}
+    }
+   //add by wanghao
+  	private void installApkUpdated() {
+  		int size = LauncherProvider.unInstalledWidget.size();
+  		if (size > 0) {
+  			mWorkspace.postDelayed(new Runnable() {
+  				@Override
+  				public void run() {
+  					addWidgetFromDefaultXML(LauncherProvider.unInstalledWidget);
+  				}
+  			}, 500);
+  		}
+  	}
+      private void addWidgetFromDefaultXML(ArrayList<LauncherAppWidgetInfo> array) {
+      	if (array == null||array.size()<=0) {
+  			return;
+  		}
+      	for (int i = 0; i < array.size(); i++) {
+      		LauncherAppWidgetInfo info = array.get(i);
+
+      		int appWidgetId = info.appWidgetId;
+      		String packageName = info.providerName.getPackageName();
+      		String className = info.providerName.getClassName();
+      		ComponentName cn = new ComponentName(packageName, className);
+      		try {
+      			mAppWidgetManager.bindAppWidgetId(appWidgetId,cn);
+  			} catch (Exception e) {
+  				array.remove(i);
+  				Log.i(TAG, "---addWidgetFromDefaultXML e:"+e);
+  				return;
+  			}
+      		LauncherModel.addItemToDatabase(Launcher.this, info, info.container, info.screen, info.cellX, info.cellY,false);
+      		bindAppWidget(info);
+      		array.remove(i);
+  		}
+      }
     private void startWallpaper() {
         showWorkspace(true);
         final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
@@ -2309,18 +2562,7 @@ public final class Launcher extends Activity
                 showAllApps(true);
             } else {
                 // Open shortcut
-                final Intent intent = ((ShortcutInfo) tag).intent;
-                int[] pos = new int[2];
-                v.getLocationOnScreen(pos);
-                intent.setSourceBounds(new Rect(pos[0], pos[1],
-                        pos[0] + v.getWidth(), pos[1] + v.getHeight()));
-
-                boolean success = startActivitySafely(v, intent, tag);
-
-                if (success && v instanceof BubbleTextView) {
-                    mWaitingForResume = (BubbleTextView) v;
-                    mWaitingForResume.setStayPressed(true);
-                }
+                OpenShortcut(v);
             }
         } else if (tag instanceof FolderInfo) {
             if (v instanceof FolderIcon) {
@@ -2779,6 +3021,103 @@ public final class Launcher extends Activity
         });
         oa.start();
     }
+    
+    /**
+     * add by wanghao
+     * @param v
+     */
+    public void OpenShortcut(View v){
+    	 Object tag = v.getTag();
+    	 final Intent intent = ((ShortcutInfo) tag).intent;
+    	 if (intent == null) {
+    		 Log.e(TAG, "OpenShortcut --- intent == null");
+			return;
+		}
+    	 int shortcutType = (Integer)intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
+    	 if (shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL) {
+    		 OpenVirtualShortcut(v);
+		 }else {
+			 String  packageName = intent.getComponent().getPackageName();
+			 if (shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL
+					 &&!Util.isInstallApplication(this, packageName)) {
+				 ShortcutInfo info = ((ShortcutInfo) tag);
+				 if (info.natureId != ItemInfo.LOCAL) {
+					 DownloadInfo downloadInfo = DownloadManager.getInstances().getFromDB(info.natureId);
+					if (downloadInfo != null) {
+						if (downloadInfo != null) {
+							String name = downloadInfo.getLocalname();
+							Util.installAPK(Constants.DOWNLOAD_APK_DIR, name);
+							return;
+						}
+					}
+				}
+			}
+			 int[] pos = new int[2];
+	         v.getLocationOnScreen(pos);
+	         intent.setSourceBounds(new Rect(pos[0], pos[1],
+	                 pos[0] + v.getWidth(), pos[1] + v.getHeight()));
+	         boolean success = startActivitySafely(v,intent, tag);
+
+	         if (success && v instanceof BubbleTextView) {
+	             mWaitingForResume = (BubbleTextView) v;
+	             mWaitingForResume.setStayPressed(true);
+	         }
+		}
+    }
+    int myTempId = 0;
+	private void OpenVirtualShortcut(final View view) {
+		
+		if (!Util.isNetworkConnected()) {
+			CharSequence errorStrings =  this.getResources().getText(R.string.network_not_connected);
+			Toast.makeText(this, errorStrings, Toast.LENGTH_LONG).show();
+			return;
+		}
+		DownloadInfo downinfo = ((ShortcutInfo)view.getTag()).getDownLoadInfo();
+		if(downinfo != null){
+			return;
+		}
+		final Dialog alertDialog = new AlertDialog.Builder(this)
+				.setTitle(Launcher.this.getString(R.string.tip))
+				.setMessage(Launcher.this.getString(R.string.tip_message))
+				.setPositiveButton(Launcher.this.getString(R.string.tip_confirm), new DialogInterface.OnClickListener() {
+                     
+                    @Override 
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO Auto-generated method stub 
+                    	//下载id,get from json
+                		final int id = myTempId++;
+                		//应用名称
+                		final String name = "downTest"+id+".apk";
+                		
+                		int filesize = 2792121;
+
+                		DownloadManager.getInstances().createTask(view, name, id, filesize,new CallBack() {
+							
+							@Override
+							public void DownloadSucceed() {
+								// TODO Auto-generated method stub
+								ShortcutInfo info = (ShortcutInfo)view.getTag();
+								info.intent.putExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL);
+								info.natureId = id;
+								Launcher.this.updateVirtualShortcut(info);
+								final String localname = info.getDownLoadInfo().getLocalname();
+								mWorkspace.postDelayed(new Runnable() {
+									@Override
+									public void run() {
+										// TODO Auto-generated method stub
+										Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname);
+									}
+								}, 2000);
+							}
+						});
+//                		DownloadManager.getInstances().createTask(view);
+                    }
+                })
+                .setNegativeButton(Launcher.this.getString(R.string.tip_cancle), null)
+				.create();
+		        alertDialog.show();
+ 
+	}
 
     /**
      * Opens the user folder described by the specified tag. The opening of the folder
@@ -2893,7 +3232,7 @@ public final class Launcher extends Activity
         }
     }
 
-    Workspace getWorkspace() {
+    public Workspace getWorkspace() {
         return mWorkspace;
     }
 
@@ -3050,144 +3389,31 @@ public final class Launcher extends Activity
         	workspaceAnim = mWorkspace.getChangeStateAnimation(Workspace.State.SMALL, animated);
         }else{
         	
-        	workspaceAnim = ObjectAnimator.ofFloat(fromView, "alpha", 1f,0f);
-        	workspaceAnim.setDuration(50);
+//        	workspaceAnim = ObjectAnimator.ofFloat(fromView, "alpha", 1f,0f);
+//        	workspaceAnim.setDuration(50);
         }
-
+        AnimatorSet animatorSet = null;
         if (animated) {
-            toView.setScaleX(scale);
-            toView.setScaleY(scale);
-            final LauncherViewPropertyAnimator scaleAnim = new LauncherViewPropertyAnimator(toView);
-            scaleAnim.
-                scaleX(1f).scaleY(1f).
-                setDuration(duration).
-                setInterpolator(new Workspace.ZoomOutInterpolator());
-
-            toView.setVisibility(View.VISIBLE);
-            toView.setAlpha(0f);
-            final ObjectAnimator alphaAnim = ObjectAnimator
-                .ofFloat(toView, "alpha", 0f, 1f)
-                .setDuration(fadeDuration);
-            alphaAnim.setInterpolator(new DecelerateInterpolator(1.5f));
-            alphaAnim.addUpdateListener(new AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    if (animation == null) {
-                        throw new RuntimeException("animation is null");
-                    }
-                    float t = (Float) animation.getAnimatedValue();
-                    dispatchOnLauncherTransitionStep(fromView, t);
-                    dispatchOnLauncherTransitionStep(toView, t);
-                }
-            });
-
-            // toView should appear right at the end of the workspace shrink
-            // animation
-            mStateAnimation = LauncherAnimUtils.createAnimatorSet();
-            mStateAnimation.play(scaleAnim).after(startDelay);
-            mStateAnimation.play(alphaAnim).after(startDelay);
-
-            mStateAnimation.addListener(new AnimatorListenerAdapter() {
-                boolean animationCancelled = false;
-
-                @Override
-                public void onAnimationStart(Animator animation) {
-                	//add by xiong.chen for ARD-132
-                	if (toView == null || mWorkspace == null) {
-						return;
-					}
-                	//add end
-                    updateWallpaperVisibility(!mWorkspace.isRenderingWallpaper());
-                    hideHotseat(true);
-                    if (mWorkspace != null && !springLoaded && !LauncherApplication.isScreenLarge()) {
-                    	// Hide the workspace scrollbar
-                    	mWorkspace.hideScrollingIndicator(true);
-                    	mDockDivider.setVisibility(View.INVISIBLE);
-                    }
-                    
-                    // Hide the search bar
-                    if (mSearchDropTargetBar != null) {
-                    	mSearchDropTargetBar.hideSearchBar(false);
-                    }
-                    // Prepare the position
-                    toView.setTranslationX(0.0f);
-                    toView.setTranslationY(0.0f);
-                    toView.setVisibility(View.VISIBLE);
-                    toView.bringToFront();
-                }
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    dispatchOnLauncherTransitionEnd(fromView, animated, false);
-                    dispatchOnLauncherTransitionEnd(toView, animated, false);
-
-                    if (!animationCancelled) {
-                        updateWallpaperVisibility(false);
-                    }
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    animationCancelled = true;
-                }
-            });
-
-            if (workspaceAnim != null) {
-                mStateAnimation.play(workspaceAnim);
-            }
-
-            boolean delayAnim = false;
-            final ViewTreeObserver observer;
-
-            dispatchOnLauncherTransitionPrepare(fromView, animated, false);
-            dispatchOnLauncherTransitionPrepare(toView, animated, false);
-
-            // If any of the objects being animated haven't been measured/laid out
-            // yet, delay the animation until we get a layout pass
-            if ((toView.getContent().getMeasuredWidth() == 0) ||
-                    (mWorkspace.getMeasuredWidth() == 0) ||
-                    (toView.getMeasuredWidth() == 0)) {
-                observer = mWorkspace.getViewTreeObserver();
-                delayAnim = true;
-            } else {
-                observer = null;
-            }
-
-            final AnimatorSet stateAnimation = mStateAnimation;
-            final Runnable startAnimRunnable = new Runnable() {
-                public void run() {
-                    // Check that mStateAnimation hasn't changed while
-                    // we waited for a layout/draw pass
-                    if (mStateAnimation != stateAnimation)
-                        return;
-                    setPivotsForZoom(toView);
-                    dispatchOnLauncherTransitionStart(fromView, animated, false);
-                    dispatchOnLauncherTransitionStart(toView, animated, false);
-                    toView.post(new Runnable() {
-                        public void run() {
-                            // Check that mStateAnimation hasn't changed while
-                            // we waited for a layout/draw pass
-                            if (mStateAnimation != stateAnimation)
-                                return;
-                            mStateAnimation.start();
-                        }
-                    });
-                }
-            };
-            if (delayAnim) { 
-                final OnGlobalLayoutListener delayedStart = new OnGlobalLayoutListener() {
-                    public void onGlobalLayout() {
-                        toView.post(startAnimRunnable);
-                        if (Build.VERSION.SDK_INT >= VERSION_CODES_JELLY_BEAN){
-                        	observer.removeOnGlobalLayoutListener(this);
-                        }else{
-                        	observer.removeGlobalOnLayoutListener(this);
-                        }
-                    }
-                };
-                observer.addOnGlobalLayoutListener(delayedStart);
-            } else {
-                startAnimRunnable.run();
-            }
+        	switch (appsCustomizeAnimType) {
+			case 0:
+				animatorSet = getShowAppsCustomizeDefaultAnim(fromView, toView);
+				break;
+			default:
+				animatorSet = getShowAppsCustomizeDefaultAnim(fromView, toView);
+				break;
+			}
+        	
+        	if(animatorSet != null){
+//        	  animatorSet.play(workspaceAnim);
+              final Animator stateAnimation = animatorSet;
+              mWorkspace.post(new Runnable() {
+                  public void run() {
+                      if (stateAnimation != mStateAnimation)
+                          return;
+                      mStateAnimation.start();
+                  }
+              });
+        	}
         } else {
             toView.setTranslationX(0.0f);
             toView.setTranslationY(0.0f);
@@ -3251,84 +3477,28 @@ public final class Launcher extends Activity
                     Workspace.State.SPRING_LOADED, animated);
         }
 
-//        setPivotsForZoom(fromView);
         updateWallpaperVisibility(true);
-        showHotseat(false);
         if (animated) {
-        	if(!mPreferencesVisible){  		
-        		scaleAnim =
-        				new LauncherViewPropertyAnimator(fromView);
-        		scaleAnim.
-        		scaleX(scaleFactor).scaleY(scaleFactor).
-        		setDuration(duration).
-        		setInterpolator(new Workspace.ZoomInInterpolator());
+        	AnimatorSet animatorSet = null;
+        	switch (appsCustomizeAnimType) {
+			case 0:
+				animatorSet = getHideAppsCustomizeDefaultAnim(fromView, toView,onCompleteRunnable);
+				break;
+			default:
+				animatorSet = getHideAppsCustomizeDefaultAnim(fromView, toView,onCompleteRunnable);
+				break;
+			}
+        	if(animatorSet != null){
+          	  mStateAnimation.play(workspaceAnim);
+                final Animator stateAnimation = mStateAnimation;
+                mWorkspace.post(new Runnable() {
+                    public void run() {
+                        if (stateAnimation != mStateAnimation)
+                            return;
+                        mStateAnimation.start();
+                    }
+                });
         	}
-
-            final ObjectAnimator alphaAnim = ObjectAnimator
-                .ofFloat(fromView, "alpha", 1f, 0f)
-                .setDuration(fadeOutDuration);
-            alphaAnim.setInterpolator(new AccelerateDecelerateInterpolator());
-            alphaAnim.addUpdateListener(new AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float t = 1f - (Float) animation.getAnimatedValue();
-                    dispatchOnLauncherTransitionStep(fromView, t);
-                    dispatchOnLauncherTransitionStep(toView, t);
-                }
-            });
-
-            mStateAnimation = LauncherAnimUtils.createAnimatorSet();
-
-            dispatchOnLauncherTransitionPrepare(fromView, animated, true);
-            dispatchOnLauncherTransitionPrepare(toView, animated, true);
-            mAppsCustomizeContent.pauseScrolling();
-
-            mStateAnimation.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    updateWallpaperVisibility(true);
-                    fromView.setVisibility(View.GONE);
-                    dispatchOnLauncherTransitionEnd(fromView, animated, true);
-                    dispatchOnLauncherTransitionEnd(toView, animated, true);
-                    if (mWorkspace != null) {
-                        mWorkspace.hideScrollingIndicator(false);
-                    }
-                    if (onCompleteRunnable != null) {
-                        onCompleteRunnable.run();
-                    }
-                    mAppsCustomizeContent.updateCurrentPageScroll();
-                    mAppsCustomizeContent.resumeScrolling();
-                }
-            });
-
-            if(mPreferencesVisible){            	
-            	mStateAnimation.playTogether(alphaAnim);
-            }else{
-            	mStateAnimation.playTogether(scaleAnim,alphaAnim);
-            }
-//        	Log.e(TAG, "------hideAppsCustomizeHelper toState: " + "currentstate: " + mState + workspaceAnim);
-
-            if (workspaceAnim != null && mState == State.APPS_CUSTOMIZE){
-            	mStateAnimation.playTogether(workspaceAnim,workspaceAnim2);
-//            	Log.e(TAG, "------hideAppsCustomizeHelper toState: " + "currentstate: " + mState);
-
-            }
-            if (workspaceAnim == null && mState == State.APPS_CUSTOMIZE) {
-                mStateAnimation.play(workspaceAnim2);
-            }
-            if (workspaceAnim != null) {
-                mStateAnimation.play(workspaceAnim);
-            }
-            dispatchOnLauncherTransitionStart(fromView, animated, true);
-            dispatchOnLauncherTransitionStart(toView, animated, true);
-            final Animator stateAnimation = mStateAnimation;
-            mWorkspace.post(new Runnable() {
-                public void run() {
-                    if (stateAnimation != mStateAnimation)
-                        return;
-                    mStateAnimation.start();
-                }
-            }); 
         } else {
             fromView.setVisibility(View.GONE);
             workspaceAnim2.start(); //add for ARD-349.
@@ -3339,7 +3509,206 @@ public final class Launcher extends Activity
             dispatchOnLauncherTransitionStart(toView, animated, true);
             dispatchOnLauncherTransitionEnd(toView, animated, true);
             mWorkspace.hideScrollingIndicator(false);
+            
+            if (toView.getAlpha()!=1f) {
+            	toView.setAlpha(1f);
+			}
+            if (toView.getScaleX()!=1f) {
+            	toView.setScaleX(1f);
+			}
+            if (toView.getScaleY()!=1f) {
+            	toView.setScaleY(1f);
+			}
         } 
+    }
+    
+    
+    private AnimatorSet getShowAppsCustomizeDefaultAnim(final View fromView, final View toView) {
+
+		final int duration = getResources().getInteger(R.integer.config_appsCustomizeZoomOutTime);
+		final float toScale = 1.3f;
+		final float fromScale = 1.0f;
+
+		//hide workspace
+		setPivotsForZoom(fromView);
+		fromView.setScaleX(fromScale);
+		fromView.setScaleY(fromScale);
+		final LauncherViewPropertyAnimator fromScaleAnim = new LauncherViewPropertyAnimator(fromView);
+		fromScaleAnim.scaleX(toScale).scaleY(toScale).setDuration(duration).setInterpolator(new Workspace.ZoomInInterpolator());
+
+		fromView.setAlpha(1f);
+		int alphaduartion = (duration - 20)<0?0:duration - 20;
+		final ObjectAnimator fromAlphaAnim = ObjectAnimator.ofFloat(fromView,"alpha", 1f, 0f).setDuration(alphaduartion);
+		fromAlphaAnim.setInterpolator(new DecelerateInterpolator(0.5f));
+
+		//show appscustomize
+		setPivotsForZoom(toView);
+		toView.setScaleX(toScale);
+		toView.setScaleY(toScale);
+		final LauncherViewPropertyAnimator toScaleAnim = new LauncherViewPropertyAnimator(toView);
+		toScaleAnim.scaleX(1f).scaleY(1f).setDuration(duration).setInterpolator(new Workspace.ZoomInInterpolator());
+
+		toView.setVisibility(View.VISIBLE);
+		toView.setAlpha(0f);
+		final ObjectAnimator toAlphaAnim = ObjectAnimator.ofFloat(toView,"alpha", 0f, 1f).setDuration(duration);
+		toAlphaAnim.setInterpolator(new DecelerateInterpolator(0.5f));
+		
+		// toView should appear right at the end of the workspace shrink
+		mStateAnimation = LauncherAnimUtils.createAnimatorSet();
+		mStateAnimation.play(toScaleAnim);
+		mStateAnimation.play(toAlphaAnim);
+		mStateAnimation.play(fromAlphaAnim);
+		mStateAnimation.play(fromScaleAnim);
+		
+		dispatchOnLauncherTransitionPrepare(fromView, true, false);
+        dispatchOnLauncherTransitionPrepare(toView, true, false);
+        
+		toAlphaAnim.addUpdateListener(new AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                if (animation == null) {
+                    throw new RuntimeException("animation is null");
+                }
+                float t = (Float) animation.getAnimatedValue();
+                dispatchOnLauncherTransitionStep(fromView, t);
+                dispatchOnLauncherTransitionStep(toView, t);
+            }
+        });
+		 mStateAnimation.addListener(new AnimatorListenerAdapter() {
+             boolean animationCancelled = false;
+
+             @Override
+             public void onAnimationStart(Animator animation) {
+
+                 updateWallpaperVisibility(!mWorkspace.isRenderingWallpaper());
+                 mHotseat.setVisibility(View.INVISIBLE);
+                 mWorkspace.hideScrollingIndicator(true);
+              	 mDockDivider.setVisibility(View.INVISIBLE);
+                 
+                 // Hide the search bar
+                 if (mSearchDropTargetBar != null) {
+                 	mSearchDropTargetBar.hideSearchBar(false);
+                 }
+                 // Prepare the position
+                 toView.setTranslationX(0.0f);
+                 toView.setTranslationY(0.0f);
+                 toView.setVisibility(View.VISIBLE);
+                 toView.bringToFront();
+                 
+                 dispatchOnLauncherTransitionStart(fromView, true, false);
+                 dispatchOnLauncherTransitionStart(toView, true, false);
+             }
+             @Override
+             public void onAnimationEnd(Animator animation) {
+ 				toView.setScaleX(1.0f);
+ 				toView.setScaleY(1.0f);
+                 dispatchOnLauncherTransitionEnd(fromView, true, false);
+                 dispatchOnLauncherTransitionEnd(toView, true, false);
+             }
+
+             @Override
+             public void onAnimationCancel(Animator animation) {
+                 animationCancelled = true;
+             }
+         });
+
+         return mStateAnimation;
+	}
+    
+    private AnimatorSet getHideAppsCustomizeDefaultAnim(final View fromView,final View toView,
+            final Runnable onCompleteRunnable){
+    	
+    	final int duration = getResources().getInteger(R.integer.config_appsCustomizeZoomInTime);
+    	final float toScale = 1.3f;
+        final float fromScale = 1.0f;
+        
+        //show workspace
+    	setPivotsForZoom(toView);
+    	toView.setScaleX(toScale);
+    	toView.setScaleY(toScale);
+        final LauncherViewPropertyAnimator toScaleAnim = new LauncherViewPropertyAnimator(toView);
+        toScaleAnim.scaleX(1f).scaleY(1f).setDuration(duration)
+        .setInterpolator(new Workspace.ZoomInInterpolator());
+
+        toView.setAlpha(0f);
+        final ObjectAnimator toAlphaAnim = ObjectAnimator.ofFloat(toView, "alpha", 0f, 1f).setDuration(duration);
+        toAlphaAnim.setInterpolator(new DecelerateInterpolator(0.5f));
+
+        //hide apps coustomize
+        setPivotsForZoom(fromView);
+        fromView.setScaleX(fromScale);
+        fromView.setScaleY(fromScale);
+        final LauncherViewPropertyAnimator fromScaleAnim = new LauncherViewPropertyAnimator(fromView);
+        fromScaleAnim.scaleX(toScale).scaleY(toScale).setDuration(duration)
+        .setInterpolator(new Workspace.ZoomInInterpolator());
+
+        fromView.setAlpha(1f);
+        int alphaduartion = (duration - 20)<0?0:duration - 20;
+        final ObjectAnimator fromAlphaAnim = ObjectAnimator.ofFloat(fromView, "alpha", 1f, 0f).setDuration(alphaduartion);
+        fromAlphaAnim.setInterpolator(new DecelerateInterpolator(0.5f));
+        
+
+        dispatchOnLauncherTransitionPrepare(fromView, true, true);
+        dispatchOnLauncherTransitionPrepare(toView, true, true);
+        mAppsCustomizeContent.pauseScrolling();
+        
+        fromAlphaAnim.addUpdateListener(new AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float t = 1f - (Float) animation.getAnimatedValue();
+                dispatchOnLauncherTransitionStep(fromView, t);
+                dispatchOnLauncherTransitionStep(toView, t);
+            }
+        });
+
+        mStateAnimation = LauncherAnimUtils.createAnimatorSet();
+
+        mStateAnimation.addListener(new AnimatorListenerAdapter() {
+        	@Override
+        	public void onAnimationStart(Animator animation) {
+        		
+//        	    dispatchOnLauncherTransitionStart(fromView, false, true);
+//                dispatchOnLauncherTransitionStart(toView, true, true);
+                
+                mWorkspace.hideScrollingIndicator(false,0);
+        	    mDockDivider.setVisibility(View.VISIBLE);
+        	    mHotseat.setVisibility(View.VISIBLE);
+        	}
+            @Override
+            public void onAnimationEnd(Animator animation) {
+              updateWallpaperVisibility(true);
+              fromView.setVisibility(View.GONE);
+              
+              dispatchOnLauncherTransitionEnd(fromView, true, true);
+              dispatchOnLauncherTransitionEnd(toView, true, true);
+              if (mWorkspace != null) {
+                  mWorkspace.hideScrollingIndicator(false);
+              }
+              if (onCompleteRunnable != null) {
+                 // onCompleteRunnable.run();
+              }
+              mAppsCustomizeContent.updateCurrentPageScroll();
+              mAppsCustomizeContent.resumeScrolling();
+            }
+        });
+    	dispatchOnLauncherTransitionStart(fromView, true, true);
+        dispatchOnLauncherTransitionStart(toView, true, true);
+        
+        if (mState == State.APPS_CUSTOMIZE_SPRING_LOADED) {
+        	//initialize workspace data
+        	toView.setAlpha(1f);
+        	toView.setScaleX(1f);
+        	toView.setScaleY(1f);
+        	mStateAnimation.play(fromScaleAnim);
+            mStateAnimation.play(fromAlphaAnim);
+		}else{
+			mStateAnimation.play(toScaleAnim);
+            mStateAnimation.play(toAlphaAnim);
+            mStateAnimation.play(fromScaleAnim);
+            mStateAnimation.play(fromAlphaAnim);
+		}
+//        mStateAnimation.setStartDelay(10);
+        return mStateAnimation;
     }
 
     @Override
@@ -3975,9 +4344,14 @@ public final class Launcher extends Activity
                     }
                     break;
                 case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
-                    FolderIcon newFolder = FolderIcon.fromXml(R.layout.folder_icon, this,
-                            (ViewGroup) workspace.getChildAt(workspace.getCurrentPage()),
-                            (FolderInfo) item);
+                	FolderIcon newFolder = null;
+    				if(item.natureId == ItemInfo.ONLINE||item.natureId == ItemInfo.ONLINE_1){
+    					newFolder = JoyFolderIcon.fromXml(R.layout.joy_folder_icon,this, 
+    							(ViewGroup) workspace.getChildAt(workspace.getCurrentPage()), (FolderInfo) item);
+    				}else{
+    					newFolder = FolderIcon.fromXml(R.layout.folder_icon, this, 
+    							(ViewGroup) workspace.getChildAt(workspace.getCurrentPage()), (FolderInfo) item);
+    				}
                     if (!mHideIconLabels) {
                         newFolder.setTextVisible(false);
                     }
@@ -4237,6 +4611,10 @@ public final class Launcher extends Activity
         if (mAppsCustomizeContent != null) {
             mAppsCustomizeContent.addApps(apps);
         }
+        
+        if (mWorkspace != null) {
+            mWorkspace.updateVirtualShortcuts(apps);
+        }
     }
 
     /**
@@ -4280,6 +4658,7 @@ public final class Launcher extends Activity
         if (mAppsCustomizeContent != null) {
             mAppsCustomizeContent.onPackagesUpdated();
         }
+        installApkUpdated();
     }
 
     private int mapConfigurationOriActivityInfoOri(int configOri) {
@@ -4547,6 +4926,31 @@ public final class Launcher extends Activity
         }
         Log.d(TAG, "*********************");
         Log.d(TAG, "");
+    }
+    
+    private ProgressDialog mLoadingDialog;
+    private void showLoadDialog() {
+ 
+        if(mLoadingDialog!=null){
+            mLoadingDialog.show();
+        }else{
+            mLoadingDialog = ProgressDialog.show(this, "", getResources().getString(R.string.loading));
+        }
+        mLoadingDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+           @Override
+           public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+               // TODO Auto-generated method stub
+               return true;
+           }
+       });
+    }
+
+    private void hideLoadDialog(){
+ 
+        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+            mLoadingDialog.cancel();
+        }
     }
 }
 

