@@ -277,4 +277,25 @@
     <string name="header_cancel">取消</string>
     <!-- add by huangming for installed apps show -->
     <string name="header_installed_app_text">已下载应用程序</string>
+    
+   <!-- online Folder ,add by wanghao -->
+    <string name="joy_game_folder">游戏锦集</string>
+    <string name="joy_application_folder">应用大全</string>
+    <string name="joy_foler_more_app">更多</string>
+    <string name="joy_foler_refresh">刷新</string>
+    <string name="joy_foler_hot_app">【热门应用】</string>
+    <string name="online_folder">在线文件夹</string>
+    <string name="menu_add_folder">添加</string>
+    <string name="add_to_desktop">添加到桌面</string>
+    <string name="add_widget_to_desktop">添加小组件</string>
+    <string name="add_folder_to_desktop">添加在线文件夹</string>
+    <string name="tip">提示</string>
+    <string name="tip_message">是否下载该应用？</string>
+    <string name="tip_confirm">确定</string>
+    <string name="tip_cancle">取消</string>
+    <string name="virtualshortcut_test">虚框软件测试</string>
+    <string name="network_not_connected">请设置好网络后再来！</string>
+    <string name="download_error">网络不给力，请设置好网络后再来！</string>
+    <string name="loading">加载中,请稍后...</string>
+    
 </resources>

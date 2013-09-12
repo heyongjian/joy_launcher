@@ -46,6 +46,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -80,6 +82,13 @@ public class LauncherProvider extends ContentProvider {
             "com.joy.launcher2.action.APPWIDGET_DEFAULT_WORKSPACE_CONFIGURE";
 
     /**
+     * ??????????????
+     */
+    static final String SHORTCUT_TYPE = "virtual_Shortcut_add_by_wanghao";
+    static final int SHORTCUT_TYPE_NORMAL = 0;//normal app icon
+    static final int SHORTCUT_TYPE_VIRTUAL = 1;//virtual app icon
+    static final int SHORTCUT_TYPE_VIRTUAL_TO_NORMAL = 2;//virtual to normal
+    /**
      * {@link Uri} triggered at any registered {@link android.database.ContentObserver} when
      * {@link AppWidgetHost#deleteHost()} is called during database creation.
      * Use this to recall {@link AppWidgetHost#startListening()} if needed.
@@ -89,6 +98,7 @@ public class LauncherProvider extends ContentProvider {
 
     private DatabaseHelper mOpenHelper;
 
+    public static ArrayList<LauncherAppWidgetInfo> unInstalledWidget = new ArrayList<LauncherAppWidgetInfo>();
     @Override
     public boolean onCreate() {
         mOpenHelper = new DatabaseHelper(getContext());
@@ -276,6 +286,7 @@ public class LauncherProvider extends ContentProvider {
                     "title TEXT," +
                     "intent TEXT," +
                     "container INTEGER," +
+                    "natureId INTEGER," +
                     "screen INTEGER," +
                     "cellX INTEGER," +
                     "cellY INTEGER," +
@@ -350,6 +361,7 @@ public class LauncherProvider extends ContentProvider {
             final int iconPackageIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_PACKAGE);
             final int iconResourceIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_RESOURCE);
             final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
+            final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
             final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
             final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
             final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
@@ -367,6 +379,7 @@ public class LauncherProvider extends ContentProvider {
                 values.put(LauncherSettings.Favorites.ICON_PACKAGE, c.getString(iconPackageIndex));
                 values.put(LauncherSettings.Favorites.ICON_RESOURCE, c.getString(iconResourceIndex));
                 values.put(LauncherSettings.Favorites.CONTAINER, c.getInt(containerIndex));
+                values.put(LauncherSettings.Favorites.NATURE_ID, c.getInt(natureIdIndex));
                 values.put(LauncherSettings.Favorites.ITEM_TYPE, c.getInt(itemTypeIndex));
                 values.put(LauncherSettings.Favorites.APPWIDGET_ID, -1);
                 values.put(LauncherSettings.Favorites.SCREEN, c.getInt(screenIndex));
@@ -610,19 +623,29 @@ public class LauncherProvider extends ContentProvider {
                     if (a.hasValue(R.styleable.Favorite_container)) {
                         container = Long.valueOf(a.getString(R.styleable.Favorite_container));
                     }
-
+                    //add by wanghao
+                    int natureId = ItemInfo.LOCAL;
+                    if(a.hasValue(R.styleable.Favorite_natureId)){
+                    	natureId = Integer.valueOf(a.getString(R.styleable.Favorite_natureId));
+                    }
                     String screen = a.getString(R.styleable.Favorite_screen);
                     String x = a.getString(R.styleable.Favorite_x);
                     String y = a.getString(R.styleable.Favorite_y);
 
                     values.clear();
                     values.put(LauncherSettings.Favorites.CONTAINER, container);
+                    values.put(LauncherSettings.Favorites.NATURE_ID, natureId);
                     values.put(LauncherSettings.Favorites.SCREEN, screen);
                     values.put(LauncherSettings.Favorites.CELLX, x);
                     values.put(LauncherSettings.Favorites.CELLY, y);
 
                     if (TAG_FAVORITE.equals(name)) {
-                        long id = addAppShortcut(db, values, a, packageManager, intent);
+                    	long id = -1;
+                    	if (natureId == ItemInfo.LOCAL) {
+                    		id = addAppShortcut(db, values, a, packageManager, intent);
+						}else {
+							 id = addVirtualShortcut(db, values, a);
+						}
                         added = id >= 0;
                     } else if (TAG_SEARCH.equals(name)) {
                         added = addSearchWidget(db, values);
@@ -658,14 +681,21 @@ public class LauncherProvider extends ContentProvider {
                             }
                             final String folder_item_name = parser.getName();
 
-                            TypedArray ar = mContext.obtainStyledAttributes(attrs,
-                                    R.styleable.Favorite);
+                            TypedArray ar = mContext.obtainStyledAttributes(attrs,R.styleable.Favorite);
+                            int natureIdr = ItemInfo.LOCAL;
+							if (ar.hasValue(R.styleable.Favorite_natureId)) {
+								natureIdr = Integer.valueOf(ar.getString(R.styleable.Favorite_natureId));
+							}
                             values.clear();
                             values.put(LauncherSettings.Favorites.CONTAINER, folderId);
-
+                            values.put(LauncherSettings.Favorites.NATURE_ID, natureIdr);
                             if (TAG_FAVORITE.equals(folder_item_name) && folderId >= 0) {
-                                long id =
-                                    addAppShortcut(db, values, ar, packageManager, intent);
+                            	long id = -1;
+                            	if (natureIdr == ItemInfo.LOCAL) {
+                            		id = addAppShortcut(db, values, ar, packageManager, intent);
+        						}else {
+        							 id = addVirtualShortcut(db, values, ar);
+        						}
                                 if (id >= 0) {
                                     folderItems.add(id);
                                 }
@@ -693,6 +723,11 @@ public class LauncherProvider extends ContentProvider {
                         }
                     }
                     if (added) i++;
+                    if (!added) {
+                    	if (TAG_APPWIDGET.equals(name)) {
+                    		addUnInstalledWidget(a, container, natureId, screen, x, y);
+                    	}
+					}
                     a.recycle();
                 }
             } catch (XmlPullParserException e) {
@@ -704,6 +739,33 @@ public class LauncherProvider extends ContentProvider {
             }
 
             return i;
+        }
+
+        //add built-in widgets
+        private void addUnInstalledWidget(TypedArray a,long container,int natureId,String screen,String x,String y){
+
+    		String packageName = a.getString(R.styleable.Favorite_packageName);
+            String className = a.getString(R.styleable.Favorite_className);
+            int spanX = Integer.valueOf(a.getString(R.styleable.Favorite_spanX));
+            int spanY = Integer.valueOf(a.getString(R.styleable.Favorite_spanY));
+        	ComponentName cn = new ComponentName(packageName, className);
+        	
+        	int appWidgetId = mAppWidgetHost.allocateAppWidgetId();
+        	
+        	LauncherAppWidgetInfo info = new LauncherAppWidgetInfo(appWidgetId,cn);
+        	info.container = container;
+        	info.natureId = natureId;
+        	info.screen = Integer.valueOf(screen);
+        	info.cellX = Integer.valueOf(x);
+        	info.cellY = Integer.valueOf(y);
+        	info.spanX = spanX;
+        	info.spanY = spanY;
+        	info.id = generateNewId();
+        	info.appWidgetId = appWidgetId;
+        	info.itemType = Favorites.ITEM_TYPE_APPWIDGET;
+        	info.providerName = cn;
+        	
+        	unInstalledWidget.add(info);
         }
 
         private long addAppShortcut(SQLiteDatabase db, ContentValues values, TypedArray a,
@@ -950,8 +1012,43 @@ public class LauncherProvider extends ContentProvider {
             }
             return id;
         }
-    }
+        
+        //add by wanghao
+        private long addVirtualShortcut(SQLiteDatabase db, ContentValues values,TypedArray a) {
+            Resources r = mContext.getResources();
 
+            Drawable icon = a.getDrawable(R.styleable.Favorite_icon);
+            Bitmap icon_bitmap = Utilities.createIconBitmap(icon, mContext);
+//            BitmapDrawable bd = (BitmapDrawable) icon;
+//            Bitmap icon_bitmap = bd.getBitmap();
+            String title = a.getString(R.styleable.Favorite_title);
+            
+            String packageName = a.getString(R.styleable.Favorite_packageName);
+            String className = a.getString(R.styleable.Favorite_className);
+            
+            ComponentName cn = new ComponentName(packageName, className);
+            Intent intent = new Intent();
+            long id = generateNewId();
+            intent.setComponent(cn);
+            intent.putExtra(SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            values.put(Favorites.INTENT, intent.toUri(0));
+            values.put(Favorites.TITLE, title);
+            values.put(Favorites.ITEM_TYPE, Favorites.ITEM_TYPE_APPLICATION);//
+            values.put(Favorites.ICON_TYPE, Favorites.ICON_TYPE_BITMAP);
+            values.put(Favorites.SPANX, 1);
+            values.put(Favorites.SPANY, 1);
+            values.put(Favorites._ID, id);
+
+            ItemInfo.writeBitmap(values, icon_bitmap);
+            
+            if (dbInsertAndCheck(db, TABLE_FAVORITES, null, values) < 0) {
+                return -1;
+            }
+            return id;
+        }
+    }
     /**
      * Build a query string that will match any row where the column matches
      * anything in the values list.
