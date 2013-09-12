@@ -117,7 +117,8 @@
         </receiver>
 
         <activity android:name="com.joy.launcher2.preference.Preferences"
-            android:label="@string/preferences_title">
+            android:label="@string/preferences_title"
+            android:theme="@style/joy_prefrences_type">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="com.cyanogenmod.category.LAUNCHER_PREFERENCES" />

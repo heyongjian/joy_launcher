@@ -161,7 +161,8 @@ public class Preferences extends PreferenceActivity
         private LayoutInflater mInflater;
 
         static int getHeaderType(Header header) {
-            if (header.id == R.id.preferences_application_section) {
+            if (header.id == R.id.preferences_application_section ||
+            		header.id == R.id.preferences_backupandrestore_section) {
                 return HEADER_TYPE_CATEGORY;
             } else {
                 return HEADER_TYPE_NORMAL;
@@ -211,9 +212,12 @@ public class Preferences extends PreferenceActivity
                 holder = new HeaderViewHolder();
                 switch (headerType) {
                     case HEADER_TYPE_CATEGORY:
-                        view = new TextView(getContext(), null,
-                                android.R.attr.listSeparatorTextViewStyle);
-                        holder.title = (TextView) view;
+//                        view = new TextView(getContext(), null,
+//                                android.R.attr.listSeparatorTextViewStyle);
+//                    	holder.title = (TextView) view;
+                    	view = mInflater.inflate(R.layout.joy_preference_category, parent, false);
+
+                    	holder.title = (TextView)view.findViewById(com.android.internal.R.id.title);
                         break;
 
                     case HEADER_TYPE_NORMAL:
@@ -223,8 +227,8 @@ public class Preferences extends PreferenceActivity
                         holder.icon = (ImageView) view.findViewById(R.id.icon);
                         holder.title = (TextView)
                                 view.findViewById(com.android.internal.R.id.title);
-                        holder.summary = (TextView)
-                                view.findViewById(com.android.internal.R.id.summary);
+//                        holder.summary = (TextView)
+//                                view.findViewById(com.android.internal.R.id.summary);
                         break;
                 }
                 view.setTag(holder);
@@ -242,13 +246,13 @@ public class Preferences extends PreferenceActivity
                 case HEADER_TYPE_NORMAL:
                     holder.icon.setImageResource(header.iconRes);
                     holder.title.setText(header.getTitle(getContext().getResources()));
-                    CharSequence summary = header.getSummary(getContext().getResources());
-                    if (!TextUtils.isEmpty(summary)) {
-                        holder.summary.setVisibility(View.VISIBLE);
-                        holder.summary.setText(summary);
-                    } else {
-                        holder.summary.setVisibility(View.GONE);
-                    }
+//                    CharSequence summary = header.getSummary(getContext().getResources());
+//                    if (!TextUtils.isEmpty(summary)) {
+//                        holder.summary.setVisibility(View.VISIBLE);
+//                        holder.summary.setText(summary);
+//                    } else {
+//                        holder.summary.setVisibility(View.GONE);
+//                    }
                     break;
             }
 

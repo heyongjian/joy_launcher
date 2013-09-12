@@ -31,13 +31,15 @@
             android:targetPackage="com.joy.launcher2"
             android:targetClass="com.joy.launcher2.preference.HiddenAppsActivity"/>
     </Preference>
-    <PreferenceCategory android:title="@string/preferences_interface_drawer_widgets_category">
+    <PreferenceCategory android:title="@string/preferences_interface_drawer_widgets_category"
+        android:layout="@layout/joy_preference_category">
         <CheckBoxPreference android:key="ui_drawer_widgets_join_apps"
             android:title="@string/preferences_interface_drawer_widgets_join_apps_title"
             android:summary="@string/preferences_interface_drawer_widgets_join_apps_summary"
             android:defaultValue="true" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/preferences_interface_drawer_scrolling_category">
+    <PreferenceCategory android:title="@string/preferences_interface_drawer_scrolling_category"
+        android:layout="@layout/joy_preference_category">
         <ListPreference android:key="ui_drawer_scrolling_transition_effect"
             android:title="@string/preferences_interface_drawer_scrolling_transition_effect_title"
             android:summary="@string/preferences_interface_drawer_scrolling_transition_effect_summary"
@@ -68,7 +70,8 @@
 <!--     </PreferenceCategory> -->
 
 <!-- add by xiong.chen for app background -->
-    <PreferenceCategory android:title="@string/all_app_view_background_title">
+    <PreferenceCategory android:title="@string/all_app_view_background_title"
+        android:layout="@layout/joy_preference_category">
         <com.joy.launcher2.widget.ColorPickerPreference 
 			android:key="ui_drawer_app_background_type"
 			android:persistent="false"

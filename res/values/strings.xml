@@ -316,6 +316,10 @@ s -->
     <string name="preferences_title">Preferences</string>
     <!-- UI -->
     <string name="preferences_interface_title">Interface</string>
+     <!-- bakcup & recover -->
+     <string name="preferences_backup_recover_title">Backup restore</string>
+        <string name="preferences_backup_title">Backup</string>
+           <string name="preferences_recover_title">Restore</string>
     <!-- Application -->
     <string name="preferences_application_title">Application</string>
 

@@ -187,4 +187,6 @@
     </style>
     <style name="CustomClingText">
     </style>
+     <style name="joy_prefrences_type" parent="android:Theme.Holo.Light">
+	</style>
 </resources>
