@@ -177,8 +177,16 @@
         <attr name="pickerTitle1" format="string" />
         <attr name="pickerTitle2" format="string" />
     </declare-styleable>
-
-    <declare-styleable name="SeekBarDialogPreference">
+    
+    <!-- add by wanghao -->
+    <declare-styleable name="IconListPrefrence">
+        <attr name="list_entries" format="string" />
+        <attr name="list_entryValues" format="string" />
+        <attr name="list_entryDrawables" format="string" />
+        <attr name="list_defaultValue" format="string" />
+    </declare-styleable>
+    
+<declare-styleable name="SeekBarDialogPreference">
         <attr name="max" />
         <attr name="min" />
         <attr name="prefix" format="string" />
