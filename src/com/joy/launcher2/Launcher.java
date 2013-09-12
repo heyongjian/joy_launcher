@@ -872,9 +872,6 @@ public final class Launcher extends Activity
             } else {
                 delayExitSpringLoadedMode = completeAdd(args);
             }
-        }//add widget by wanghao
-        else if((requestCode == REQUEST_PICK_APPWIDGET||requestCode == REQUEST_CREATE_APPWIDGET)&&resultCode == RESULT_OK){
-        	addAppWidget(requestCode,data);
         }
         mDragLayer.clearAnimatedView();
         // Exit spring loaded mode if necessary after cancelling the configuration of a widget
@@ -2243,7 +2240,7 @@ public final class Launcher extends Activity
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				//showAddWidget();
+				showAddWidget();
 				dialog.dismiss();
 			}
 		});
@@ -2260,6 +2257,9 @@ public final class Launcher extends Activity
         pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
         startActivityForResult(pickIntent, REQUEST_PICK_APPWIDGET);
+        
+        mPendingAddInfo.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+        mPendingAddInfo.screen = getCurrentWorkspaceScreen();
     }
     /**
      * 弹出添加在线文件的窗�?

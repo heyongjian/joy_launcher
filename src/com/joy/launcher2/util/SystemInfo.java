@@ -472,17 +472,17 @@ public class SystemInfo {
 				if (str==null) {
 					return str;
 				}
-				if (str.equals("内蒙古自治区")) {
+				if (str.contains("内蒙古")) {
 					str = "内蒙古";
-				}else if (str.equals("西藏自治区")) {
+				}else if (str.contains("西藏")) {
 					str = "西藏";
-				}else if (str.equals("宁夏回族自治区")) {
+				}else if (str.contains("宁夏")) {
 					str = "宁夏";
-				}else if (str.equals("新疆维吾尔自治区")) {
+				}else if (str.contains("新疆")) {
 					str = "新疆";
-				}else if (str.equals("香港特别行政区")) {
+				}else if (str.contains("香港")) {
 					str = "香港";
-				}else if (str.equals("澳门特别行政区")) {
+				}else if (str.contains("澳门")) {
 					str = "澳门";
 				}else if (str.contains("省")) {
 					str = str.replace("省", "");
