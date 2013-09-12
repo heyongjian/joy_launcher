@@ -16,13 +16,16 @@
 
 package com.joy.launcher2;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+
 
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
@@ -44,6 +47,11 @@ public class IconCache {
         public String title;
     }
 
+    //add by huangming for icon
+    private ArrayList<String> mPackageFilter = new ArrayList<String>();
+    private ArrayList<String> mActivityFilter = new ArrayList<String>();
+    //end
+    
     private final Bitmap mDefaultIcon;
     private final LauncherApplication mContext;
     private final PackageManager mPackageManager;
@@ -192,6 +200,9 @@ public class IconCache {
     private CacheEntry cacheLocked(ComponentName componentName, ResolveInfo info,
             HashMap<Object, CharSequence> labelCache) {
         CacheEntry entry = mCache.get(componentName);
+        //Modify by huangming for icon
+        String packageName = componentName.getPackageName();
+        String activityName = componentName.getClassName();
         if (entry == null) {
             entry = new CacheEntry();
 
@@ -209,11 +220,85 @@ public class IconCache {
             if (entry.title == null) {
                 entry.title = info.activityInfo.name;
             }
+            
+            Resources res = mContext.getResources();
+            if(mPackageFilter.size() <= 0)
+            {
+            	mPackageFilter.clear();
+            	mActivityFilter.clear();
+            	String[] systemIcons = res.getStringArray(R.array.system_icons_filter);
+            	if(systemIcons != null)
+            	{
+            		for(String systemIcon : systemIcons)
+            		{
+            			String[] paStr = systemIcon.split("_");
+            			if(paStr.length == 2)
+            			{
+            				mPackageFilter.add(paStr[0]);
+            				mActivityFilter.add(paStr[1]);
+            			}
+            		}
+            		
+            	}
+            }
+            boolean isSystem = false;
+            if(packageName != null && activityName != null && checkIsSystemApp(mContext, packageName))
+            {
+            	for(int i = 0; i < mPackageFilter.size(); i++)
+            	{
+            		if(packageName.toLowerCase().contains(mPackageFilter.get(i)) 
+            				&& activityName.toLowerCase().contains(mActivityFilter.get(i)))
+            		{
+            			String iconName = "joy_system_icon_" + mActivityFilter.get(i);
+            			int iconId = res == null ?0 : res.getIdentifier(iconName, "drawable", mContext.getPackageName());
+                    	if(iconId > 0)
+                    	{
+                    		Drawable d = getFullResIcon(res, iconId);
+                    		if(d != null)
+                    		{
+                    			entry.icon = Utilities.createIconBitmap(
+                                        d, 
+                                        mContext);
+                    			isSystem = true;
+                    		}
+                    		
+                    	}
+            			break;
+            		}
+            	}
+            }
+            
+            if(!isSystem)
+            {
+            	entry.icon = Utilities.createIconBitmap(
+                        getFullResIcon(info), mContext, packageName);
+            }
 
-            entry.icon = Utilities.createIconBitmap(
-                    getFullResIcon(info), mContext, componentName.getPackageName());
+            /*entry.icon = Utilities.createIconBitmap(
+                    getFullResIcon(info), mContext, componentName.getPackageName());*/
         }
+        //end
         return entry;
+    }
+    
+    public static boolean checkIsSystemApp(Context context, String packageName)
+    {
+    	boolean isSystemApp = false;
+    	try
+    	{
+    		PackageInfo pi = context.getPackageManager().getPackageInfo(packageName, 0);
+    		if((pi.applicationInfo.flags & android.content.pm.ApplicationInfo.FLAG_SYSTEM) !=0)
+    		{
+    			
+    			isSystemApp = true;
+    		}
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	
+    	return isSystemApp;
     }
 
     public HashMap<ComponentName, Bitmap> getAllIcons() {

@@ -121,4 +121,92 @@
         <item>2</item>
     </string-array>
     <!--add end -->
+    
+    <!-- add by huangming for Desktop appearance  -->
+    <string-array name="preferences_interface_homescreen_icon_szie_entries">
+        <item>Large Icon</item>
+        <item>Medium Icon</item>
+        <item>Small Icon</item>
+    </string-array>
+    <string-array name="preferences_interface_homescreen_icon_size_values">
+        <item>Large</item>
+        <item>Medium</item>
+        <item>Small</item>
+    </string-array>
+    <string-array name="preferences_interface_homescreen_icon_text_szie_entries">
+        <item>Large Text</item>
+        <item>Medium Text</item>
+        <item>Small Text</item>
+    </string-array>
+    <string-array name="preferences_interface_homescreen_icon_text_size_values">
+        <item>Large</item>
+        <item>Medium</item>
+        <item>Small</item>
+    </string-array>
+    <string-array name="icon_bg_names">
+        <item>joy_desktop_bg_1</item>
+        <item>joy_desktop_bg_2</item>
+        <item>joy_desktop_bg_3</item>
+        <item>joy_desktop_bg_4</item>
+        <item>joy_desktop_bg_5</item>
+        <item>joy_desktop_bg_6</item>
+        <item>joy_desktop_bg_7</item>
+        <item>joy_desktop_bg_8</item>
+        <item>joy_desktop_bg_9</item>
+        <item>joy_desktop_bg_10</item>
+        <item>joy_desktop_bg_11</item>
+        <item>joy_desktop_bg_12</item>
+        <item>joy_desktop_bg_13</item>
+        <item>joy_desktop_bg_14</item>
+        <item>joy_desktop_bg_15</item>
+        <item>joy_desktop_bg_16</item>
+        <item>joy_desktop_bg_17</item>
+        <item>joy_desktop_bg_18</item>
+        <item>joy_desktop_bg_19</item>
+        <item>joy_desktop_bg_20</item>
+        <item>joy_desktop_bg_21</item>
+        <item>joy_desktop_bg_22</item>
+    </string-array>
+    <string-array name="system_icon_array">
+        <!-- <item>com.android.browser</item>
+        <item>com.android.calculator2</item>
+        <item>com.android.camera</item>
+        <item>com.android.contacts</item>
+        <item>com.android.email</item>
+        <item>com.android.gallery3d</item>
+        <item>com.android.mms</item>
+        <item>com.android.providers.downloads.ui</item>
+        <item>com.android.qrdfileexplorer</item>
+        <item>com.android.quicksearchbox</item>
+        <item>com.android.soundrecorder</item>
+        <item>com.android.calendar</item>
+        <item>com.android.music</item>
+        <item>com.android.deskclock</item>
+        <item>com.android.settings</item>
+        <item>com.android.stoptimer</item>
+        <item>com.android.profile</item>
+        <item>com.android.stk</item> -->
+    </string-array>
+    <string-array name="system_icons_filter">
+        <item>browser_browser</item>
+        <item>calculator_calculator</item>
+        <item>camera_camera</item>
+        <item>email_email</item>
+        <item>gallery_gallery</item>
+        <item>mms_mms</item>
+        <item>downloads_downloads</item>
+        <item>file_file</item>
+        <item>quicksearchbox_quicksearchbox</item>
+        <item>soundrecorder_soundrecorder</item>
+        <item>calendar_calendar</item>
+        <item>music_music</item>
+        <item>deskclock_deskclock</item>
+        <item>settings_settings</item>
+        <item>stoptimer_stoptimer</item>
+        <item>stk_stk</item>
+        <item>contacts_dialtacts</item>
+        <item>contacts_people</item>
+        <item>video_video</item>
+        <item>fm_fm</item>
+    </string-array>
 </resources>

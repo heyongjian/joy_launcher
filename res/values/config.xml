@@ -110,4 +110,6 @@
     <!-- must be between 0 and 100 -->
     <integer name="hotseat_item_scale_percentage">100</integer>
     <bool name="general_show_appbackground">true</bool>
+    <!-- icon size or icon text size -->
+    <string name="config_defaultSize">Medium</string>
 </resources>

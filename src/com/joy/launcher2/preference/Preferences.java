@@ -19,12 +19,15 @@ package com.joy.launcher2.preference;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.joy.launcher2.IconStyleActivity;
 import com.joy.launcher2.LauncherApplication;
 import com.joy.launcher2.R;
 
@@ -117,6 +121,21 @@ public class Preferences extends PreferenceActivity
                 preferenceScreen.removePreference(findPreference("ui_homescreen_grid"));
             }
         }
+
+		@Override
+		public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+				Preference preference) {
+			// TODO Auto-generated method stub
+			String key = preference.getKey();
+	    	if(PreferencesProvider.ICON_STYLE_KEY.equals(key))
+	    	{
+	    		Intent intent = new Intent();
+	    		intent.setClass(getActivity(), IconStyleActivity.class);
+	    		startActivity(intent);
+	    	}
+			return super.onPreferenceTreeClick(preferenceScreen, preference);
+		}
+        
     }
 
     public static class DrawerFragment extends PreferenceFragment {

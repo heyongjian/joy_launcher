@@ -219,5 +219,10 @@
     <dimen name="joyfolder_layout_title">30dp</dimen>
     <dimen name="joyfolder_title_icon_size">40dp</dimen>
     <integer name="joyfolder_content_size">16</integer>
+    
+    <!-- add by huangming for icon size -->
+    <dimen name="cell_h_margin_new">8dp</dimen>
+    <dimen name="cell_v_margin_new">12dp</dimen>
+    <dimen name="icon_text_size_default">13px</dimen>
 
 </resources>

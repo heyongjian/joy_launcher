@@ -24,11 +24,16 @@ import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.Region.Op;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
 import com.joy.launcher2.download.DownloadInfo;
+import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.preference.PreferencesProvider.Size;
+import com.joy.launcher2.preference.PreferencesProvider.TextStyle;
 
 /**
  * TextView that draws a bubble behind the text. We cannot use a LineBackgroundSpan
@@ -91,6 +96,40 @@ public class BubbleTextView extends TextView implements ShortcutInfo.ShortcutLis
             res.getColor(android.R.color.holo_blue_light);
 
         setShadowLayer(SHADOW_LARGE_RADIUS, 0.0f, SHADOW_Y_OFFSET, SHADOW_LARGE_COLOUR);
+      //add by huangming for Desktop appearance
+        Size textSize = PreferencesProvider.Interface.Homescreen.getIconTextSize(
+        		getContext(), 
+        		res.getString(R.string.config_defaultSize));
+        int defaultSize = res.getDimensionPixelSize(R.dimen.icon_text_size_default);
+        if(textSize == Size.Large)
+        {
+        	defaultSize = (int)(defaultSize * Utilities.LARGE_RATIO);
+        }
+        else if(textSize == Size.Small)
+        {
+        	defaultSize = (int)(defaultSize * Utilities.SMALL_RATIO);
+        }
+        setTextSize(defaultSize);
+        
+        TextStyle textStyle = PreferencesProvider.Interface.Homescreen.getIconTextStyle(
+        		getContext(), 
+        		TextStyle.Marquee.toString());
+        if(textStyle == TextStyle.Marquee)
+        {
+        	setSingleLine();
+        	setEllipsize(TruncateAt.MARQUEE);
+        }
+        else if(textStyle == TextStyle.Ellipsis)
+        {
+        	setSingleLine();
+        	setEllipsize(TruncateAt.END);
+        }
+        else if(textStyle == TextStyle.TwoLines)
+        {
+        	setSingleLine(false);
+        	setMaxLines(2);
+        }
+        //end
     }
 
     public void applyFromShortcutInfo(ShortcutInfo info, IconCache iconCache) {

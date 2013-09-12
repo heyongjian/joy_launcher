@@ -20,7 +20,7 @@
     android:title="@string/preferences_interface_homescreen_title">
     <PreferenceCategory android:title="@string/preferences_interface_homescreen_general_category"
         android:layout="@layout/joy_preference_category">
-        <com.joy.launcher2.preference.DoubleNumberPickerPreference android:key="ui_homescreen_grid"
+        <!-- <com.joy.launcher2.preference.DoubleNumberPickerPreference android:key="ui_homescreen_grid"
             android:title="@string/preferences_interface_homescreen_general_grid_title"
             android:summary="@string/preferences_interface_homescreen_general_grid_summary"
             launcher:pickerTitle1="@string/preferences_interface_homescreen_general_grid_rows_title"
@@ -30,7 +30,7 @@
             launcher:max1="5"
             launcher:min1="3"
             launcher:max2="5"
-            launcher:min2="3" />
+            launcher:min2="3" /> -->
         <com.joy.launcher2.preference.NumberPickerPreference android:key="ui_homescreen_screens"
             android:title="@string/preferences_interface_homescreen_general_screens_title"
             android:summary="@string/preferences_interface_homescreen_general_screens_summary"
@@ -104,4 +104,29 @@
 <!--             android:defaultValue="0" -->
 <!--             android:dependency="ui_homescreen_indicator_enable" /> -->
 <!--     </PreferenceCategory> -->
+
+    <!-- add by huangming for Desktop appearance  -->
+            <PreferenceCategory android:key="ui_homescreen_appearance"
+                android:title="@string/preferences_interface_homescreen_appearance_category"
+                android:layout="@layout/joy_preference_category">                
+				<Preference android:key="ui_homescreen_icon_style"
+				    android:summary="@string/preferences_interface_homescreen_icon_style_summary"
+				    android:title="@string/preferences_interface_homescreen_icon_style_title"/>
+                <ListPreference
+				    android:key="ui_homescreen_icon_size"
+				    android:summary="@string/preferences_interface_homescreen_icon_size_summary"
+				    android:title="@string/preferences_interface_homescreen_icon_size_title"
+				    android:entries="@array/preferences_interface_homescreen_icon_szie_entries"
+				    android:entryValues="@array/preferences_interface_homescreen_icon_size_values" 
+				    android:defaultValue="@string/config_defaultSize" >
+				</ListPreference>
+				<ListPreference
+				    android:key="ui_homescreen_icon_text_size"
+				    android:summary="@string/preferences_interface_homescreen_icon_text_size_summary"
+				    android:title="@string/preferences_interface_homescreen_icon_text_size_title"
+				    android:entries="@array/preferences_interface_homescreen_icon_text_szie_entries"
+				    android:entryValues="@array/preferences_interface_homescreen_icon_text_size_values"
+				    android:defaultValue="@string/config_defaultSize" >
+				</ListPreference>
+            </PreferenceCategory>
 </PreferenceScreen>

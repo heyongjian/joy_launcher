@@ -47,6 +47,21 @@ public final class PreferencesProvider {
     	editor.commit();
     }
     //end
+    
+    public enum Size {
+    	Large,
+    	Medium,
+    	Small
+    }
+    
+    public enum TextStyle {
+    	Marquee,
+    	Ellipsis,
+    	TwoLines
+    }
+    
+    public static final String ICON_STYLE_KEY = "ui_homescreen_icon_style";
+    public static final String ICON__TEXT_STYLE_KEY = "ui_homescreen_icon_text_style";
 
     public static void load(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
@@ -70,6 +85,33 @@ public final class PreferencesProvider {
 
     public static class Interface {
         public static class Homescreen {
+        	
+        	//add by huangming for desktop appearance
+        	public static Size getIconSize(Context context, String def)
+        	{
+        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
+        		return Size.valueOf(preferences.getString("ui_homescreen_icon_size", def));
+        	}
+        	
+        	public static Size getIconTextSize(Context context, String def)
+        	{
+        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
+        		return Size.valueOf(preferences.getString("ui_homescreen_icon_text_size", def));
+        	}
+        	
+        	public static String getIconStyle(Context context, String def)
+        	{
+        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
+        		return preferences.getString(ICON_STYLE_KEY, def);
+        	}
+        	
+        	public static TextStyle getIconTextStyle(Context context, String def)
+        	{
+        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
+        		return TextStyle.valueOf(preferences.getString(ICON__TEXT_STYLE_KEY, def));
+        	}
+        	//end
+        	
             public static int getNumberHomescreens() {
                 return getInt("ui_homescreen_screens", 5);
             }
