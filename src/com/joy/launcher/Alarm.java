@@ -22,7 +22,6 @@ public class Alarm implements Runnable{
     // if we reach this time and the alarm hasn't been cancelled, call the listener
     private long mAlarmTriggerTime;
 
-    //Test for rollback.
     // if we've scheduled a call to run() (ie called mHandler.postDelayed), this variable is true.
     // We use this to avoid having multiple pending callbacks
     private boolean mWaitingForCallback;
