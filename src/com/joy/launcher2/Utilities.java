@@ -36,13 +36,14 @@ import java.util.ArrayList;
 
 import com.joy.launcher2.R;
 import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.preference.PreferencesProvider.Size;
 
 import android.util.Log;
 
 /**
  * Various utilities shared amongst the Launcher's classes.
  */
-final class Utilities {
+public final class Utilities {
     @SuppressWarnings("unused")
     private static final String TAG = "Joy.Utilities";
 
@@ -51,6 +52,13 @@ final class Utilities {
     private static int sIconTextureWidth = -1;
     private static int sIconTextureHeight = -1;
     private static int sStandard = -1;
+    
+    //add by huangming for icon size.
+    private static Drawable sBg = null;
+    private static ArrayList<String> sFilter = new ArrayList<String>();
+    public static float LARGE_RATIO = 1.2f;
+    public static float SMALL_RATIO = 0.8F;
+    //end
 
     private static final Paint sBlurPaint = new Paint();
     private static final Paint sGlowColorPressedPaint = new Paint();
@@ -116,7 +124,7 @@ final class Utilities {
         synchronized (sCanvas) { // we share the statics :-(
             int bgType = 0;
             //modify by xiong.chen for bug wxy-572 at 2013-07-16
-            Resources res = context.getResources();
+           /* Resources res = context.getResources();
             String[] apkIcon = res.getStringArray(R.array.replace_apk_icon_array); 
             if(packageName != null){
                 bgType = stringToAsicll(packageName) % 3;
@@ -127,9 +135,38 @@ final class Utilities {
                 		break;
                 	}
                 }
-            }
+            }*/
             if (sIconWidth == -1) {
                 initStatics(context);
+            }
+            
+          //modify by huangming for icon size
+            if(sFilter == null)
+            {
+            	sFilter = new ArrayList<String>();
+            }
+            
+            if(sFilter.size() <= 0)
+            {
+            	String[] systemIcons = context.getResources().getStringArray(R.array.system_icon_array);
+            	if(systemIcons != null)
+            	{
+            		for(String systemIcon : systemIcons)
+            		{
+            			sFilter.add(systemIcon);
+            		}
+            	}
+            }
+            
+            if(sBg == null)
+            {
+            	Resources res = context.getResources();
+            	String bgName = PreferencesProvider.Interface.Homescreen.getIconStyle(context, "");
+            	int bgId = res == null ?0 : res.getIdentifier(bgName, "drawable", "com.joy.launcher2");
+            	if(bgId > 0)
+            	{
+            		sBg = res.getDrawable(bgId);
+            	}
             }
            
             int width = sIconWidth;
@@ -149,7 +186,7 @@ final class Utilities {
             }
             int sourceWidth = icon.getIntrinsicWidth();
             int sourceHeight = icon.getIntrinsicHeight();
-            if (sourceWidth > 0 && sourceHeight > 0) {
+            /*if (sourceWidth > 0 && sourceHeight > 0) {
                 // There are intrinsic sizes.
                 if (width < sourceWidth || height < sourceHeight) {
                     // It's too big, scale it down.
@@ -164,9 +201,25 @@ final class Utilities {
                     // width = sourceWidth;
                     // height = sourceHeight;
                 }
+            }*/
+            
+            if(sourceWidth > 0 && sourceHeight > 0)
+            {
+            	float ratio;
+            	if(sourceWidth > sourceHeight)
+            	{
+            		ratio = (float)sourceWidth / width;
+            	}
+            	else
+            	{
+            		ratio = (float)sourceHeight / height;
+            	}
+            	width = (int)(sourceWidth / ratio);
+            	height = (int)(sourceHeight / ratio);
             }
+            
             Drawable bground;
-            mShowAppBackground = PreferencesProvider.Interface.General.getAppBackground(
+            /*mShowAppBackground = PreferencesProvider.Interface.General.getAppBackground(
             		res.getBoolean(R.bool.general_show_appbackground));
             sOldBounds.set(icon.getBounds());
 //            bground = res.getDrawable(R.drawable.icon_background_white);
@@ -206,7 +259,7 @@ final class Utilities {
                     width = height = (int)(sStandard * 0.6);
                 }
             }//END
-            
+            */
             // no intrinsic size --> use default size
             int textureWidth = sIconTextureWidth;
             int textureHeight = sIconTextureHeight;
@@ -230,9 +283,16 @@ final class Utilities {
                 canvas.drawRect(left, top, left+width, top+height, debugPaint);
             }
 
-            if(mShowAppBackground && !mFilter.contains(packageName) && packageName != null){
+            /*if(mShowAppBackground && !mFilter.contains(packageName) && packageName != null){
                 bground.draw(canvas);
+            }*/
+            
+            if(sBg != null && packageName != null && !sFilter.contains(packageName))
+            {
+            	sBg.setBounds(0, 0, sIconWidth, sIconHeight);
+            	sBg.draw(canvas);
             }
+            //end
             icon.setBounds(left, top, left+width, top+height);
             icon.draw(canvas);
             icon.setBounds(sOldBounds);
@@ -323,7 +383,26 @@ final class Utilities {
         final DisplayMetrics metrics = resources.getDisplayMetrics();
         final float density = metrics.density;
 
-        sIconWidth = sIconHeight = (int) resources.getDimension(R.dimen.app_icon_size);
+      //modify by huangming for icon size;
+        Size iconSize= PreferencesProvider.Interface.Homescreen.getIconSize(
+        		context, 
+        		resources.getString(R.string.config_defaultSize));
+        int appIconSize = (int) resources.getDimension(R.dimen.app_icon_size);
+        if(iconSize == Size.Large)
+        {
+        	appIconSize = (int)(appIconSize * LARGE_RATIO);
+        }
+        else if(iconSize == Size.Small)
+        {
+        	appIconSize = (int)(appIconSize * SMALL_RATIO);
+        }
+        else
+        {
+        	
+        }
+        sIconWidth = sIconHeight = appIconSize;
+        //sIconWidth = sIconHeight = (int) resources.getDimension(R.dimen.app_icon_size);
+        //end
         sIconTextureWidth = sIconTextureHeight = sIconWidth;
         sStandard = sIconWidth;
         sBlurPaint.setMaskFilter(new BlurMaskFilter(5 * density, BlurMaskFilter.Blur.NORMAL));
