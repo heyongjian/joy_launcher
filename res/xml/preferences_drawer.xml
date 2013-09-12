@@ -40,15 +40,12 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/preferences_interface_drawer_scrolling_category"
         android:layout="@layout/joy_preference_category">
-        <com.joy.launcher2.preference.iconlistpreference.IconListPreference android:key="ui_drawer_scrolling_transition_effect"
+        <ListPreference android:key="ui_drawer_scrolling_transition_effect"
             android:title="@string/preferences_interface_drawer_scrolling_transition_effect_title"
             android:summary="@string/preferences_interface_drawer_scrolling_transition_effect_summary"
-            launcher:list_entries="@array/preferences_interface_drawer_scrolling_transition_effect_entries"
-            launcher:list_entryValues="@array/preferences_interface_drawer_scrolling_transition_effect_values"
-            launcher:list_entryDrawables="@array/preferences_interface_drawer_scrolling_transition_effect_drawables"
-            launcher:list_defaultValue="@string/config_drawerDefaultTransitionEffect"   >
-        </com.joy.launcher2.preference.iconlistpreference.IconListPreference>
-
+            android:entries="@array/preferences_interface_drawer_scrolling_transition_effect_entries"
+            android:entryValues="@array/preferences_interface_drawer_scrolling_transition_effect_values"
+            android:defaultValue="@string/config_drawerDefaultTransitionEffect" />
 <!--         <CheckBoxPreference android:key="ui_drawer_scrolling_fade_adjacent_screens" -->
 <!--             android:title="@string/preferences_interface_drawer_scrolling_fade_adjacent_screens_title" -->
 <!--             android:summary="@string/preferences_interface_drawer_scrolling_fade_adjacent_screens_summary" /> -->
