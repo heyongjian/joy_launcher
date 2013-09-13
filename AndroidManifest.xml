@@ -203,5 +203,14 @@
             android:label="@string/icon_style_activity_title"
             android:theme="@style/joy_prefrences_icon_style" >
         </activity>
+        
+        <receiver android:name=".PackageChangedReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_CHANGED"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package"></data>
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
