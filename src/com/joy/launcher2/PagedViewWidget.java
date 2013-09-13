@@ -45,6 +45,10 @@ public class PagedViewWidget extends LinearLayout {
     static PagedViewWidget sShortpressTarget = null;
     boolean mIsAppWidget;
     private final Rect mOriginalImagePadding = new Rect();
+    //add by huangming for launcher crash.
+    private WidgetPreviewLoader mWidgetPreviewLoader;
+    private Object mInfo;
+    //end
 
     public PagedViewWidget(Context context) {
         this(context, null);
@@ -87,17 +91,24 @@ public class PagedViewWidget extends LinearLayout {
             final ImageView image = (ImageView) findViewById(R.id.widget_preview);
             if (image != null) {
                 FastBitmapDrawable preview = (FastBitmapDrawable) image.getDrawable();
-                if (preview != null && preview.getBitmap() != null) {
+                //modify by huangming for launcher crash.
+                /*if (preview != null && preview.getBitmap() != null) {
                     preview.getBitmap().recycle();
+                }*/
+                if (mInfo != null && preview != null && preview.getBitmap() != null) {
+                	mWidgetPreviewLoader.recycleBitmap(mInfo, preview.getBitmap());
                 }
+                //end
                 image.setImageDrawable(null);
             }
         }
     }
 
+    //modify by huangming for launcher crash.
     public void applyFromAppWidgetProviderInfo(AppWidgetProviderInfo info,
-            int maxWidth, int[] cellSpan) {
+            int maxWidth, int[] cellSpan, WidgetPreviewLoader loader) {
         mIsAppWidget = true;
+        mInfo = info;
         final ImageView image = (ImageView) findViewById(R.id.widget_preview);
         if (maxWidth > -1) {
             image.setMaxWidth(maxWidth);
@@ -111,10 +122,12 @@ public class PagedViewWidget extends LinearLayout {
             int vSpan = Math.min(cellSpan[1], LauncherModel.getWorkspaceCellCountY());
             dims.setText(String.format(mDimensionsFormatString, hSpan, vSpan));
         }
+        mWidgetPreviewLoader = loader;
     }
 
-    public void applyFromResolveInfo(PackageManager pm, ResolveInfo info) {
+    public void applyFromResolveInfo(PackageManager pm, ResolveInfo info, WidgetPreviewLoader loader) {
         mIsAppWidget = false;
+        mInfo = info;
         CharSequence label = info.loadLabel(pm);
         final ImageView image = (ImageView) findViewById(R.id.widget_preview);
         image.setContentDescription(label);
@@ -124,7 +137,9 @@ public class PagedViewWidget extends LinearLayout {
         if (dims != null) {
             dims.setText(String.format(mDimensionsFormatString, 1, 1));
         }
+        mWidgetPreviewLoader = loader;
     }
+    //end
 
     public int[] getPreviewSize() {
         final ImageView i = (ImageView) findViewById(R.id.widget_preview);
