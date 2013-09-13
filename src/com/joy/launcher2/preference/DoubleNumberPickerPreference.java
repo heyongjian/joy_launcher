@@ -138,26 +138,36 @@ public class DoubleNumberPickerPreference extends DialogPreference {
             textInput2.setFocusableInTouchMode(false);
         }
 
-        //add by xiong.chen for bug WXY-69
-        EditText editText1 = (EditText) mNumberPicker1.getChildAt(0);
-        EditText editText2 = (EditText) mNumberPicker2.getChildAt(0);
-        editText1.setOnFocusChangeListener(new OnFocusChangeListener() {
-            
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                // do nothing
-            }
-        });
-        editText2.setOnFocusChangeListener(new OnFocusChangeListener() {
-            
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                // do nothing
-            }
-        });
-        editText1.setInputType(InputType.TYPE_NULL);
-        editText2.setInputType(InputType.TYPE_NULL);
-        //add end
+        //add by wanghao for compatible with different version 13-9-13
+        int count1 = mNumberPicker1.getChildCount();
+        for (int i = 0; i < count1; i++) {
+        	View v = mNumberPicker1.getChildAt(i);
+        	if (v instanceof EditText) {
+				((EditText)v).setOnFocusChangeListener(new OnFocusChangeListener() {
+		            
+		            @Override
+		            public void onFocusChange(View v, boolean hasFocus) {
+		                // do nothing
+		            }
+		        });
+				((EditText)v).setInputType(InputType.TYPE_NULL);
+			}
+		}
+        int count2 = mNumberPicker2.getChildCount();
+        for (int i = 0; i < count2; i++) {
+        	View v = mNumberPicker2.getChildAt(i);
+        	if (v instanceof EditText) {
+				((EditText)v).setOnFocusChangeListener(new OnFocusChangeListener() {
+		            
+		            @Override
+		            public void onFocusChange(View v, boolean hasFocus) {
+		                // do nothing
+		            }
+		        });
+				((EditText)v).setInputType(InputType.TYPE_NULL);
+			}
+		}
+        //end
         return view;
     }
 
