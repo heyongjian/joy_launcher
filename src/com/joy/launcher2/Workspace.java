@@ -1179,7 +1179,25 @@ public class Workspace extends PagedView
         int scrollRange = getScrollRange();
 
         // Again, we adjust the wallpaper offset to be consistent between values of mLayoutScale
-        float adjustedScrollX = Math.max(0, Math.min(getScrollX(), mMaxScrollX));
+        //add by huangming for screen cycle
+        float adjustedScrollX = Math.max(0, Math.min(mScrollX, mMaxScrollX));
+        
+        if(mOverScrollX < 0 && isCycle)
+        {
+        	scrollRange = getWidth();
+        	adjustedScrollX = Math.abs(mOverScrollX);
+        }
+        else if(mOverScrollX > mMaxScrollX  && isCycle)
+        {
+        	scrollRange = getWidth();
+        	adjustedScrollX = scrollRange - (mOverScrollX - mMaxScrollX);
+        	
+        }
+        else
+        {
+        	adjustedScrollX = Math.max(0, Math.min(getScrollX(), mMaxScrollX));
+        }
+        //end
         adjustedScrollX *= mWallpaperScrollRatio;
         mLayoutScale = layoutScale;
 
