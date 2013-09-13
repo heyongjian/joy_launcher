@@ -363,6 +363,8 @@ public final class Launcher extends Activity
     
     InstallAPK mInstallAPK = new InstallAPK(this);
     
+    //add by wanghao,for issue-1:weather the widget is added by menu.
+    private boolean addWidgetByMenu = false;
     
     private Runnable mBuildLayersRunnable = new Runnable() {
         public void run() {
@@ -816,13 +818,22 @@ public final class Launcher extends Activity
     @Override
     protected void onActivityResult(
             final int requestCode, final int resultCode, final Intent data) {
+    	
+    	//add by wanghao for add widget by menu
+        if (addWidgetByMenu) {
+        	if((requestCode == REQUEST_PICK_APPWIDGET||requestCode == REQUEST_CREATE_APPWIDGET)&&resultCode == RESULT_OK){
+            	addAppWidget(requestCode,data);
+            	return;
+            }
+		}
+        //add end
+        
     	//add by chenxiong for app background 04-09
         if (requestCode == PHOTO_PICKED_WITH_DATA) {
         	if (resultCode == RESULT_OK) {
         		setAppBackgroundType(CUSTOM_BACKGROUND);
         		setAppBackground();
 			}
-        	
         }
         //add end
         if (requestCode == REQUEST_BIND_APPWIDGET) {
@@ -832,16 +843,11 @@ public final class Launcher extends Activity
                 completeTwoStageWidgetDrop(RESULT_CANCELED, appWidgetId);
             } else if (resultCode == RESULT_OK) {
                 addAppWidgetImpl(appWidgetId, mPendingAddInfo, null, mPendingAddWidgetInfo);
+                mWaitingForResult = false;
             }
-            //add by wanghao
-            mWaitingForResult = false;
             return;
-        }//add widget by wanghao
-        else if((requestCode == REQUEST_PICK_APPWIDGET||requestCode == REQUEST_CREATE_APPWIDGET)&&resultCode == RESULT_OK){
-        	addAppWidget(requestCode,data);
-        	mWaitingForResult = false;
-        	return;
         }
+        
         boolean delayExitSpringLoadedMode = false;
         boolean isWidgetDrop = (requestCode == REQUEST_PICK_APPWIDGET ||
                 requestCode == REQUEST_CREATE_APPWIDGET);
@@ -2221,6 +2227,8 @@ public final class Launcher extends Activity
 			break;
 		case REQUEST_CREATE_APPWIDGET:
 			completeAddAppWidget(appWidgetId, LauncherSettings.Favorites.CONTAINER_DESKTOP, getCurrentWorkspaceScreen(),null,null);
+			addWidgetByMenu = false;
+			mWaitingForResult = false;
 			break;
 		}
     }
@@ -2264,6 +2272,7 @@ public final class Launcher extends Activity
         pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
         startActivityForResult(pickIntent, REQUEST_PICK_APPWIDGET);
+        addWidgetByMenu = true;
     }
     /**
      * 弹出添加在线文件的窗�?
