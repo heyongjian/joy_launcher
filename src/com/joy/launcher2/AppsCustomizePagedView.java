@@ -461,6 +461,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             mPreClassArray = context.getResources().getStringArray(R.array.unicom_apps_package_name);
 		}
         //add end
+        
+        //add by wanghao
+        int defCellCountX = getContext().getResources().getInteger(R.integer.config_drawer_Columns);
+        int defCellCountY = getContext().getResources().getInteger(R.integer.config_drawer_Rows);
+        mMaxAppCellCountX = PreferencesProvider.Interface.Drawer.getCellCountX(context, defCellCountX);
+        mMaxAppCellCountY = PreferencesProvider.Interface.Drawer.getCellCountY(context, defCellCountY);
     }
 
     @Override
@@ -591,11 +597,14 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         if (mMaxAppCellCountX > -1) {
             maxCellCountX = Math.min(maxCellCountX, mMaxAppCellCountX);
         }
-        // Temp hack for now: only use the max cell count Y for widget layout
-        int maxWidgetCellCountY = maxCellCountY;
         if (mMaxAppCellCountY > -1) {
-            maxWidgetCellCountY = Math.min(maxWidgetCellCountY, mMaxAppCellCountY);
+            maxCellCountY = Math.min(maxCellCountY, mMaxAppCellCountY);
         }
+        // Temp hack for now: only use the max cell count Y for widget layout
+//        int maxWidgetCellCountY = maxCellCountY;
+//        if (mMaxAppCellCountY > -1) {
+//            maxWidgetCellCountY = Math.min(maxWidgetCellCountY, mMaxAppCellCountY);
+//        }
 
         // Now that the data is ready, we can calculate the content width, the number of cells to
         // use for each page
@@ -610,7 +619,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         // Force a measure to update recalculate the gaps
         int widthSpec = MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.AT_MOST);
         int heightSpec = MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.AT_MOST);
-        mWidgetSpacingLayout.calculateCellCount(width, height, maxCellCountX, maxWidgetCellCountY);
+        mWidgetSpacingLayout.calculateCellCount(width, height, maxCellCountX, maxCellCountY);
         mWidgetSpacingLayout.measure(widthSpec, heightSpec);
         mContentWidth = mWidgetSpacingLayout.getContentWidth();
 
