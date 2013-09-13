@@ -60,6 +60,14 @@
         <item>Stack</item>
 <!--         <item>Accordian</item> -->
     </string-array>
+    <integer-array name="preferences_interface_homescreen_scrolling_transition_effect_drawables">
+        <item>@drawable/pref_transition_effect_standard</item>
+        <item>@drawable/pref_transition_effect_rotate_up</item>
+        <item>@drawable/pref_transition_effect_zoomin</item>
+        <item>@drawable/pref_transition_effect_boxout</item>
+        <item>@drawable/pref_transition_effect_spin</item>
+        <item>@drawable/pref_transition_effect_stack</item>
+    </integer-array>
     <string-array name="preferences_interface_drawer_scrolling_transition_effect_entries">
        <item>Standard</item>
 <!--         <item>Tablet</item> -->
@@ -92,6 +100,14 @@
         <item>Stack</item>
 <!--         <item>Accordian</item> -->
     </string-array>
+    <integer-array name="preferences_interface_drawer_scrolling_transition_effect_drawables">
+        <item>@drawable/pref_transition_effect_standard</item>
+        <item>@drawable/pref_transition_effect_rotate_up</item>
+        <item>@drawable/pref_transition_effect_zoomin</item>
+        <item>@drawable/pref_transition_effect_boxout</item>
+        <item>@drawable/pref_transition_effect_spin</item>
+        <item>@drawable/pref_transition_effect_stack</item>
+    </integer-array>
     <string-array name="preferences_interface_drawer_indicator_position_entries">
         <item>Top/Left</item>
         <item>Bottom/Right</item>

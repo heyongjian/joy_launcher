@@ -834,6 +834,11 @@ public final class Launcher extends Activity
                 addAppWidgetImpl(appWidgetId, mPendingAddInfo, null, mPendingAddWidgetInfo);
             }
             return;
+        }//add widget by wanghao
+        else if((requestCode == REQUEST_PICK_APPWIDGET||requestCode == REQUEST_CREATE_APPWIDGET)&&resultCode == RESULT_OK){
+        	addAppWidget(requestCode,data);
+        	mWaitingForResult = false;
+        	return;
         }
         boolean delayExitSpringLoadedMode = false;
         boolean isWidgetDrop = (requestCode == REQUEST_PICK_APPWIDGET ||
@@ -872,9 +877,6 @@ public final class Launcher extends Activity
             } else {
                 delayExitSpringLoadedMode = completeAdd(args);
             }
-        }//add widget by wanghao
-        else if((requestCode == REQUEST_PICK_APPWIDGET||requestCode == REQUEST_CREATE_APPWIDGET)&&resultCode == RESULT_OK){
-        	addAppWidget(requestCode,data);
         }
         mDragLayer.clearAnimatedView();
         // Exit spring loaded mode if necessary after cancelling the configuration of a widget
@@ -2243,7 +2245,7 @@ public final class Launcher extends Activity
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				//showAddWidget();
+				showAddWidget();
 				dialog.dismiss();
 			}
 		});

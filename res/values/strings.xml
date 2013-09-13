@@ -400,7 +400,11 @@ s -->
     <string name="preferences_interface_drawer_indicator_fade_summary">Fade away the indicator after the page has changed</string>
     <string name="preferences_interface_drawer_indicator_position_title">Indicator position</string>
     <string name="preferences_interface_drawer_indicator_position_summary">Choose where to show the indicator on the screen</string>
-
+	<!-- add by wanghao -->
+    <string name="preferences_interface_drawer_setting_title">drawer setting</string>
+    <string name="preferences_interface_drawer_setting_row_column_num_title">drawer row and column</string>
+    <string name="preferences_interface_drawer_setting_row_column_num_summary">show the drawer row and column</string>
+    
     <!-- Dock -->
     <string name="preferences_interface_dock_title">Dock</string>
     <string name="preferences_interface_dock_summary">Show the details of dock  </string>
