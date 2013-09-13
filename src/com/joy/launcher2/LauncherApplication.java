@@ -43,6 +43,9 @@ public class LauncherApplication extends Application {
 	
     public LauncherModel mModel;
     public IconCache mIconCache;
+    //add by huangming for launcher crash.
+    private WidgetPreviewLoader.CacheDb mWidgetPreviewCacheDb;
+    //end
     private static boolean sIsScreenLarge;
     private static float sScreenDensity;
     private static int sLongPressTimeout = 300;
@@ -57,6 +60,9 @@ public class LauncherApplication extends Application {
         sIsScreenLarge = getResources().getBoolean(R.bool.is_large_screen);
         sScreenDensity = getResources().getDisplayMetrics().density;
      
+        //add by huangming for launcher crash.
+        mWidgetPreviewCacheDb = new WidgetPreviewLoader.CacheDb(this);
+        //end
         // Load all preferences  by yongjian.he on 2013-5-28
         PreferencesProvider.load(this);
         mIconCache = new IconCache(this);
@@ -132,6 +138,12 @@ public class LauncherApplication extends Application {
             mModel.startLoaderFromBackground();
         }
     };
+    
+    //add by huangming for launcher crash.
+    WidgetPreviewLoader.CacheDb getWidgetPreviewCacheDb() {
+    	return mWidgetPreviewCacheDb;
+    }
+    //end
 
     LauncherModel setLauncher(Launcher launcher) {
         mModel.initialize(launcher);
