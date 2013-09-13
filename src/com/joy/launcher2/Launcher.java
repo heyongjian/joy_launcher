@@ -833,6 +833,8 @@ public final class Launcher extends Activity
             } else if (resultCode == RESULT_OK) {
                 addAppWidgetImpl(appWidgetId, mPendingAddInfo, null, mPendingAddWidgetInfo);
             }
+            //add by wanghao
+            mWaitingForResult = false;
             return;
         }//add widget by wanghao
         else if((requestCode == REQUEST_PICK_APPWIDGET||requestCode == REQUEST_CREATE_APPWIDGET)&&resultCode == RESULT_OK){
