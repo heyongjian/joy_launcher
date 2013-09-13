@@ -112,4 +112,8 @@
     <bool name="general_show_appbackground">true</bool>
     <!-- icon size or icon text size -->
     <string name="config_defaultSize">Medium</string>
+    
+    <!-- PagedViewCellLayout grid size ,add by wanghao-->
+    <integer name="config_drawer_Rows">5</integer>
+    <integer name="config_drawer_Columns">4</integer>
 </resources>

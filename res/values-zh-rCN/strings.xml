@@ -225,7 +225,12 @@
     <string name="preferences_interface_drawer_indicator_fade_summary">改变页面后将淡出指示器</string>
     <string name="preferences_interface_drawer_indicator_position_title">指示器位置</string>
     <string name="preferences_interface_drawer_indicator_position_summary">选择指示器在屏幕上的位置</string>
-
+    <!-- add by wanghao -->
+    <string name="preferences_interface_drawer_setting_title">抽屉设置</string>
+    <string name="preferences_interface_drawer_setting_row_column_num_title">抽屉行列数</string>
+    <string name="preferences_interface_drawer_setting_row_column_num_summary">显示抽屉行列数</string>
+    
+    
     <!-- Dock -->
     <string name="preferences_interface_dock_title">托盘设置</string>
     <string name="preferences_interface_dock_summary">设置托盘的页面与图标数量</string>
