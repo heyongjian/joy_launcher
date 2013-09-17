@@ -15,12 +15,26 @@ public class ProtocalFactory{
 	public static final int OP_WALLPAPER = 2000;//获取壁纸类别
 	public static final int OP_WALLPAPER_LIST = 2001;//获取壁纸列表
 	public static final int OP_FOLDER_LIST = 2010;//在线文件夹列表
-	static String SIGN_KEY = "deskt0pj@y";//约定字符串
+	public static final int OP_BACKUP = 1111;//备份
+	public static final String HOST = "http://192.168.164.134:8080/client/upload.do";
+	public static String SIGN_KEY = "deskt0pj@y";//约定字符串
 	
 	public ProtocalFactory() {
 
 	}
 
+	public static String getSign(String ts, String rs){
+	
+		StringBuffer sb = new StringBuffer(200);
+		sb.append(Util.encodeContentForUrl(Util.md5Encode(ts+rs))).append(SIGN_KEY);
+		return sb.toString();
+	}
+	
+	public static String getSjz(String rs)
+	{
+		return Util.encodeContentForUrl(rs);
+	}
+	
 	public static String getSign(String ts){
 		String randomString = Util.randomString(6);
 		StringBuffer sb = new StringBuffer(200);
