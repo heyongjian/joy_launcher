@@ -44,7 +44,7 @@
             android:title="@string/preferences_backup_recover_title" />
     
     <header android:id="@+id/preferences_backup_section"
-           
+        
             android:title="@string/preferences_backup_title" 
             android:icon="@drawable/preference_backup"/> 
             
