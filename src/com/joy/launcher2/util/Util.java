@@ -1,7 +1,11 @@
 package com.joy.launcher2.util;
 
+import static android.os.Environment.MEDIA_MOUNTED;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -511,4 +515,72 @@ public class Util {
 		}
 		return result;
 	}
+	
+	/**
+	 * 根据文件名获得sd file
+	 * @param fileName
+	 * @return
+	 */
+	public static File getSdBackupFile(String fileName)
+    {
+    	File sdBackupFile = null;
+    	if (Environment.getExternalStorageState().equals(MEDIA_MOUNTED))
+    	{
+    		sdBackupFile = new File(Environment.getExternalStorageDirectory(), fileName);
+    		if(!sdBackupFile.exists())
+    		{
+    			try {
+					if(!sdBackupFile.createNewFile())
+					{
+						sdBackupFile = null;
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					sdBackupFile = null;
+					e.printStackTrace();
+				}
+    		}
+    	}
+    	return sdBackupFile;
+    }
+    
+	/**
+	 * 将文件内容copy到另一文件
+	 * @param formFile
+	 * @param toFile
+	 * @return
+	 */
+    public static boolean copyFile(File formFile, File toFile)
+    {
+    	boolean success = false;
+    	FileInputStream fis = null;
+    	FileOutputStream fos = null;
+    	try {
+			fis = new FileInputStream(formFile);
+			fos = new FileOutputStream(toFile);
+			byte bt[] = new byte[1024];
+			int c;
+			while ((c = fis.read(bt)) > 0) 
+			{
+				fos.write(bt, 0, c);
+			}
+			success = true;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				if(fis != null)fis.close();
+				if(fos != null)fos.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    	
+    	return success;
+    }
 }

@@ -225,4 +225,94 @@
         <item>video_video</item>
         <item>fm_fm</item>
     </string-array>
+    <!--  add by huangming for backup and recover function..-->
+    <string-array name="backup_keys">
+        <item>channel</item>
+        
+        <item>ui_homescreen_grid</item>
+        <item>ui_homescreen_screens</item>
+        <item>ui_homescreen_default_screen</item>
+        <item>ui_homescreen_scrolling_transition_effect</item>
+        <item>ui_homescreen_scrolling_scroll_wallpaper</item>
+        <item>ui_homescreen_scrolling_show_outlines</item>
+        <item>ui_homescreen_icon_style</item>
+        <item>ui_homescreen_icon_text_style</item>
+        <item>ui_homescreen_icon_size</item>
+        <item>ui_homescreen_icon_text_size</item>
+        
+        <item>ui_drawer_orientation</item>
+        <item>ui_drawer_widgets_join_apps</item>
+        <item>ui_drawer_scrolling_transition_effect</item>
+        <item>ui_drawer_grid</item>
+        <item>ui_drawer_app_background_type</item>
+       
+        <item>ui_dock_pages</item>
+        <item>ui_dock_default_page</item>
+        <item>ui_dock_icons</item>
+        <item>ui_dock_icon_scale</item>
+        
+        <item>ui_general_fullscreen</item>
+        <item>ui_general_orientation</item>
+        <item>ui_general_screen_cycle</item>
+        
+    </string-array>
+    <string-array name="backup_keys_attrs">
+        <item>string</item>
+        
+        <item>string</item>
+        <item>int</item>
+        <item>int</item>
+        <item>string</item>
+        <item>boolean</item>
+        <item>boolean</item>
+        <item>string</item>
+        <item>string</item>
+        <item>string</item>
+        <item>string</item>
+        
+        <item>string</item>
+        <item>boolean</item>
+        <item>string</item>
+        <item>string</item>
+        <item>int</item>
+        
+        <item>int</item>
+        <item>int</item>
+        <item>int</item>
+        <item>int</item>
+        
+        <item>boolean</item>
+        <item>boolean</item>
+        <item>boolean</item>
+    </string-array>
+    <string-array name="backup_ordinary_keys">
+        <item>channel</item>
+        
+        <item>ui_homescreen_grid</item>
+        <item>ui_homescreen_scrolling_transition_effect</item>
+        <item>ui_homescreen_icon_style</item>
+        <item>ui_homescreen_icon_text_style</item>
+        <item>ui_homescreen_icon_size</item>
+        <item>ui_homescreen_icon_text_size</item>
+        
+        <item>ui_drawer_scrolling_transition_effect</item>
+        <item>ui_drawer_grid</item>
+       
+        <item>ui_general_screen_cycle</item>
+    </string-array>
+    <string-array name="backup_ordinary_keys_attrs">
+        <item>string</item>
+        
+        <item>string</item>
+        <item>string</item>
+        <item>string</item>
+        <item>string</item>
+        <item>string</item>
+        <item>string</item>
+        
+        <item>string</item>
+        <item>string</item>
+        
+        <item>boolean</item>
+    </string-array>
 </resources>

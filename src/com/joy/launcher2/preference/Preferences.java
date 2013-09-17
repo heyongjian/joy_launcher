@@ -16,17 +16,24 @@
 
 package com.joy.launcher2.preference;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,19 +42,30 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.joy.launcher2.IconStyleActivity;
 import com.joy.launcher2.LauncherApplication;
+import com.joy.launcher2.network.impl.ProtocalFactory;
+import com.joy.launcher2.network.impl.Service;
+import com.joy.launcher2.network.util.FormFile;
+import com.joy.launcher2.network.util.HttpRequestUtil;
+import com.joy.launcher2.util.Util;
 import com.joy.launcher2.R;
 
 public class Preferences extends PreferenceActivity
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+        implements SharedPreferences.OnSharedPreferenceChangeListener,
+        DialogInterface.OnClickListener{
 
     private static final String TAG = "Joy.Preferences";
 
     private SharedPreferences mPreferences;
     //add by yongjian.he for adapter sdk 16.
     private List<Header> mHeaders;
+    //add by huangming for backup and recover function.
+    long mHeaderId = -1;
+    ProgressDialog mProgressDialog;
+    //end
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,8 +182,169 @@ public class Preferences extends PreferenceActivity
             addPreferencesFromResource(R.xml.preferences_general);
         }
     }
+    
+    //add by huangming for backup and recover function.
+    @Override
+	public void onHeaderClick(Header header, int position) {
+		// TODO Auto-generated method stub
+		super.onHeaderClick(header, position);
+		mHeaderId = header.id;
+		if(mHeaderId == R.id.preferences_backup_section)
+		{
+			showDialog(
+					R.string.preferences_bakcup_dialog_title, 
+					R.string.preferences_bakcup_message);
+		}
+		else if(mHeaderId == R.id.preferences_recover_section)
+		{
+			showDialog(
+					R.string.preferences_recover_dialog_title, 
+					R.string.preferences_recover_message);
+		}
+		
+	}
+    
+    private void showProgressDialog(int messageResId)
+    {
+    	if(mProgressDialog == null)
+    	{
+    		mProgressDialog = new ProgressDialog(this);
+    	}
+    	mProgressDialog.setMessage(getString(messageResId));
+		mProgressDialog.setCancelable(true);
+    	mProgressDialog.show();
+    }
+    
+    private void dismissProgressDialog()
+    {
+    	if(mProgressDialog != null)
+    	{
+    		mProgressDialog.dismiss();
+    	}
+    }
+    
+    private void showDialog(int titleResId, int messageResTd)
+    {
+    	Builder builder = new AlertDialog.Builder(this)
+    	.setTitle(titleResId)
+    	.setPositiveButton(R.string.backup_recover_sure, this)
+    	.setNegativeButton(R.string.backup_recover_cancel, this)
+    	.setMessage(messageResTd);
+    	builder.create().show();
+    }
+    
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		// TODO Auto-generated method stub
+		if(which == DialogInterface.BUTTON_POSITIVE)
+		{
+			Resources res = getResources();
+			boolean isOrdinaryUser = res.getBoolean(R.bool.config_ordinary_user);
+			if(mHeaderId == R.id.preferences_backup_section)
+			{
+				boolean success = PreferencesProvider.setBackupMode(this);
+        		if(success)
+        		{
+        			if(isOrdinaryUser)
+        			{
+        				display(R.string.backup_success);
+        			}
+        			else
+        			{
+        				try {
+        					showProgressDialog(R.string.backup_desktop);
+							Service.getInstance().GotoNetwork(new MyCallback());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							dismissProgressDialog();
+							display(R.string.backup_failed);
+							e.printStackTrace();
+						}
+        			}
+        		}
+        		else
+        		{
+        			display(R.string.backup_failed);
+        		}
+			}
+			else if(mHeaderId == R.id.preferences_recover_section)
+			{
+                boolean success = PreferencesProvider.setRecoverMode(this);
+        		
+        		if(success)
+        		{
+        			display(R.string.recover_success);
+        		}
+        		else
+        		{
+        			display(R.string.recover_failed);
+        		}
+			}
+		}
+	}
+	
+	private void display(int messageResId)
+	{
+		Toast.makeText(this, messageResId, 0).show();
+	}
+	
+	class MyCallback implements Service.CallBack
+	{
 
-    private static class HeaderAdapter extends ArrayAdapter<Header> {
+		boolean success = false;
+		
+		@Override
+		public void onPreExecute() {
+			// TODO Auto-generated method stub
+			//showProgressDialog(R.string.backup_desktop);
+		}
+
+		@Override
+		public void onPostExecute() {
+			// TODO Auto-generated method stub
+			dismissProgressDialog();
+			if(success)
+			{
+				display(R.string.backup_success);
+			}
+			else
+			{
+				display(R.string.backup_failed);
+			}
+		}
+
+		@Override
+		public void doInBackground() {
+			// TODO Auto-generated method stub
+			//network
+			
+			final SharedPreferences sp = getSharedPreferences(PreferencesProvider.PREFERENCES_KEY, 0);
+			String channel = sp.getString("channel", "");
+			if(channel.equals(""))
+			{
+				Log.e("Backup", "channel is wrong");
+				return;
+			}
+			Map<String, String> params = new HashMap<String, String>();  
+			String randomTS = Util.getTS();
+			String randomString = Util.randomString(6);
+			params.put("op", Integer.toString(ProtocalFactory.OP_BACKUP));
+			params.put("channel", channel);
+			params.put("sign", ProtocalFactory.getSign(randomTS, randomString));
+			params.put("sjz", ProtocalFactory.getSjz(randomString));
+			File file = getSharedPrefsFile(PreferencesProvider.PREFERENCES_BACKUP);
+			FormFile formFile = new FormFile(PreferencesProvider.PREFERENCES_BACKUP + ".xml", file, "xml", "text/xml");
+			try {
+				success = HttpRequestUtil.post(ProtocalFactory.HOST, params, formFile);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	//end
+
+	private static class HeaderAdapter extends ArrayAdapter<Header> {
         private static final int HEADER_TYPE_NORMAL = 0;
         private static final int HEADER_TYPE_CATEGORY = 1;
 
@@ -278,4 +457,5 @@ public class Preferences extends PreferenceActivity
             return view;
         }
     }
+
 }

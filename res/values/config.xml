@@ -1,4 +1,5 @@
 <resources>
+    <bool name="config_ordinary_user">false</bool>
     <!-- add by huilin.wang -->
     <bool name="lock_screen_wallpapper">false</bool>
     
