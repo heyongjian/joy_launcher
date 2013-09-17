@@ -345,31 +345,24 @@ public final class PreferencesProvider {
         	//add by huangming for desktop appearance
         	public static Size getIconSize(Context context, String def)
         	{
-        		initPreferencesFile(context);
-        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-        		return Size.valueOf(preferences.getString("ui_homescreen_icon_size", def));
+        		return Size.valueOf(getString("ui_homescreen_icon_size", def));
         	}
         	
         	public static Size getIconTextSize(Context context, String def)
         	{
-        		initPreferencesFile(context);
-        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-        		return Size.valueOf(preferences.getString("ui_homescreen_icon_text_size", def));
+        		return Size.valueOf(getString("ui_homescreen_icon_text_size", def));
         	}
         	
         	public static String getIconStyle(Context context, String def)
         	{
-        		initPreferencesFile(context);
-        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-        		return preferences.getString(ICON_STYLE_KEY, def);
+        		return getString(ICON_STYLE_KEY, def);
         	}
         	
         	public static TextStyle getIconTextStyle(Context context, String def)
         	{
-        		initPreferencesFile(context);
-        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-        		return TextStyle.valueOf(preferences.getString(ICON__TEXT_STYLE_KEY, def));
+        		return TextStyle.valueOf(getString(ICON__TEXT_STYLE_KEY, def));
         	}
+        	
         	//end
         	
             public static int getNumberHomescreens() {
@@ -495,8 +488,7 @@ public final class PreferencesProvider {
             //add by wanghao
         	 public static int getCellCountX(Context context, int def) {
         		 initPreferencesFile(context);
-                 final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-                 String[] values = preferences.getString("ui_drawer_grid", "0|" + def).split("\\|");
+                 String[] values = getString("ui_drawer_grid", "0|" + def).split("\\|");
                  try {
                      return Integer.parseInt(values[1]);
                  } catch (NumberFormatException e) {
@@ -505,8 +497,7 @@ public final class PreferencesProvider {
              }
              public static int getCellCountY(Context context, int def) {
             	 initPreferencesFile(context);
-                 final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-                 String[] values = preferences.getString("ui_drawer_grid", def + "|0").split("\\|");;
+                 String[] values = getString("ui_drawer_grid", def + "|0").split("\\|");;
                  try {
                      return Integer.parseInt(values[0]);
                  } catch (NumberFormatException e) {
