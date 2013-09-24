@@ -378,6 +378,21 @@ s -->
     <string name="icon_style_sure">OK</string>
     <string name="icon_style_cancel">Cancel</string>
     
+    <!-- add by huangming for backup and recover function. -->
+    <string name="preferences_bakcup_message">Backup desktop settings</string>
+    <string name="preferences_bakcup_dialog_title">Desktop backup</string>
+    <string name="preferences_recover_message">Recover the backup desktop settings</string>
+    <string name="preferences_recover_dialog_title">Desktop recover</string>
+    <string name="backup_recover_sure">OK</string>
+    <string name="backup_recover_cancel">Cancel</string>
+    <string name="backup_success">Backup success</string>
+    <string name="backup_failed">Backup failed</string>
+   <!--  <string name="network_backup_success">Network backup success</string>
+    <string name="network_backup_failed">Network backup failed</string> -->
+    <string name="recover_success">Recover success</string>
+    <string name="recover_failed">Recover failed</string>
+    <string name="backup_desktop">Backup desktop...</string>
+    
     <!-- Drawer -->
     <string name="preferences_interface_drawer_title">Drawer</string>
     <string name="preferences_interface_drawer_summary">Apps and widgets drawer</string>

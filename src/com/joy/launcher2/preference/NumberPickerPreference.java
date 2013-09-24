@@ -85,18 +85,24 @@ public class NumberPickerPreference extends DialogPreference {
         mNumberPicker.setValue(getPersistedInt(mDefault));
         mNumberPicker.setWrapSelectorWheel(false);
         
-        //add by xiong.chen for bug WXY-69
-        EditText editText = (EditText) mNumberPicker.getChildAt(0);
-        editText.setOnFocusChangeListener(new OnFocusChangeListener() {
-            
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                // do nothing
-            }
-        });
-        editText.setInputType(InputType.TYPE_NULL);
-        //add end
+        //add by wanghao for issue-2：preferences in hotseat make launcher crash。
+        int count1 = mNumberPicker.getChildCount();
+        for (int i = 0; i < count1; i++) {
+        	View v = mNumberPicker.getChildAt(i);
+        	if (v instanceof EditText) {
+				((EditText)v).setOnFocusChangeListener(new OnFocusChangeListener() {
+		            
+		            @Override
+		            public void onFocusChange(View v, boolean hasFocus) {
+		                // do nothing
+		            }
+		        });
+				((EditText)v).setInputType(InputType.TYPE_NULL);
+			}
+		}
+        //end
 
+        
         // No keyboard popup
 //        EditText textInput = (EditText) mNumberPicker.findViewById(com.android.internal.R.id.numberpicker_input);
 //        textInput.setCursorVisible(false);

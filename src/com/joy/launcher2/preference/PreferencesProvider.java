@@ -16,13 +16,27 @@
 
 package com.joy.launcher2.preference;
 
+import static android.os.Environment.MEDIA_MOUNTED;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.os.Environment;
+import android.util.Log;
 
 import com.joy.launcher2.AppsCustomizePagedView;
+import com.joy.launcher2.R;
 import com.joy.launcher2.Workspace;
+import com.joy.launcher2.util.Util;
 
 public final class PreferencesProvider {
     public static final String PREFERENCES_KEY = "com.joy.launcher2_preferences";
@@ -60,10 +74,252 @@ public final class PreferencesProvider {
     	TwoLines
     }
     
+    
+    //add by huangming for backup and recover function.
+  	public static final String PREFERENCES_BACKUP = "joy_laucher_backup_preferences";
+  	public static final String BACKUP_KEY = "preferences_bakcup";
+  	public static final String RECOVER_KEY = "preferences_recover";
+  	private static boolean sClearDataOrFirst = true;
+  	private static final Object sLock = new Object();
+  	private static final String TAG = "PreferencesProvider";
+  	private static final boolean DEBUG = true;
+  	//end
+    
     public static final String ICON_STYLE_KEY = "ui_homescreen_icon_style";
     public static final String ICON__TEXT_STYLE_KEY = "ui_homescreen_icon_text_style";
 
+    
+    //add by huangming for backup and recover function.
+    private static void initPreferencesFile(Context context)
+    {
+    	synchronized (sLock)
+    	{
+    		if(sClearDataOrFirst)
+        	{
+        		//judge whether clear data or first by preferences exists.
+    			if(DEBUG)Log.e(TAG, "init preferences file step 1:judge whether clear data or first ");
+    			final SharedPreferences sp = context.getSharedPreferences(PREFERENCES_KEY, 0);
+    		    Map<String, ?> map = sp.getAll();
+    		    if(map != null && map.size() > 0)
+    		    {
+    		    	sClearDataOrFirst = false;
+    		    }
+    		    else
+    		    {
+    		    	if(DEBUG)Log.e(TAG, "init preferences file step 2:copy assets backup file to data/data sp.");
+    		    	AssetManager am = context.getAssets();
+        			InputStream is = null;
+        			FileOutputStream fos = null;
+        			File backupFile = context.getSharedPrefsFile(PREFERENCES_BACKUP);
+        			try {
+    					is = am.open(PREFERENCES_BACKUP + ".xml");
+    					File parent = backupFile.getParentFile();
+    					if(!parent.exists())
+    					{
+    						parent.mkdirs();
+    					}
+    					if(!backupFile.exists())
+    					{
+    						backupFile.createNewFile();
+    						fos = new FileOutputStream(backupFile);
+        					int length = -1;
+                            byte[] buf = new byte[1024];
+                            while ((length = is.read(buf)) != -1)
+                            {
+                              fos.write(buf, 0, length);
+                            }
+                            fos.flush();
+    					}
+    					sClearDataOrFirst = false;
+    				} catch (IOException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				} finally {
+    					if(sClearDataOrFirst)
+            			{
+            				if(backupFile != null && backupFile.exists())
+            				{
+            					backupFile.delete();
+            				}
+            			}
+    					try {
+    						if(is != null)is.close();
+    						if(fos != null)fos.close();
+    					} catch (IOException e) {
+    						// TODO Auto-generated catch block
+    						e.printStackTrace();
+    					}
+    					
+    				}
+        			if(DEBUG)Log.e(TAG, "init preferences file step 3:copy data/data backup file content to config file.");
+        			if(!sClearDataOrFirst)
+        			{
+        				Resources res = context.getResources();
+            			String[] keys = res.getStringArray(R.array.backup_keys);
+                    	String[] attrs = res.getStringArray(R.array.backup_keys_attrs);
+                    	recoverData(context, keys, attrs);
+        			}
+        			sClearDataOrFirst = false;
+    		    }
+        	}
+    	}
+    	
+    }
+    
+    
+    
+    public static boolean setRecoverMode(Context context)
+    {
+    	boolean success = false;
+    	Resources res = context.getResources();
+    	if(res != null)
+    	{
+    		String[] keys = null;
+        	String[] attrs = null;
+        	boolean isOrdinaryUser = res.getBoolean(R.bool.config_ordinary_user);
+        	if(isOrdinaryUser)
+        	{
+        		keys = res.getStringArray(R.array.backup_ordinary_keys);
+            	attrs = res.getStringArray(R.array.backup_ordinary_keys_attrs);
+        	}
+        	else
+        	{
+        		keys = res.getStringArray(R.array.backup_keys);
+            	attrs = res.getStringArray(R.array.backup_keys_attrs);
+        	}
+        	
+        	File backupFile = context.getSharedPrefsFile(PREFERENCES_BACKUP);
+			
+        	File sdBackupFile = Util.getSdBackupFile(PREFERENCES_BACKUP + ".xml");
+        	if(backupFile != null && backupFile.exists() && sdBackupFile != null && sdBackupFile.exists())
+        	{
+        		if(Util.copyFile(sdBackupFile, backupFile))
+        		{
+        			success = recoverData(context, keys, attrs);
+        		}
+        		
+        	}
+    	}
+    	return success;
+    	
+    }
+    
+    public static boolean setBackupMode(Context context)
+    {
+    	boolean success = false;
+    	Resources res = context.getResources();
+    	if(res != null)
+    	{
+    		String[] keys = null;
+        	String[] attrs = null;
+        	boolean isOrdinaryUser = res.getBoolean(R.bool.config_ordinary_user);
+        	if(isOrdinaryUser)
+        	{
+        		keys = res.getStringArray(R.array.backup_ordinary_keys);
+            	attrs = res.getStringArray(R.array.backup_ordinary_keys_attrs);
+        	}
+        	else
+        	{
+        		keys = res.getStringArray(R.array.backup_keys);
+            	attrs = res.getStringArray(R.array.backup_keys_attrs);
+        	}
+        	if(DEBUG)Log.e(TAG, "back up step 1:copy config file content to data/data sp.");
+        	boolean isNeedBackup = backupData(context, keys, attrs);
+        	
+        	File backupFile = context.getSharedPrefsFile(PREFERENCES_BACKUP);
+        	File sdBackupFile = Util.getSdBackupFile(PREFERENCES_BACKUP + ".xml");
+        	if(backupFile != null && backupFile.exists() && sdBackupFile != null && sdBackupFile.exists() && isNeedBackup)
+        	{
+        		if(DEBUG)Log.e(TAG, "back up step 2:copy data/data file  to sdcard.");
+        		success = Util.copyFile(backupFile, sdBackupFile);
+        	}
+    	}
+    	return success;
+    }
+    
+    public static boolean backupData(Context context, String[] keys, String[] attrs)
+    {
+    	if(keys == null || attrs == null)return false;
+    	if(keys.length == 0 || attrs.length == 0)return false;
+    	if(keys.length != attrs.length)return false;
+    	final SharedPreferences sp = context.getSharedPreferences(PREFERENCES_KEY, 0);
+    	final SharedPreferences backupSp = context.getSharedPreferences(PREFERENCES_BACKUP, 0);
+    	SharedPreferences.Editor editor = backupSp.edit();
+    	for(int i = 0; i < keys.length; i++)
+    	{
+    		String key = keys[i];
+    		String attr = attrs[i];
+    		if(sp.contains(key))
+    		{
+    			if("string".equals(attr))
+    			{
+    				String value = sp.getString(key, "");
+    				if(!value.equals(""))
+    				{
+    					editor.putString(key, value);
+    				}
+    			}
+    			else if("int".equals(attr))
+    			{
+    				int value = sp.getInt(key, Integer.MIN_VALUE);
+    				if(value != Integer.MIN_VALUE)
+    				{
+    					editor.putInt(key, value);
+    				}
+    			}
+    			else if("boolean".equals(attr))
+    			{
+    				boolean value = sp.getBoolean(key, false);
+    				editor.putBoolean(key, value);
+    			}
+    		}
+    	}
+    	return editor.commit();
+    }
+    
+    public static boolean recoverData(Context context, String[] keys, String[] attrs)
+    {
+    	if(keys == null || attrs == null)return false;
+    	if(keys.length == 0 || attrs.length == 0)return false;
+    	if(keys.length != attrs.length)return false;
+    	final SharedPreferences sp = context.getSharedPreferences(PREFERENCES_KEY, 0);
+    	final SharedPreferences backupSp = context.getSharedPreferences(PREFERENCES_BACKUP, 0);
+    	SharedPreferences.Editor editor = sp.edit();
+    	for(int i = 0; i < keys.length; i++)
+    	{
+    		String key = keys[i];
+    		String attr = attrs[i];
+    		if(backupSp.contains(key))
+    		{
+    			if("string".equals(attr))
+    			{
+    				String value = backupSp.getString(key, "");
+    				if(!value.equals(""))
+    				{
+    					editor.putString(key, value);
+    				}
+    			}
+    			else if("int".equals(attr))
+    			{
+    				int value = backupSp.getInt(key, Integer.MIN_VALUE);
+    				if(value != Integer.MIN_VALUE)
+    				{
+    					editor.putInt(key, value);
+    				}
+    			}
+    			else if("boolean".equals(attr))
+    			{
+    				boolean value = backupSp.getBoolean(key, false);
+    				editor.putBoolean(key, value);
+    			}
+    		}
+    	}
+    	return editor.commit();
+    }
+    //end
+    
     public static void load(Context context) {
+    	initPreferencesFile(context);
         SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
         sKeyValues = preferences.getAll();
     }
@@ -89,27 +345,24 @@ public final class PreferencesProvider {
         	//add by huangming for desktop appearance
         	public static Size getIconSize(Context context, String def)
         	{
-        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-        		return Size.valueOf(preferences.getString("ui_homescreen_icon_size", def));
+        		return Size.valueOf(getString("ui_homescreen_icon_size", def));
         	}
         	
         	public static Size getIconTextSize(Context context, String def)
         	{
-        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-        		return Size.valueOf(preferences.getString("ui_homescreen_icon_text_size", def));
+        		return Size.valueOf(getString("ui_homescreen_icon_text_size", def));
         	}
         	
         	public static String getIconStyle(Context context, String def)
         	{
-        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-        		return preferences.getString(ICON_STYLE_KEY, def);
+        		return getString(ICON_STYLE_KEY, def);
         	}
         	
         	public static TextStyle getIconTextStyle(Context context, String def)
         	{
-        		final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-        		return TextStyle.valueOf(preferences.getString(ICON__TEXT_STYLE_KEY, def));
+        		return TextStyle.valueOf(getString(ICON__TEXT_STYLE_KEY, def));
         	}
+        	
         	//end
         	
             public static int getNumberHomescreens() {
@@ -234,8 +487,8 @@ public final class PreferencesProvider {
             
             //add by wanghao
         	 public static int getCellCountX(Context context, int def) {
-                 final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-                 String[] values = preferences.getString("ui_drawer_grid", "0|" + def).split("\\|");
+        		 initPreferencesFile(context);
+                 String[] values = getString("ui_drawer_grid", "0|" + def).split("\\|");
                  try {
                      return Integer.parseInt(values[1]);
                  } catch (NumberFormatException e) {
@@ -243,8 +496,8 @@ public final class PreferencesProvider {
                  }
              }
              public static int getCellCountY(Context context, int def) {
-                 final SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
-                 String[] values = preferences.getString("ui_drawer_grid", def + "|0").split("\\|");;
+            	 initPreferencesFile(context);
+                 String[] values = getString("ui_drawer_grid", def + "|0").split("\\|");;
                  try {
                      return Integer.parseInt(values[0]);
                  } catch (NumberFormatException e) {
