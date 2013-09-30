@@ -22,7 +22,7 @@ import android.provider.BaseColumns;
 /**
  * Settings related utilities.
  */
-class LauncherSettings {
+public class LauncherSettings {
     static interface BaseLauncherColumns extends BaseColumns {
         /**
          * Descriptive name of the gesture that can be displayed to the user.
@@ -87,7 +87,9 @@ class LauncherSettings {
          * <P>Type: TEXT</P>
          */
         static final String ICON_RESOURCE = "iconResource";
-
+        
+        static final String ICON_PATH = "iconPath";
+        
         /**
          * The custom icon bitmap, if icon type is ICON_TYPE_BITMAP.
          * <P>Type: BLOB</P>
@@ -98,7 +100,7 @@ class LauncherSettings {
     /**
      * Favorites.
      */
-    static final class Favorites implements BaseLauncherColumns {
+    public static final class Favorites implements BaseLauncherColumns {
         /**
          * The content:// style URL for this table
          */
@@ -141,7 +143,7 @@ class LauncherSettings {
         /**
          * The icon is a resource identified by a package name and an integer id.
          */
-        static final int CONTAINER_DESKTOP = -100;
+        public static final int CONTAINER_DESKTOP = -100;
         static final int CONTAINER_HOTSEAT = -101;
 
         /**

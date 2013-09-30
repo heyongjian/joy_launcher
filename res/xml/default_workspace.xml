@@ -27,39 +27,6 @@
         launcher:y="0" />
     
      <!-- Left screen [1] -->
-      <folder
-        launcher:natureId="0"
-        launcher:screen="1"
-        launcher:title="@string/joy_game_folder"
-        launcher:x="0"
-        launcher:y="0" >
-            <favorite
-	        launcher:packageName="com.polontech.android.c360by"
-	        launcher:className="com.polontech.android.c360by.activities.RegisterActivity"
-	        launcher:icon="@drawable/ic_launcher_home"
-	        launcher:title="@string/virtualshortcut_test"
-	        launcher:natureId="1" />
-            <favorite
-	        launcher:packageName="com.polontech.android.c360by"
-	        launcher:className="com.polontech.android.c360by.activities.RegisterActivity"
-	        launcher:icon="@drawable/ic_launcher_home"
-	        launcher:title="@string/virtualshortcut_test"
-	        launcher:natureId="1"/>
-    </folder>
-    
-    <folder
-        launcher:natureId="1"
-        launcher:screen="1"
-        launcher:title="@string/joy_application_folder"
-        launcher:x="1"
-        launcher:y="0" >
-        <favorite
-            launcher:className="com.android.contacts.activities.DialtactsActivity"
-            launcher:packageName="com.android.contacts" />
-        <favorite
-            launcher:className="com.android.contacts.activities.DialtactsActivity"
-            launcher:packageName="com.android.contacts" />
-    </folder>
 
     <appwidget
         launcher:packageName="com.android.settings"

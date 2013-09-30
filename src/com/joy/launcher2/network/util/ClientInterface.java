@@ -25,6 +25,13 @@ public interface ClientInterface {
 	public JSONObject request(Protocal protocal) throws Exception ;
 	
 	/**
+	 * 获取字符串
+	 * @param protocal
+	 * @return
+	 * @throws Exception
+	 */
+	public String getString(Protocal protocal) throws Exception ;
+	/**
 	 * 发送数据，得到返回的流
 	 * @param protocal
 	 * @return

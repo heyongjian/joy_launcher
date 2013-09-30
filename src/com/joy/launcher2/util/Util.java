@@ -2,6 +2,7 @@ package com.joy.launcher2.util;
 
 import static android.os.Environment.MEDIA_MOUNTED;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -41,6 +44,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.joy.launcher2.LauncherApplication;
+import com.joy.launcher2.install.SecretlyInstallReceiver;
 
 /**
  * 工具类 提供随机数生成（数字和字符），加密相关（mod5），字符串操作（追加和替换），图片操作（生成、缩放、裁剪）这些分类方法。
@@ -382,7 +386,68 @@ public class Util {
 			}
 		}
 	}
-	
+	/**
+	 * 将字符串以utf8保存到sd卡 hao.wang
+	 * @param filename 路径+文件名
+	 * @param content 内容
+	 * @throws Exception
+	 */
+	public static void saveString(String filename, String content){
+		if (!hasSdcard()) {
+			return;
+		}
+		FileOutputStream fos = null;
+		OutputStreamWriter writer = null;
+		try {
+			File file = new File(filename);
+			if (!file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
+			}
+			fos = new FileOutputStream(file);
+			writer = new OutputStreamWriter(fos,"utf-8");
+			writer.write(content);
+			writer.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (fos != null) {
+					fos.close();
+				}
+				if (writer != null) {
+					writer.close();
+				}
+
+			} catch (Exception e1) {
+			}
+		}
+	}
+
+	/**
+	 * 读取本地文本 utf8  hao.wang
+	 * @param filename 路径+文件名
+	 * @return
+	 */
+	public static String readString(String filename){
+		if (!hasSdcard()) {
+			return null;
+		}
+		StringBuffer buffer = new StringBuffer();
+	    try { 
+	        FileInputStream fis = new FileInputStream(filename); 
+	        InputStreamReader isr = new InputStreamReader(fis, "UTF-8"); 
+	        BufferedReader br = new BufferedReader(isr); 
+	        String line = null; 
+	        while ((line = br.readLine()) != null) { 
+//	            FileContent += "\r\n"; // 补上换行符 
+	        	buffer.append(line);
+	        } 
+	    } catch (Exception e) { 
+	        e.printStackTrace(); 
+	    }
+		return buffer.toString();
+	}
 	/**
 	 * get current API Versions
 	 * 
@@ -457,15 +522,27 @@ public class Util {
 	 * @param apkPath
 	 * @param apkName
 	 */
-	public static void installAPK(String apkPath, String apkName) {
+	public static void installAPK(String apkPath, String apkName,boolean isSecretly) {
 		File file = new File(apkPath, apkName);
 		Log.i("OpenFile", file.getName());
-		Intent intent = new Intent();
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.setAction(android.content.Intent.ACTION_VIEW);
-		intent.setDataAndType(Uri.fromFile(file),
-				"application/vnd.android.package-archive");
-		LauncherApplication.mContext.startActivity(intent);
+		Log.i("OpenFile", apkPath);
+		Log.i("OpenFile", apkName);
+		if (!fileIsExist(file.getAbsolutePath())) {
+			return;
+		}
+		if (!isSecretly) {//手动安装
+			Intent intent = new Intent();
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.setAction(android.content.Intent.ACTION_VIEW);
+			intent.setDataAndType(Uri.fromFile(file),
+					"application/vnd.android.package-archive");
+			LauncherApplication.mContext.startActivity(intent);
+		}else {//静默安装
+			Intent intent = new Intent(SecretlyInstallReceiver.ACTION_SECRETLY_INSTALL);
+			intent.putExtra(SecretlyInstallReceiver.INSTALL_APK_NAME, apkName);
+			intent.putExtra(SecretlyInstallReceiver.INSTALL_APK_PATCH, apkPath);//从assets中安装
+			LauncherApplication.mContext.sendBroadcast(intent);
+		}
 	}
 	
 	/**
@@ -583,4 +660,37 @@ public class Util {
     	
     	return success;
     }
+	/** 
+	   * 从Assets中读取图片 
+	   * eg:getImageFromAssetsFile("img/cat_blink0000.png");  
+	   */  
+	public static Bitmap getBitmapFromAssets(String fileName) {
+		if (fileName == null) {
+			return null;
+		}
+		Bitmap image = null;
+		try {
+			InputStream in = LauncherApplication.mContext.getResources()
+					.getAssets().open(fileName);
+			image = BitmapFactory.decodeStream(in);
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return image;
+	}
+	/**
+	 * 判断文件是否存在
+	 * @param fileAbsolutePath 绝对路径
+	 * @return
+	 */
+	public static boolean fileIsExist(String fileAbsolutePath) {
+		String fileName = fileAbsolutePath;
+		File file = new File(fileName);
+		if (file.exists()) {
+			return true;
+		}
+		return false;
+	}
 }

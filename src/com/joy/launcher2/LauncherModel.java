@@ -27,10 +27,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import com.joy.launcher2.R;
-import com.joy.launcher2.preference.PreferencesProvider;
 
 import android.app.SearchManager;
 import android.appwidget.AppWidgetManager;
@@ -52,6 +50,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -61,6 +61,9 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
+
+import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.util.Util;
 
 /**
  * Maintains in-memory state of the Launcher. It is expected that there should be only one
@@ -515,6 +518,186 @@ public class LauncherModel extends BroadcastReceiver {
 
         return items;
     }
+    /**
+     * 获取数据库里的数据（用于备份）
+     * @param context
+     * @return
+     */
+    public static String getDataBase(Context context){
+
+    	StringBuffer buffer = new StringBuffer();
+        final ContentResolver cr = context.getContentResolver();
+        final Cursor c = cr.query(LauncherSettings.Favorites.CONTENT_URI, null, null, null, null);
+        
+        final int idIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites._ID);
+        final int iconTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_TYPE);
+        final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
+        final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
+        final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
+        final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
+        final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
+        final int cellYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLY);
+        final int spanXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SPANX);
+        final int spanYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SPANY);
+        final int titleIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.TITLE);
+        final int intentIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.INTENT);
+        final int appWidgetIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.APPWIDGET_ID);
+//        final int iconIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON);
+        final int iconPathIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_PATH);
+		final int iconPackageIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_PACKAGE);
+		final int iconResourceIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_RESOURCE);
+        
+        try {
+        	int indexxxx= 0;
+            while (c.moveToNext()) {
+            	indexxxx ++;
+            	int id = c.getInt(idIndex);
+                int cellX = c.getInt(cellXIndex);
+                int cellY = c.getInt(cellYIndex);
+                int spanX = c.getInt(spanXIndex);
+                int spanY = c.getInt(spanYIndex);
+                int container = c.getInt(containerIndex);
+                int natureId = c.getInt(natureIdIndex);//wanghao
+                int iconType = c.getInt(iconTypeIndex);
+                int itemType = c.getInt(itemTypeIndex);
+                int screen = c.getInt(screenIndex);
+                int appWidgetId = c.getInt(appWidgetIdIndex);
+                String title = c.getString(titleIndex);
+//                byte[] iconData = c.getBlob(iconIndex);
+                String iconPath = c.getString(iconPathIndex);
+                String intentStr = c.getString(intentIndex);
+                String iconPackage = c.getString(iconPackageIndex);
+                String iconResource = c.getString(iconResourceIndex);
+                
+                Intent intent  = null;
+                String packageName = null;
+                String className = null;
+                if (intentStr != null) {
+                	try {
+						intent = Intent.parseUri(intentStr, 0);
+					} catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                	if (intent != null&& intent.getComponent() != null) {
+                		packageName = intent.getComponent().getPackageName();
+                    	className = intent.getComponent().getClassName();
+					}
+				}
+                String split = "_split_";
+                String equal = "_equal_";
+                String and = "_and_";
+                buffer.append("_id"+equal+id)
+                .append(split+"cellX"+equal+cellX)
+                .append(split+"cellY"+equal+cellY)
+                .append(split+"spanX"+equal+spanX)
+                .append(split+"spanY"+equal+spanY)
+                .append(split+"container"+equal+container)
+                .append(split+"natureId"+equal+natureId)
+                .append(split+"iconType"+equal+iconType)
+                .append(split+"itemType"+equal+itemType)
+                .append(split+"screen"+equal+screen)
+                .append(split+"appWidgetId"+equal+appWidgetId)
+                .append(split+"title"+equal+title)
+//                .append(split+"iconData"+equal+(iconData==null?"null":iconData.toString()))
+                .append(split+"iconPath"+equal+iconPath)
+                .append(split+"packageName"+equal+packageName)
+                .append(split+"className"+equal+className)
+                .append(split+"intent"+equal+intentStr)
+                .append(split+"iconPackage"+equal+iconPackage)
+                .append(split+"iconResource"+equal+iconResource)
+                .append(and);
+            }
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        finally {
+            c.close();
+        }
+        return buffer.toString();
+    }
+    /**
+     * 从备份的xml里获取数据，保存到数据库（用于恢复）
+     * @param context
+     * @param info
+     */
+	public static void saveDataBase(Context context, String info) {
+		
+		PackageManager packageManager = context.getPackageManager();
+		final ContentResolver cr = context.getContentResolver();
+		
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		String[] arrays = info.split("_and_");
+		for (int i = 0; i < arrays.length; i++) {
+			String[] array = arrays[i].split("_split_");
+			Map<String, String> map = new HashMap<String, String>();
+			for (int j = 0; j < array.length; j++) {
+				String[] string = array[j].split("_equal_");
+				String values = "";
+				if(string.length>1){
+					values = string[1];
+				}
+				map.put(string[0],values);
+			}
+			list.add(map);
+		}
+		for (int i = 0; i < list.size(); i++) {
+			
+			final ContentValues values = new ContentValues();
+			Map<String, String> map = list.get(i);
+			
+			String _id = map.get("_id");
+			String cellX = map.get("cellX");
+			String cellY = map.get("cellY");
+			String spanX = map.get("spanX");
+			String spanY = map.get("spanY");
+			String container = map.get("container");
+			String natureId = map.get("natureId");
+			String iconType = map.get("iconType");
+			String itemType = map.get("itemType");
+			String screen = map.get("screen");
+			String appWidgetId = map.get("appWidgetId");
+			String title = map.get("title");
+//			String iconData = map.get("iconData");
+			String iconPath = map.get("iconPath");
+			String packageName = map.get("packageName");
+			String className = map.get("className");
+			String intentString = map.get("intent");
+			String iconPackage = map.get("iconPackage");
+			String iconResource = map.get("iconResource");
+			
+			Intent intent = null;
+			if (intentString != null) {
+				try {
+					intent = Intent.parseUri(intentString, 0);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			String uri = intent != null ? intent.toUri(0) : null;
+    		values.put(LauncherSettings.Favorites.INTENT, uri);
+			values.put(LauncherSettings.Favorites._ID, _id);
+    		values.put(LauncherSettings.Favorites.CONTAINER, container);
+    		values.put(LauncherSettings.Favorites.NATURE_ID, natureId);
+    		values.put(LauncherSettings.Favorites.CELLX, cellX);
+    		values.put(LauncherSettings.Favorites.CELLY, cellY);
+    		values.put(LauncherSettings.Favorites.SPANX, spanX);
+    		values.put(LauncherSettings.Favorites.SPANY, spanY);
+    		values.put(LauncherSettings.Favorites.SCREEN, screen);
+    		values.put(LauncherSettings.Favorites.ICON_TYPE, iconType);
+    		values.put(LauncherSettings.Favorites.ITEM_TYPE, itemType);
+    		values.put(LauncherSettings.Favorites.APPWIDGET_ID, appWidgetId);
+    		values.put(LauncherSettings.Favorites.TITLE, title);
+    		values.put(LauncherSettings.Favorites.ICON_PACKAGE, iconPackage);
+    		values.put(LauncherSettings.Favorites.ICON_RESOURCE, iconResource);
+//    		if (iconData != null&&!iconData.equals("null")) {
+//    			values.put(LauncherSettings.Favorites.ICON,iconData.getBytes());
+//			}
+    		values.put(LauncherSettings.Favorites.ICON_PATH, iconPath);
+    		cr.insert(LauncherSettings.Favorites.CONTENT_URI,values);
+		}
+	}
 
     /**
      * Find a folder in the db, creating the FolderInfo if necessary, and adding it to folderList.
@@ -670,7 +853,7 @@ public class LauncherModel extends BroadcastReceiver {
      * @param context
      * @param item
      */
-    static void deleteItemFromDatabase(Context context, final ItemInfo item) {
+    public static void deleteItemFromDatabase(Context context, final ItemInfo item) {
         final ContentResolver cr = context.getContentResolver();
         final Uri uriToDelete = LauncherSettings.Favorites.getContentUri(item.id, false);
 
@@ -1351,6 +1534,8 @@ public class LauncherModel extends BroadcastReceiver {
                             (LauncherSettings.Favorites.SPANX);
                     final int spanYIndex = c.getColumnIndexOrThrow(
                             LauncherSettings.Favorites.SPANY);
+                    final int iconPathIndex = c.getColumnIndexOrThrow(
+                            LauncherSettings.Favorites.ICON_PATH);
 
                     ShortcutInfo info;
                     String intentDescription;
@@ -1372,12 +1557,11 @@ public class LauncherModel extends BroadcastReceiver {
                                 } catch (URISyntaxException e) {
                                     continue;
                                 }
-                            int shortcutType = (Integer)intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
-
-                            if(shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL||
-                            		shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL){
+                            int shortcutType = (Integer)intent.getExtra(ShortcutInfo.SHORTCUT_TYPE, ShortcutInfo.SHORTCUT_TYPE_NORMAL);
+                            if(shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL||
+                            		shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL){
                             	//load from db
-                            	info = getShortcutInfo(c, context, iconIndex, titleIndex);
+                            	info = getShortcutInfo(c, context, iconIndex, titleIndex,iconPathIndex);
                             } else 
                                 if (itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
                                     info = getShortcutInfo(manager, intent, context, c, iconIndex,
@@ -1414,7 +1598,7 @@ public class LauncherModel extends BroadcastReceiver {
                                     info.screen = c.getInt(screenIndex);
                                     info.cellX = c.getInt(cellXIndex);
                                     info.cellY = c.getInt(cellYIndex);
-
+                                    info.iconPath = c.getString(iconPathIndex);
                                     // check & update map of what's occupied
                                     if (!checkItemPlacement(occupied, info)) {
                                         break;
@@ -1461,7 +1645,7 @@ public class LauncherModel extends BroadcastReceiver {
                                 folderInfo.screen = c.getInt(screenIndex);
                                 folderInfo.cellX = c.getInt(cellXIndex);
                                 folderInfo.cellY = c.getInt(cellYIndex);
-
+                                folderInfo.iconPath = c.getString(iconPathIndex);
                                 // check & update map of what's occupied
                                 if (!checkItemPlacement(occupied, folderInfo)) {
                                     break;
@@ -2253,13 +2437,24 @@ public class LauncherModel extends BroadcastReceiver {
      * @param titleIndex
      * @return
      */
-    public ShortcutInfo getShortcutInfo(Cursor c,Context context,int iconIndex,int titleIndex){
+    public ShortcutInfo getShortcutInfo(Cursor c,Context context,int iconIndex,int titleIndex,int iconPathIndex){
     	Bitmap icon = null;
     	final ShortcutInfo info = new ShortcutInfo();
     	info.itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
         info.title = c.getString(titleIndex);
 
-    	icon = getIconFromCursor(c, iconIndex, context);
+        if(icon == null){
+    		String iconpath = c.getString(iconPathIndex);
+    		if(iconpath != null){
+    			Bitmap bitmap = Util.getBitmapFromAssets(iconpath);
+                Drawable drawable = new BitmapDrawable(bitmap);
+                icon = Utilities.createIconBitmap(drawable, context);
+    		}
+    	}
+        if(icon == null){
+        	icon = getIconFromCursor(c, iconIndex, context);
+        }
+    	
         if (icon == null) {
             icon = getFallbackIcon();
             info.customIcon = false;
@@ -2278,16 +2473,16 @@ public class LauncherModel extends BroadcastReceiver {
      * @param cn
      * @return
      */
-    public ShortcutInfo getShortcutInfo(Context context,Bitmap icon,String title,ComponentName cn){
+    public ShortcutInfo getShortcutInfo(Context context,Bitmap icon,String title,ComponentName cn,int shortcutType){
     	final ShortcutInfo info = new ShortcutInfo();
     	 Intent intent = new Intent();
          intent.setComponent(cn);
          intent.setComponent(cn);
-         intent.putExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL);
+         intent.putExtra(ShortcutInfo.SHORTCUT_TYPE, shortcutType);
          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                  Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         info.intent = intent;
-    	info.itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
+    	info.itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
         info.title = title;
 
         if (icon == null) {

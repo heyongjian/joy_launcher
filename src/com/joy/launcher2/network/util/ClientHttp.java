@@ -46,7 +46,12 @@ public class ClientHttp implements ClientInterface {
 	private static final Boolean DEBUG = true;
 	@Override
 	public JSONObject request(Protocal protocal) throws Exception {
-		JSONObject data = post(protocal);
+//		JSONObject data = post(protocal);
+		String string = getString(protocal);
+		if (string == null) {
+			return null;
+		}
+		JSONObject data = new JSONObject(string);;
 		return data;
 	}
 	
@@ -59,52 +64,44 @@ public class ClientHttp implements ClientInterface {
 	public boolean isOK() {
 		return true;
 	}
-	
-	public JSONObject post(Protocal protocal) throws Exception {
-		JSONObject json = null;
-		InputStream in = null;
-		BufferedReader reader = null;
+
+	public String getString(Protocal protocal) throws Exception {
+
 		StringBuffer buffer = new StringBuffer();
+		BufferedReader reader = null;
+		InputStream in = null;
 		try {
 			in = getInputStream(protocal);
-			Log.i(TAG, " in : "+in);
-			if(in == null){
+			Log.i(TAG, " in : " + in);
+			if (in == null) {
 				return null;
 			}
-			
+
 			reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-			
+
+			Log.i(TAG, "  reader : " + reader);
 			String line = null;
-			while((line = reader.readLine()) != null){
-//				Log.i(TAG, "  line : "+line);
+			while ((line = reader.readLine()) != null) {
+				Log.i(TAG, "  line : " + line);
 				buffer.append(line);
 			}
-			
-			try {
-//				Log.i(TAG, "  buffer : "+buffer.toString());
-				json = new JSONObject(buffer.toString());
-			} catch (Exception e) {
-				// TODO: handle exception
-				Log.e(TAG, "  json异常 : "+e);
-			}
-//			Log.e("", "URL:" + url + ",获取到服务器数据:" + json);
-			Log.i(TAG, "  str : "+json.toString());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			Log.i(TAG, "网络异常    -----------》3  "+ex);
-		}
-		finally {
-			if(reader != null){
+
+			return buffer.toString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (reader != null) {
 				reader.close();
 				reader = null;
 			}
-			if(in != null){
+			if (in != null) {
 				in.close();
 				in = null;
 			}
 			buffer = null;
 		}
-		return json;
+		return null;
 	}
 
 	/**
@@ -134,7 +131,7 @@ public class ClientHttp implements ClientInterface {
 			String randomTS = Util.getTS();
 			// url
 			if (protocal.getGetData() != null) {
-				urlStrl += "?" + protocal.getGetData() +ProtocalFactory.getSign(randomTS);
+				urlStrl += protocal.getGetData() +ProtocalFactory.getSign(randomTS);
 			}
 			if(DEBUG) Log.i(TAG, "---getInputStream urlStrl： "+urlStrl);
 			

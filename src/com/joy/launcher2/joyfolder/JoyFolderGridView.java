@@ -3,15 +3,20 @@ package com.joy.launcher2.joyfolder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-import android.R.integer;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.GridView;
+import android.widget.TextView;
+
+import com.joy.launcher2.LauncherApplication;
+import com.joy.launcher2.network.handler.AppListHandler;
+import com.joy.launcher2.network.impl.Service.CallBack;
 
 /**
  *在线文件夹中应用推荐列表
@@ -19,41 +24,60 @@ import android.widget.GridView;
  *
  */
 public class JoyFolderGridView extends GridView{
-	List<Map<String, Object>> allList;
+
+	ArrayList<List<Map<String, Object>>> allList;
 	JoyFolderAdapter adtaAdapter;
 	Context mContext;
+	int curPage=0;
 	public JoyFolderGridView(Context context) {
 		super(context);
 		mContext = context;
-		// TODO Auto-generated constructor stub
+		init();
 	}
 
 	public JoyFolderGridView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mContext = context;
-		// TODO Auto-generated constructor stub
+		init();
 	}
 
 	public JoyFolderGridView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		mContext = context;
-		// TODO Auto-generated constructor stub
+		init();
 	}
 	
-	public void initJoyFolderGridView(List<Map<String, Object>> l){
-		allList = l;
+	private void init(){
 		adtaAdapter = new JoyFolderAdapter(mContext);
-		List<Map<String, Object>> list = getAppFromArray(4);
+		List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
 		adtaAdapter.setList(list);
-		
 		setAdapter(adtaAdapter);
+		curPage = 0;
 	}
-	
-	public void update(){
-		List<Map<String, Object>> list = getAppFromArray(4);
+	public void initJoyFolderGridView(ArrayList<List<Map<String, Object>>> allList){
+		this.allList = allList;
+		curPage = 0;
+		update(curPage);
+	}
+
+	private void initAdapter(int page){
+		List<Map<String, Object>> list = allList.get(curPage);
 		adtaAdapter.setList(list);
 		adtaAdapter.notifyDataSetChanged();
-		
+	}
+	public boolean isShowOver(){
+		if (allList==null) {
+			return true;
+		}
+		 if (curPage>=allList.size()-1) {
+			return true;
+		}
+		 return false;
+	}
+	public void update(int page){
+
+		initAdapter(page);
+		List<Map<String, Object>> list = allList.get(curPage);
 		int count = this.getChildCount();
 		for (int i = 0; i < count; i++) {
 			View view = this.getChildAt(i);
@@ -67,20 +91,12 @@ public class JoyFolderGridView extends GridView{
 		}
 	}
 
-	int group=0;
-	public List<Map<String, Object>> getAppFromArray(int num) {
+	public void update(){
 		
-		List<Map<String, Object>> showAppList = new ArrayList<Map<String, Object>>();
-		for (int i = group; i < group+num; i++) {
-		 
-			int index = i%allList.size();
-			Map<String, Object> info = allList.get(index);
-			int count = showAppList.size();
-			if(count<num){
-				showAppList.add(info);
-			}
+		if (!isShowOver()) {
+			curPage++;
+			update(curPage);
 		}
-		group+=num;
-		return showAppList;
 	}
+
 }

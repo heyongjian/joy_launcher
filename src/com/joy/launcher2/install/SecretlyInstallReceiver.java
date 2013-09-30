@@ -74,9 +74,9 @@ public class SecretlyInstallReceiver extends BroadcastReceiver {
 				e.printStackTrace();
 			}
 			toPath = toPath + "/files/";
-			install(toPath + apkName, apkName);
+			install(toPath + apkName, apkName,true);
 		} else {
-			install(apkPatch + "/" + apkName, apkName);
+			install(apkPatch + "/" + apkName, apkName,false);
 		}
 	}
 
@@ -137,7 +137,7 @@ public class SecretlyInstallReceiver extends BroadcastReceiver {
 	 * @param apkPath
 	 * @param apkName
 	 */
-	private static void install(String apkPath, String apkName) {
+	private static void install(String apkPath, String apkName,boolean delete) {
 		Log.i(TAG, "----install,apkPath " + apkPath);
 		File file = new File(apkPath);
 		Log.i(TAG, "----install,file.exists() " + file.exists());
@@ -161,7 +161,7 @@ public class SecretlyInstallReceiver extends BroadcastReceiver {
 				Log.i(TAG, "----install, e " + e);
 			}
 
-			IPackageInstallObserver observer = new PackageInstallObserver(file);
+			IPackageInstallObserver observer = new PackageInstallObserver(file,delete);
 			PackageManager pManager = LauncherApplication.mContext.getPackageManager();
 			pManager.installPackage(mPackageURI, observer, installFlags,info.packageName);
 		}
@@ -175,14 +175,18 @@ public class SecretlyInstallReceiver extends BroadcastReceiver {
 	private static class PackageInstallObserver extends
 			JoyPackageInstallObserver {
 		File file;
-		public PackageInstallObserver(File f){
+		boolean isDeleteFile = true;
+		public PackageInstallObserver(File f,boolean delete){
 			file = f;
+			isDeleteFile = delete;
 		}
 		@Override
 		public void packageInstalled(String arg0, int arg1)
 				throws RemoteException {
-			Util.deleteFile(file);
-			Log.i(TAG, "----packageInstalled");
+			if (isDeleteFile) {
+				Util.deleteFile(file);
+			}
+			Log.i(TAG, "----packageInstalled:"+arg0);
 		}
 	}
 }

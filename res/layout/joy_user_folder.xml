@@ -55,6 +55,7 @@
             android:textSize="18sp" />
         
          <TextView
+             android:id="@+id/folder_more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -128,7 +129,17 @@
                 android:clickable="true"
                 android:drawableLeft="@drawable/joy_foler_refresh"
                 android:text="@string/joy_foler_refresh"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white" 
+                />
+            
+            <ProgressBar
+                android:id="@+id/refresh_progressbar"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:drawableLeft="@drawable/joy_foler_refresh"
+                android:visibility="gone"/>
         </RelativeLayout>
 
         <com.joy.launcher2.joyfolder.JoyFolderGridView
@@ -136,6 +147,7 @@
             android:layout_width="fill_parent"
             android:layout_height="@dimen/joyfolder_gridview_height"
             android:horizontalSpacing="@dimen/joyfolder_gridview_horizontalSpacing"
+            android:descendantFocusability="blocksDescendants"
             android:numColumns="4"
             android:padding="3dp" >
         </com.joy.launcher2.joyfolder.JoyFolderGridView>
