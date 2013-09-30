@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import android.accounts.Account;
@@ -77,7 +78,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -111,6 +111,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
@@ -126,12 +127,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.joy.launcher2.DropTarget.DragObject;
+import com.joy.launcher2.download.DownLoadDBHelper;
 import com.joy.launcher2.download.DownloadInfo;
 import com.joy.launcher2.download.DownloadManager;
 import com.joy.launcher2.download.DownloadManager.CallBack;
 import com.joy.launcher2.install.InstallAPK;
 import com.joy.launcher2.install.InstallAPK.InstallApkListener;
 import com.joy.launcher2.joyfolder.JoyFolderIcon;
+import com.joy.launcher2.joyfolder.JoyIconView;
+import com.joy.launcher2.network.handler.BuiltInHandler;
 import com.joy.launcher2.preference.Preferences;
 import com.joy.launcher2.preference.PreferencesProvider;
 import com.joy.launcher2.util.Constants;
@@ -2280,30 +2284,46 @@ public final class Launcher extends Activity
      * @return
      */
     private void showAddOnlineFolder(){
-
-		LayoutInflater inflater = getLayoutInflater();
-		View view = inflater.inflate(R.layout.add_folder_dialog,(ViewGroup) findViewById(R.id.dialog));
-		String string = getResources().getString(R.string.online_folder);
-		final AlertDialog dialog = new AlertDialog.Builder(this).setTitle(string).setView(view).show();
     	
-    	LinearLayout gameFolder = (LinearLayout)view.findViewById(R.id.game_folder);
-    	gameFolder.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				addJoyFolder(ItemInfo.ONLINE);
-				dialog.dismiss();
+    	BuiltInHandler handler = new BuiltInHandler();
+    	List<Map<String, Object>> joyfolderMaps = handler.getBuiltInJoyFolderList();
+    	LinearLayout linearLayout = new LinearLayout(this);
+    	linearLayout.setOrientation(linearLayout.VERTICAL);
+    	 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);  
+    	LayoutInflater inflater = getLayoutInflater();
+    	String string = getResources().getString(R.string.online_folder);
+    	final AlertDialog dialog = new AlertDialog.Builder(this).setTitle(string).setView(linearLayout).show();
+    	
+    	for (int i = 0; i < joyfolderMaps.size(); i++) {
+    		View itemLayout = inflater.inflate(R.layout.add_joyfolder_item, null);
+    		View partition = itemLayout.findViewById(R.id.partition);
+    		if (i==joyfolderMaps.size()-1) {
+    			partition.setVisibility(View.GONE);
 			}
-		});
-    	LinearLayout applicationFolder = (LinearLayout)view.findViewById(R.id.application_folder);
-    	applicationFolder.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				addJoyFolder(ItemInfo.ONLINE_1);
-				dialog.dismiss();
-			}
-		});
+    		Map<String, Object> map = joyfolderMaps.get(i);
+    		final int natualId = (Integer)map.get("id");
+    		final String iconPath = map.get("icon").toString();
+    		final String name = map.get("title").toString();
+    		
+    		ImageView imgView = (ImageView)itemLayout.findViewById(R.id.icon);
+    		Bitmap bm = Util.getBitmapFromAssets(iconPath);
+    		imgView.setImageBitmap(bm);
+    		TextView textView = (TextView)itemLayout.findViewById(R.id.name);
+    		textView.setText(name);
+    		View itemView = itemLayout.findViewById(R.id.joy_folder_item);
+    				
+    		itemView.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					addJoyFolder(natualId,name,iconPath);
+					dialog.dismiss();
+				}
+			});
+    		
+    		linearLayout.addView(itemLayout,lp);
+		}
 	
     }
     /**
@@ -2311,7 +2331,7 @@ public final class Launcher extends Activity
      * @param natureId
      * @return
      */
-    FolderIcon addJoyFolder(int natureType) {
+    FolderIcon addJoyFolder(int natureType,String title,String iconPath) {
 
     	final int screen = getCurrentWorkspaceScreen();
 
@@ -2324,19 +2344,9 @@ public final class Launcher extends Activity
         	int cellX = mTargetCell[0];
             int cellY = mTargetCell[1];
             final FolderInfo folderInfo = new FolderInfo();
-            switch (natureType) {
-			case ItemInfo.LOCAL:
-				folderInfo.title = getText(R.string.folder_name);
-				break;
-			case ItemInfo.ONLINE:
-				folderInfo.title = getText(R.string.joy_game_folder);
-				break;
-			case ItemInfo.ONLINE_1:
-				folderInfo.title = getText(R.string.joy_application_folder);
-				break;
-			}
             folderInfo.natureId = natureType;
-           
+            folderInfo.title = title;
+            folderInfo.iconPath = iconPath;
             LauncherModel.addItemToDatabase(Launcher.this, folderInfo, container, screen, cellX, cellY,
                     false);
             sFolders.put(folderInfo.id, folderInfo);
@@ -2382,23 +2392,6 @@ public final class Launcher extends Activity
         sFolders.remove(folder.id);
     }
     
-    public void addVirtualShortcutTEST(){
-    	
-    	Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_home);
-        BitmapDrawable bd= new BitmapDrawable(getResources(), icon); 
-        Bitmap icon_bitmap = Utilities.createIconBitmap(bd, this);
-        String title = getString(R.string.virtualshortcut_test);
-	    String className="com.polontech.android.c360by.activities.RegisterActivity";
-	    String packageName="com.polontech.android.c360by";
-        ComponentName cn = new ComponentName(packageName, className); 
-        final ShortcutInfo info = mModel.getShortcutInfo(this, icon_bitmap, title,cn);
-        long container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
-        int screen = 1;
-        int cellX = 2;
-        int cellY = 0;
-        
-        addVirtualShortcut(container, screen, cellX, cellY, info);
-    }
     View addVirtualShortcut(long container, final int screen, int cellX,
             int cellY,ShortcutInfo info) {
 
@@ -2416,41 +2409,7 @@ public final class Launcher extends Activity
     		mModel.updateItemInDatabase(this, info);
 		}
     }
-   //add by wanghao
-  	private void installApkUpdated() {
-  		int size = LauncherProvider.unInstalledWidget.size();
-  		if (size > 0) {
-  			mWorkspace.postDelayed(new Runnable() {
-  				@Override
-  				public void run() {
-  					addWidgetFromDefaultXML(LauncherProvider.unInstalledWidget);
-  				}
-  			}, 500);
-  		}
-  	}
-      private void addWidgetFromDefaultXML(ArrayList<LauncherAppWidgetInfo> array) {
-      	if (array == null||array.size()<=0) {
-  			return;
-  		}
-      	for (int i = 0; i < array.size(); i++) {
-      		LauncherAppWidgetInfo info = array.get(i);
 
-      		int appWidgetId = info.appWidgetId;
-      		String packageName = info.providerName.getPackageName();
-      		String className = info.providerName.getClassName();
-      		ComponentName cn = new ComponentName(packageName, className);
-      		try {
-      			mAppWidgetManager.bindAppWidgetId(appWidgetId,cn);
-  			} catch (Exception e) {
-  				array.remove(i);
-  				Log.i(TAG, "---addWidgetFromDefaultXML e:"+e);
-  				return;
-  			}
-      		LauncherModel.addItemToDatabase(Launcher.this, info, info.container, info.screen, info.cellX, info.cellY,false);
-      		bindAppWidget(info);
-      		array.remove(i);
-  		}
-      }
     private void startWallpaper() {
         showWorkspace(true);
         final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
@@ -2800,8 +2759,18 @@ public final class Launcher extends Activity
         		success = startActivity(v, intent, tag);
         	}
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "Unable to launch. tag=" + tag + " intent=" + intent, e);
+    		final PackageManager pm = getPackageManager();  
+    		 ComponentName cop = intent.getComponent();
+    		 if (cop!= null) {
+    			 Intent i = pm.getLaunchIntentForPackage(cop.getPackageName());
+    			 if (i != null) {
+    				 success = startActivity(v, i, tag);
+				}
+			}
+        	if (!success){
+				 Toast.makeText(this, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
+				 Log.e(TAG, "Unable to launch. tag=" + tag + " intent=" + intent, e);
+			}
         }
         return success;
     }
@@ -3041,27 +3010,25 @@ public final class Launcher extends Activity
      */
     public void OpenShortcut(View v){
     	 Object tag = v.getTag();
-    	 final Intent intent = ((ShortcutInfo) tag).intent;
+		ShortcutInfo info = ((ShortcutInfo) tag);
+		final Intent intent = (info).intent;
     	 if (intent == null) {
     		 Log.e(TAG, "OpenShortcut --- intent == null");
 			return;
 		}
-    	 int shortcutType = (Integer)intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
-    	 if (shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL) {
+		int shortcutType = info.getShortcutType();
+		if (shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL) {
     		 OpenVirtualShortcut(v);
 		 }else {
 			 String  packageName = intent.getComponent().getPackageName();
-			 if (shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL
+			if (shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL
 					 &&!Util.isInstallApplication(this, packageName)) {
-				 ShortcutInfo info = ((ShortcutInfo) tag);
-				 if (info.natureId != ItemInfo.LOCAL) {
-					 DownloadInfo downloadInfo = DownloadManager.getInstances().getFromDB(info.natureId);
+				if (info.natureId != ItemInfo.LOCAL) {
+					DownloadInfo downloadInfo = DownLoadDBHelper.getInstances().get(info.natureId);
 					if (downloadInfo != null) {
-						if (downloadInfo != null) {
-							String name = downloadInfo.getLocalname();
-							Util.installAPK(Constants.DOWNLOAD_APK_DIR, name);
-							return;
-						}
+						String name = downloadInfo.getLocalname();
+						Util.installAPK(Constants.DOWNLOAD_APK_DIR, name,false);
+						return;
 					}
 				}
 			}
@@ -3085,51 +3052,56 @@ public final class Launcher extends Activity
 			Toast.makeText(this, errorStrings, Toast.LENGTH_LONG).show();
 			return;
 		}
-		DownloadInfo downinfo = ((ShortcutInfo)view.getTag()).getDownLoadInfo();
+		final ShortcutInfo shortcutInfo = (ShortcutInfo)view.getTag();
+		DownloadInfo downinfo = shortcutInfo.getDownLoadInfo();
 		if(downinfo != null){
 			return;
 		}
-		final Dialog alertDialog = new AlertDialog.Builder(this)
-				.setTitle(Launcher.this.getString(R.string.tip))
-				.setMessage(Launcher.this.getString(R.string.tip_message))
-				.setPositiveButton(Launcher.this.getString(R.string.tip_confirm), new DialogInterface.OnClickListener() {
-                     
-                    @Override 
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO Auto-generated method stub 
-                    	//下载id,get from json
-                		final int id = myTempId++;
-                		//应用名称
-                		final String name = "downTest"+id+".apk";
-                		
-                		int filesize = 2792121;
+		DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
 
-                		DownloadManager.getInstances().createTask(view, name, id, filesize,new CallBack() {
-							
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+
+				DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
+				if (dInfo == null) {
+					dInfo = DownLoadDBHelper.getInstances().get(shortcutInfo.natureId);
+				}
+				((JoyIconView) view).setDownloadInfo(dInfo);
+
+				DownloadManager.getInstances().createTask((JoyIconView) view,
+						dInfo, new CallBack() {
 							@Override
-							public void DownloadSucceed() {
-								// TODO Auto-generated method stub
-								ShortcutInfo info = (ShortcutInfo)view.getTag();
-								info.intent.putExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL);
-								info.natureId = id;
-								Launcher.this.updateVirtualShortcut(info);
-								final String localname = info.getDownLoadInfo().getLocalname();
+							public void downloadSucceed() {
+								shortcutInfo.setShortcutType(ShortcutInfo.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL);
+								DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
+								final String localname = dInfo.getLocalname();
+								final int id = dInfo.getId();
+								shortcutInfo.natureId = id;
+								Launcher.this.updateVirtualShortcut(shortcutInfo);
 								mWorkspace.postDelayed(new Runnable() {
 									@Override
 									public void run() {
-										// TODO Auto-generated method stub
-										Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname);
+										Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname, false);
 									}
 								}, 2000);
+								shortcutInfo.setDownLoadInfo(null);
 							}
-						});
-//                		DownloadManager.getInstances().createTask(view);
-                    }
-                })
-                .setNegativeButton(Launcher.this.getString(R.string.tip_cancle), null)
+							@Override
+							public void downloadFailed() {
+								shortcutInfo.setDownLoadInfo(null);
+							}
+						}, false);
+			}
+		};
+		final Dialog alertDialog = new AlertDialog.Builder(this)
+				.setTitle(Launcher.this.getString(R.string.tip))
+				.setMessage(Launcher.this.getString(R.string.tip_message))
+				.setPositiveButton(Launcher.this.getString(R.string.tip_confirm), listener)
+				.setNegativeButton(
+						Launcher.this.getString(R.string.tip_cancle), null)
 				.create();
-		        alertDialog.show();
- 
+		alertDialog.show();
+
 	}
 
     /**
@@ -4358,7 +4330,7 @@ public final class Launcher extends Activity
                     break;
                 case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
                 	FolderIcon newFolder = null;
-    				if(item.natureId == ItemInfo.ONLINE||item.natureId == ItemInfo.ONLINE_1){
+    				if(item.natureId != ItemInfo.LOCAL){
     					newFolder = JoyFolderIcon.fromXml(R.layout.joy_folder_icon,this, 
     							(ViewGroup) workspace.getChildAt(workspace.getCurrentPage()), (FolderInfo) item);
     				}else{
@@ -4626,7 +4598,7 @@ public final class Launcher extends Activity
         }
         
         if (mWorkspace != null) {
-            mWorkspace.updateVirtualShortcuts(apps);
+//            mWorkspace.updateVirtualShortcuts(apps);
         }
     }
 
@@ -4671,9 +4643,41 @@ public final class Launcher extends Activity
         if (mAppsCustomizeContent != null) {
             mAppsCustomizeContent.onPackagesUpdated();
         }
-        installApkUpdated();
+        updatedBuiltInWidget();
     }
+    static List<LauncherAppWidgetInfo> mBuiltInWidgetList = new ArrayList<LauncherAppWidgetInfo>();
+    public static void addBuiltInWidgetToList(LauncherAppWidgetInfo info){
+    	mBuiltInWidgetList.add(info);
+    }
+    private void addBuiltInWidgetToScreen(LauncherAppWidgetInfo info) {
+  	  int appWidgetId = info.appWidgetId;
+  		String packageName = info.providerName.getPackageName();
+  		String className = info.providerName.getClassName();
+  		ComponentName cn = new ComponentName(packageName, className);
+  		try {
+  			mAppWidgetManager.bindAppWidgetId(appWidgetId,cn);
+			} catch (Exception e) {
+				Log.i(TAG, "---addWidgetFromDefaultXML e:"+e);
+				return;
+			}
+  		LauncherModel.addItemToDatabase(Launcher.this, info, info.container, info.screen, info.cellX, info.cellY,false);
+  		bindAppWidget(info);
+    }
+    public  void updatedBuiltInWidget(){
 
+		if (mBuiltInWidgetList != null) {
+			for (int i = 0; i < mBuiltInWidgetList.size(); i++) {
+				final LauncherAppWidgetInfo info = mBuiltInWidgetList.get(i);
+				mBuiltInWidgetList.remove(i);
+				mWorkspace.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						addBuiltInWidgetToScreen(info);
+					}
+				}, 500);
+			}
+		}
+    }
     private int mapConfigurationOriActivityInfoOri(int configOri) {
         final Display d = getWindowManager().getDefaultDisplay();
         int naturalOri = Configuration.ORIENTATION_LANDSCAPE;

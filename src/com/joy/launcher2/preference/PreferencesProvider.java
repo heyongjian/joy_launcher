@@ -16,11 +16,7 @@
 
 package com.joy.launcher2.preference;
 
-import static android.os.Environment.MEDIA_MOUNTED;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,10 +26,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.os.Environment;
 import android.util.Log;
 
 import com.joy.launcher2.AppsCustomizePagedView;
+import com.joy.launcher2.LauncherModel;
 import com.joy.launcher2.R;
 import com.joy.launcher2.Workspace;
 import com.joy.launcher2.util.Util;
@@ -166,8 +162,8 @@ public final class PreferencesProvider {
     	
     }
     
-    
-    
+    public static final String PREFERENCES_DESKTOP_BAKCUP_KEY = "preferences_desktop_bakcup_key";
+    public static final String PREFERENCES_DESKTOP_IS_RECOVER_KEY = "preferences_desktop_is_recover_key";
     public static boolean setRecoverMode(Context context)
     {
     	boolean success = false;
@@ -274,6 +270,9 @@ public final class PreferencesProvider {
     			}
     		}
     	}
+    	//backup desktop info
+    	String desktopinfo = LauncherModel.getDataBase(context);
+    	editor.putString(PREFERENCES_DESKTOP_BAKCUP_KEY, desktopinfo);
     	return editor.commit();
     }
     
@@ -314,6 +313,12 @@ public final class PreferencesProvider {
     			}
     		}
     	}
+    	//recover desktop info
+    	String desktopinfo = backupSp.getString(PREFERENCES_DESKTOP_BAKCUP_KEY, "");
+    	if (!desktopinfo.equals("")) {
+    		editor.putString(PREFERENCES_DESKTOP_BAKCUP_KEY, desktopinfo);
+    		editor.putBoolean(PREFERENCES_DESKTOP_IS_RECOVER_KEY, true);
+		}
     	return editor.commit();
     }
     //end

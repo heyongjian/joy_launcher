@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.joy.launcher2.LauncherApplication;
 /**
  * 数据库相关操作的类
  * 
@@ -47,11 +48,19 @@ public class DownLoadDBHelper {
  
 	private SQLiteDatabase db;
 	
+	static DownLoadDBHelper dbHelper;
 	public DownLoadDBHelper(Context ctx) {
 		context = ctx;
 		mDBHelper = new DatabaseHelper(context);
 	}
 
+	static public DownLoadDBHelper getInstances() {
+		
+		if (dbHelper == null) {
+			dbHelper = new DownLoadDBHelper(LauncherApplication.mContext);
+		}
+		return dbHelper;
+	}
 	private static class DatabaseHelper extends SQLiteOpenHelper {
 		public DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -97,7 +106,7 @@ public class DownLoadDBHelper {
 	/**
 	 * 关闭数据库
 	 */
-	public synchronized void close() {
+	public synchronized void close() throws SQLException {
 		mDBHelper.close();
 	}
 
@@ -123,9 +132,15 @@ public class DownLoadDBHelper {
 	 * 删除数据,根据指定id删除
 	 */
 	public synchronized void delete(DownloadInfo info) {
+		delete(info.getId());
+	}
+	/**
+	 * 删除数据,根据指定id删除
+	 */
+	public synchronized void delete(int id) {
 
 		 open();
-		 db.delete(DATABASE_TABLE, ID + "=" + info.getId(), null);
+		 db.delete(DATABASE_TABLE, ID + "=" + id, null);
 		 close();
 	}
 

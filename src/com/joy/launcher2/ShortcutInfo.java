@@ -34,7 +34,7 @@ public class ShortcutInfo extends ItemInfo {
     /**
      * The intent used to start the application.
      */
-    Intent intent;
+    public Intent intent;
 
     /**
      * Indicates whether the title comes from an application's resource (if false)
@@ -70,6 +70,13 @@ public class ShortcutInfo extends ItemInfo {
      */
     private ShortcutListener mListener;
 
+    /**
+     * virtual shortcut type
+     */
+    public static final String SHORTCUT_TYPE = "virtual_Shortcut_type";
+    public static final int SHORTCUT_TYPE_NORMAL = 0;//normal app icon
+    public static final int SHORTCUT_TYPE_VIRTUAL = 1;//virtual app icon
+    public static final int SHORTCUT_TYPE_VIRTUAL_TO_NORMAL = 2;//virtual to normal
     ShortcutInfo() {
         itemType = LauncherSettings.BaseLauncherColumns.ITEM_TYPE_SHORTCUT;
     }
@@ -155,7 +162,7 @@ public class ShortcutInfo extends ItemInfo {
     void onAddToDatabase(ContentValues values) {
         super.onAddToDatabase(values);
 
-        String titleStr = title != null && (customTitle || itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT) ?
+        String titleStr = title != null /*&& (customTitle || itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT)*/ ?
                 title.toString() : null;
         values.put(LauncherSettings.BaseLauncherColumns.TITLE, titleStr);
 
@@ -180,7 +187,24 @@ public class ShortcutInfo extends ItemInfo {
             }
         }
     }
+ 
+			
+	public int getShortcutType() {
+		if (this.intent == null) {
+			return SHORTCUT_TYPE_NORMAL;
+		}
+		int shortcutType = (Integer) intent.getExtra(
+				SHORTCUT_TYPE,
+				SHORTCUT_TYPE_NORMAL);
 
+		return shortcutType;
+	}
+	public void setShortcutType(int type) {
+		if (this.intent == null) {
+			return ;
+		}
+		intent.putExtra(ShortcutInfo.SHORTCUT_TYPE,type);
+	}
     @Override
     public String toString() {
         return "ShortcutInfo(title=" + (title != null ? title.toString() : "unknown ") + "intent=" + intent + "id=" + this.id

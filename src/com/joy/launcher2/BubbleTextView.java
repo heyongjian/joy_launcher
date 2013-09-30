@@ -26,11 +26,10 @@ import android.graphics.Region.Op;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.TextView;
 
 import com.joy.launcher2.download.DownloadInfo;
+import com.joy.launcher2.joyfolder.JoyIconView;
 import com.joy.launcher2.preference.PreferencesProvider;
 import com.joy.launcher2.preference.PreferencesProvider.Size;
 import com.joy.launcher2.preference.PreferencesProvider.TextStyle;
@@ -40,7 +39,7 @@ import com.joy.launcher2.preference.PreferencesProvider.TextStyle;
  * because we want to make the bubble taller than the text and TextView's clip is
  * too aggressive.
  */
-public class BubbleTextView extends TextView implements ShortcutInfo.ShortcutListener {
+public class BubbleTextView extends JoyIconView implements ShortcutInfo.ShortcutListener {
     static final float SHADOW_LARGE_RADIUS = 4.0f;
     static final float SHADOW_SMALL_RADIUS = 1.75f;
     static final float SHADOW_Y_OFFSET = 2.0f;
@@ -70,8 +69,6 @@ public class BubbleTextView extends TextView implements ShortcutInfo.ShortcutLis
     private boolean mTextVisible = true;
     private CharSequence mVisibleText;
 
-    //add by wanghao
-    DownLoadProgressBar mProgressBar;
     public BubbleTextView(Context context) {
         super(context);
         init();
@@ -141,6 +138,7 @@ public class BubbleTextView extends TextView implements ShortcutInfo.ShortcutLis
         setText(info.title);
         setTag(info);
         info.setListener(this);
+        LauncherModel.updateItemInDatabase(this.getContext(), info);
     }
 
     @Override
@@ -405,35 +403,9 @@ public class BubbleTextView extends TextView implements ShortcutInfo.ShortcutLis
             setText("");
         }
     }
-    
-    //add by wanghao
+
     @Override
-    protected void onDraw(Canvas canvas) {
-    	// TODO Auto-generated method stub
-    	super.onDraw(canvas);
-    	
-    	  final int scrollX = mScrollX;
-          final int scrollY = mScrollY;
-          if ((scrollX | scrollY) == 0) {
-          	drawProgressBar(canvas);
-          } else {
-              canvas.translate(scrollX, scrollY);
-              drawProgressBar(canvas);
-              canvas.translate(-scrollX, -scrollY);
-          }
-    }
-
-    //add by wanghao
-    private void initProgressBar(){
-    	mProgressBar = new DownLoadProgressBar();
-    	
-    }
-    /**
-     * draw progress bar,add by wanghao
-     * @param canvas
-     */
-	protected void drawProgressBar(Canvas canvas) {
-
+    public void drawProgressBar(Canvas canvas) {
 		ShortcutInfo info = (ShortcutInfo)getTag();
 		
 		if (info == null) {
@@ -443,117 +415,33 @@ public class BubbleTextView extends TextView implements ShortcutInfo.ShortcutLis
 			return;
 		}
 		
-		int shortcutType = (Integer) info.intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
-		boolean isVirtual = shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL;
+		int shortcutType = info.getShortcutType();
+		boolean isVirtual = shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL;
 		if (isVirtual) {
-			if (mProgressBar == null) {
-				mProgressBar = new DownLoadProgressBar();
-			}
-			mProgressBar.drawProgressBar(canvas,info,isVirtual);
-		}else {
-			if(mProgressBar != null){
-				mProgressBar = null;
-			}
+			this.showProgressBar(true);
+			super.drawProgressBar(canvas);
+		}else{
+			this.showProgressBar(false);
+			this.releaseDownLoadProgressBar();
 		}
-	}
-	protected void drawProgressBar(Canvas canvas,int left,int top) {
-
-		ShortcutInfo info = (ShortcutInfo)getTag();
-		
-		if (info == null) {
-			return;
-		}
-		if (info.intent == null) {
-			return;
-		}
-		
-		int shortcutType = (Integer) info.intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
-		boolean isVirtual = shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL;
-		if (isVirtual) {
-			if (mProgressBar == null) {
-				mProgressBar = new DownLoadProgressBar();
-			}
-			mProgressBar.drawProgressBar(canvas,info,isVirtual,left,top);
-		}else {
-			if(mProgressBar != null){
-				mProgressBar = null;
-			}
-		}
-	}
-	
-    public Drawable getCompoundDrawable(Canvas canvas,int left,int top) {
-    	
-    	if (mProgressBar!= null) {
-    		drawProgressBar(canvas,left,top);
-		}
-    	return null;
     }
     
-    // add by wanghao
-    class DownLoadProgressBar{
-        
-        private Drawable progressbar;
-        private Drawable progressbar_groove;
-        private Drawable progressbar_cursor;
-        private Drawable progressbar_bg;
-        private Rect progressbarBounds;
-        
-        public DownLoadProgressBar(){
-        	
-        	progressbar = getResources().getDrawable(R.drawable.download_progressbar);
-        	progressbar_bg = getResources().getDrawable(R.drawable.download_progressbar_bg);
-        	progressbar_groove = getResources().getDrawable(R.drawable.download_progressbar_groove);
-        	progressbar_cursor = getResources().getDrawable(R.drawable.download_progressbar_cursor);
-        	Drawable[] drawables = getCompoundDrawables();
-            Drawable drawableTop = drawables[1];
-            progressbarBounds = drawableTop.getBounds();
-        }
-
-		public void drawProgressBar(Canvas canvas, ShortcutInfo info,boolean isVirtual) {
-			int left =(getWidth() - progressbarBounds.width()) / 2;
-			int top = getPaddingTop();
-			
-			drawProgressBar(canvas, info, isVirtual, left, top);
+    @Override
+    public void setDownloadInfo(DownloadInfo dInfo) {
+    	// TODO Auto-generated method stub
+    	ShortcutInfo info = (ShortcutInfo)getTag();
+    	if(info != null){
+    		info.setDownLoadInfo(dInfo);
+    	}
+    }
+    @Override
+    public DownloadInfo getDownloadInfo() {
+    	// TODO Auto-generated method stub
+    	ShortcutInfo info = (ShortcutInfo)getTag();
+		
+		if (info == null||info.intent == null) {
+			return null;
 		}
-
-        private void drawProgressBar(Canvas canvas,ShortcutInfo info,boolean isVirtual,int left,int top){
-    		
-        	DownloadInfo downloadInfo = info.getDownLoadInfo();
-
-    		if (downloadInfo == null&&isVirtual) {
-    			canvas.save();
-    			canvas.translate(left, top);
-    			progressbar.setBounds(progressbarBounds);
-    			progressbar.draw(canvas);
-    			canvas.restore();
-    			return;
-    		}else if (downloadInfo != null) {
-    			canvas.save();
-    			canvas.translate(left, top);
-    			progressbar_bg.setBounds(progressbarBounds);
-    			progressbar_bg.draw(canvas);
-    			
-    			int maxw = progressbarBounds.width();
-    			int maxh = progressbarBounds.height()/10;
-
-    			int progressbar_left = progressbarBounds.left;
-    			int progressbar_top = (progressbarBounds.bottom - progressbar_cursor.getIntrinsicHeight())/2;
-    			int progressbar_right = maxw;
-    			int progressbar_bottom = progressbar_top+maxh;
-    			progressbar_groove.setBounds(progressbar_left, progressbar_top, progressbar_right, progressbar_bottom);
-    			progressbar_groove.draw(canvas);
-    			
-    			int w = maxw*downloadInfo.getCompletesize()/downloadInfo.getFilesize();
-    			if (w < progressbar_cursor.getIntrinsicWidth()) {
-//    				w = progressbar_cursor.getIntrinsicWidth();
-    				canvas.restore();
-    				return;
-    			}
-    			progressbar_cursor.setBounds(progressbar_left, progressbar_top, w, progressbar_bottom);
-    			progressbar_cursor.draw(canvas);
-    			canvas.translate(left, top);
-    			canvas.restore();
-    		}
-        }
+		return info.getDownLoadInfo();
     }
 }

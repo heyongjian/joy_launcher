@@ -31,11 +31,11 @@ public class InstallAPK {
 	}
 	
 	public void init(){
-		String string = Util.getStringFromAssets("built-in_apk.txt");
+		String string = Util.getStringFromAssets("built-in.txt");
 		
 		try {
 			JSONObject jsonObject = new JSONObject(string);
-			JSONArray jsonarry = jsonObject.getJSONArray("apkList");
+			JSONArray jsonarry = jsonObject.getJSONArray("built-in_apk");
 			int length = jsonarry.length();
 			for(int i=0;i<length;i++){
 				JSONObject item = jsonarry.getJSONObject(i);
