@@ -3602,7 +3602,7 @@ public final class Launcher extends Activity
     
     private AnimatorSet getHideAppsCustomizeDefaultAnim(final View fromView,final View toView,
             final Runnable onCompleteRunnable){
-//    	ssw
+    	
     	final int duration = getResources().getInteger(R.integer.config_appsCustomizeZoomInTime);
     	final float toScale = 1.3f;
         final float fromScale = 1.0f;
