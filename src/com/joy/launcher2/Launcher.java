@@ -3127,7 +3127,7 @@ public final class Launcher extends Activity
                     folder.getParent() + ").");
         }
         folder.animateOpen();
-        growAndFadeOutFolderIcon(folderIcon);
+        if(LauncherApplication.sTheme == LauncherApplication.THEME_DEFAULT)growAndFadeOutFolderIcon(folderIcon);
     }
 
     public void closeFolder() {
@@ -3149,9 +3149,49 @@ public final class Launcher extends Activity
         ViewGroup parent = (ViewGroup) folder.getParent().getParent();
         if (parent != null) {
             FolderIcon fi = (FolderIcon) mWorkspace.getViewForTag(folder.mInfo);
-            shrinkAndFadeInFolderIcon(fi);
+            if(LauncherApplication.sTheme == LauncherApplication.THEME_DEFAULT)shrinkAndFadeInFolderIcon(fi);
         }
         folder.animateClosed();
+    }
+    
+    void hideAllViews()
+    {
+    	if(mWorkspace != null && mWorkspace.getVisibility() == View.VISIBLE)
+    	{
+    		mWorkspace.setVisibility(View.INVISIBLE);
+    	}
+    	
+    	if(mDockDivider != null && mDockDivider.getVisibility() == View.VISIBLE)
+    	{
+    		mDockDivider.setVisibility(View.INVISIBLE);
+    	}
+    	
+    	if(mHotseat != null && mHotseat.getVisibility() == View.VISIBLE)
+    	{
+    		mHotseat.setVisibility(View.INVISIBLE);
+    	}
+    	mSearchDropTargetBar.hideSearchBar(false);
+    	
+    	
+    }
+    
+    void showAllViews()
+    {
+    	if(mWorkspace != null && mWorkspace.getVisibility() != View.VISIBLE)
+    	{
+    		mWorkspace.setVisibility(View.VISIBLE);
+    	}
+    	
+    	if(mDockDivider != null && mDockDivider.getVisibility() != View.VISIBLE)
+    	{
+    		mDockDivider.setVisibility(View.VISIBLE);
+    	}
+    	
+    	if(mHotseat != null && mHotseat.getVisibility() != View.VISIBLE)
+    	{
+    		mHotseat.setVisibility(View.VISIBLE);
+    	}
+    	mSearchDropTargetBar.showSearchBar(false);
     }
 
     public boolean onLongClick(View v) {
