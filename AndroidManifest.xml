@@ -81,6 +81,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+ 	<uses-permission android:name="android.permission.DEVICE_POWER"/>
     
     <application
         android:name="com.joy.launcher2.LauncherApplication"
@@ -212,5 +214,36 @@
                 <data android:scheme="package"></data>
             </intent-filter>
         </receiver>
+        
+        <service
+            android:name="com.joy.launcher2.push.PushService"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="com.joy.launcher2.push" />
+                
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.joy.launcher2.push.download"/>
+            </intent-filter>
+        </service>
+        <receiver android:name="com.joy.launcher2.push.PushReceiver"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="com.joy.launcher2.push" />
+                
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.joy.launcher2.push.download"/>
+            </intent-filter>
+        </receiver>
+        <activity
+            android:name="com.joy.launcher2.push.PushRemindActivity"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="com.joy.launcher2.push.remind" />
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
