@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -47,6 +48,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -59,6 +61,11 @@ import android.util.Xml;
 
 import com.joy.launcher2.R;
 import com.joy.launcher2.LauncherSettings.Favorites;
+import com.joy.launcher2.download.DownLoadDBHelper;
+import com.joy.launcher2.download.DownloadInfo;
+import com.joy.launcher2.network.handler.BuiltInHandler;
+import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.util.Util;
 
 public class LauncherProvider extends ContentProvider {
     private static final String TAG = "Joy.LauncherProvider";
@@ -91,7 +98,6 @@ public class LauncherProvider extends ContentProvider {
 
     private DatabaseHelper mOpenHelper;
 
-    public static ArrayList<LauncherAppWidgetInfo> unInstalledWidget = new ArrayList<LauncherAppWidgetInfo>();
     @Override
     public boolean onCreate() {
         mOpenHelper = new DatabaseHelper(getContext());
@@ -209,6 +215,26 @@ public class LauncherProvider extends ContentProvider {
      * @param workspaceResId that can be 0 to use default or non-zero for specific resource
      */
     synchronized public void loadDefaultFavoritesIfNecessary(int origWorkspaceResId) {
+    	final SharedPreferences backupSp = getContext().getSharedPreferences(
+				PreferencesProvider.PREFERENCES_KEY, 0);
+    	boolean isRecover = backupSp.getBoolean(PreferencesProvider.PREFERENCES_DESKTOP_IS_RECOVER_KEY, false);
+    	if(isRecover){
+    		SharedPreferences.Editor editor = backupSp.edit();
+    		editor.putBoolean(PreferencesProvider.PREFERENCES_DESKTOP_IS_RECOVER_KEY, false);
+    		editor.commit();
+    		String desktopinfo = backupSp.getString(PreferencesProvider.PREFERENCES_DESKTOP_BAKCUP_KEY, "");
+    		if (!desktopinfo.equals("")) {
+    			mOpenHelper.getWritableDatabase().delete("favorites", null, null);
+    			LauncherModel.saveDataBase(getContext(), desktopinfo);
+    			
+    			String spKey = LauncherApplication.getSharedPreferencesKey();
+    	        SharedPreferences sp = getContext().getSharedPreferences(spKey, Context.MODE_PRIVATE);
+    	        SharedPreferences.Editor editor2 = sp.edit();
+    	        editor2.remove(DB_CREATED_BUT_DEFAULT_WORKSPACE_NOT_LOADED);
+    	        editor2.commit();
+    			return;
+    		}
+    	}
         String spKey = LauncherApplication.getSharedPreferencesKey();
         SharedPreferences sp = getContext().getSharedPreferences(spKey, Context.MODE_PRIVATE);
         if (sp.getBoolean(DB_CREATED_BUT_DEFAULT_WORKSPACE_NOT_LOADED, false)) {
@@ -226,6 +252,7 @@ public class LauncherProvider extends ContentProvider {
                 editor.putInt(DEFAULT_WORKSPACE_RESOURCE_ID, origWorkspaceResId);
             }
             mOpenHelper.loadFavorites(mOpenHelper.getWritableDatabase(), workspaceResId);
+            mOpenHelper.loadJoyFavorites(mOpenHelper.getWritableDatabase());
             editor.commit();
         }
     }
@@ -719,34 +746,30 @@ public class LauncherProvider extends ContentProvider {
 
             return i;
         }
-
-        //add built-in widgets
-        private void addUnInstalledWidget(TypedArray a,long container,int natureId,String screen,String x,String y){
-
-    		String packageName = a.getString(R.styleable.Favorite_packageName);
-            String className = a.getString(R.styleable.Favorite_className);
-            int spanX = Integer.valueOf(a.getString(R.styleable.Favorite_spanX));
-            int spanY = Integer.valueOf(a.getString(R.styleable.Favorite_spanY));
-        	ComponentName cn = new ComponentName(packageName, className);
+        private void loadJoyFavorites(SQLiteDatabase db) {
+        	BuiltInHandler handler = new BuiltInHandler();
+        	List<Map<String, Object>> builtInShortcutList = handler.getBuiltInShortcutList();
+        	List<Map<String, Object>> builtInJoyFolderList = handler.getBuiltInJoyFolderList();
+        	List<Map<String, Object>> builtInnWidgetList = handler.getBuiltInWidgetList();
+        	System.err.println("builtInShortcutList === "+builtInShortcutList);
+        	System.err.println("builtInShortcutList === "+builtInShortcutList.size());
+        	for (int i = 0; i < builtInJoyFolderList.size(); i++) {
+        		Map<String, Object> map = builtInJoyFolderList.get(i);
+        		addJoyFolder(db, map);
+			}
         	
-        	int appWidgetId = mAppWidgetHost.allocateAppWidgetId();
-        	
-        	LauncherAppWidgetInfo info = new LauncherAppWidgetInfo(appWidgetId,cn);
-        	info.container = container;
-        	info.natureId = natureId;
-        	info.screen = Integer.valueOf(screen);
-        	info.cellX = Integer.valueOf(x);
-        	info.cellY = Integer.valueOf(y);
-        	info.spanX = spanX;
-        	info.spanY = spanY;
-        	info.id = generateNewId();
-        	info.appWidgetId = appWidgetId;
-        	info.itemType = Favorites.ITEM_TYPE_APPWIDGET;
-        	info.providerName = cn;
-        	
-        	unInstalledWidget.add(info);
+        	for (int i = 0; i < builtInShortcutList.size(); i++) {
+        		Map<String, Object> map = builtInShortcutList.get(i);
+        		addVirtualShortcut(db, map);
+			}
+        	for (int i = 0; i < builtInnWidgetList.size(); i++) {
+        		Map<String, Object> map = builtInnWidgetList.get(i);
+        		LauncherAppWidgetInfo info = addBuiltInWidget(db, map);
+        		if (info != null) {
+					Launcher.addBuiltInWidgetToList(info);
+				}
+			}
         }
-
         private long addAppShortcut(SQLiteDatabase db, ContentValues values, TypedArray a,
                 PackageManager packageManager, Intent intent) {
             long id = -1;
@@ -992,40 +1015,173 @@ public class LauncherProvider extends ContentProvider {
             return id;
         }
         
-        //add by wanghao
-        private long addVirtualShortcut(SQLiteDatabase db, ContentValues values,TypedArray a) {
-            Resources r = mContext.getResources();
+        private long addVirtualShortcut(SQLiteDatabase db, Map<String, Object> map) {
+        	 
+            if (map == null) {
+				return -1;
+			}
+            int natureId = (Integer)map.get("id");
+            int container  = (Integer)map.get("container");
+            String iconpath = (String)map.get("icon");
+            String title = (String)map.get("title");
+            String packageName =(String)map.get("packageName");
+            String className = (String)map.get("className");
+            String name = (String)map.get("name");
+            String url = (String)map.get("url");
+            int filesize = (Integer)map.get("filesize");
+            int screen = (Integer)map.get("screen");
+            int x = (Integer)map.get("x");
+            int y = (Integer)map.get("y");
 
-            Drawable icon = a.getDrawable(R.styleable.Favorite_icon);
-            Bitmap icon_bitmap = Utilities.createIconBitmap(icon, mContext);
-//            BitmapDrawable bd = (BitmapDrawable) icon;
-//            Bitmap icon_bitmap = bd.getBitmap();
-            String title = a.getString(R.styleable.Favorite_title);
+            final ContentResolver cr = mContext.getContentResolver();
+            Cursor c = cr.query(LauncherSettings.Favorites.CONTENT_URI, 
+            		new String[] {LauncherSettings.Favorites.ITEM_TYPE,
+            		LauncherSettings.Favorites.NATURE_ID,
+            		LauncherSettings.Favorites._ID}, null, null, null);
+            final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
+            final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
+            final int idIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites._ID);
+            int tempcontainer = LauncherSettings.Favorites.CONTAINER_DESKTOP;
             
-            String packageName = a.getString(R.styleable.Favorite_packageName);
-            String className = a.getString(R.styleable.Favorite_className);
+            if (container!=LauncherSettings.Favorites.CONTAINER_DESKTOP&&
+            		container!=LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
+            	try {
+                	boolean isover = false;
+                    while (!isover&&c.moveToNext()) {
+                    	int itemType = c.getInt(itemTypeIndex);
+                        int tempNatureId = c.getInt(natureIdIndex);
+                        int id = c.getInt(idIndex);
+                         if (container==tempNatureId) {
+                             if (itemType == Favorites.ITEM_TYPE_FOLDER) {
+                            	 tempcontainer = id;
+                            	 isover = true;
+         					}
+    					}
+                    }
+                } catch (Exception e) {
+                	tempcontainer = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+                } finally {
+                    c.close();
+                }
+			}
             
             ComponentName cn = new ComponentName(packageName, className);
             Intent intent = new Intent();
             long id = generateNewId();
             intent.setComponent(cn);
-//            intent.putExtra(SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL);
+            intent.putExtra(ShortcutInfo.SHORTCUT_TYPE, ShortcutInfo.SHORTCUT_TYPE_VIRTUAL);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                     Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            values.put(Favorites.INTENT, intent.toUri(0));
-            values.put(Favorites.TITLE, title);
-            values.put(Favorites.ITEM_TYPE, Favorites.ITEM_TYPE_APPLICATION);//
-            values.put(Favorites.ICON_TYPE, Favorites.ICON_TYPE_BITMAP);
-            values.put(Favorites.SPANX, 1);
-            values.put(Favorites.SPANY, 1);
-            values.put(Favorites._ID, id);
-
+            
+            ContentValues values = new ContentValues();
+        	values.clear();
+        	values.put(LauncherSettings.Favorites._ID, id);
+			values.put(LauncherSettings.Favorites.CONTAINER, tempcontainer);
+			values.put(LauncherSettings.Favorites.NATURE_ID, natureId);
+			values.put(LauncherSettings.Favorites.SCREEN, screen);
+			values.put(LauncherSettings.Favorites.CELLX, x);
+			values.put(LauncherSettings.Favorites.CELLY, y);
+            values.put(LauncherSettings.Favorites.SPANX, 1);
+            values.put(LauncherSettings.Favorites.SPANY, 1);
+            values.put(LauncherSettings.Favorites.TITLE, title);
+            values.put(LauncherSettings.Favorites.INTENT, intent.toUri(0));
+            values.put(LauncherSettings.Favorites.ITEM_TYPE, Favorites.ITEM_TYPE_APPLICATION);//
+            values.put(LauncherSettings.Favorites.ICON_TYPE, Favorites.ICON_TYPE_BITMAP);
+            values.put(LauncherSettings.Favorites.ICON_PATH, iconpath);
+            
+            Bitmap bitmap = Util.getBitmapFromAssets(iconpath);
+            Drawable icon = new BitmapDrawable(bitmap);
+            Bitmap icon_bitmap = Utilities.createIconBitmap(icon, mContext);
             ItemInfo.writeBitmap(values, icon_bitmap);
             
+            
+//            System.err.println("builtInShortcutList  container 2=== "+dbInsertAndCheck(db, TABLE_FAVORITES, null, values));
             if (dbInsertAndCheck(db, TABLE_FAVORITES, null, values) < 0) {
                 return -1;
             }
+
+            DownloadInfo dInfo = new DownloadInfo();
+			dInfo.setId(natureId);
+			dInfo.setFilename(name);
+			dInfo.setLocalname(name);
+			dInfo.setUrl(url);
+			dInfo.setCompletesize(0);
+			dInfo.setFilesize(filesize);
+            DownLoadDBHelper.getInstances().insert(dInfo);
             return id;
+        }
+        
+		private long addJoyFolder(SQLiteDatabase db, Map<String, Object> map) {
+			if (map == null) {
+				return -1;
+			}
+			String title =  (String) map.get("title");
+			int screen =  (Integer) map.get("screen");
+			int x =  (Integer) map.get("x");
+			int y =  (Integer) map.get("y");
+			int natureId = (Integer) map.get("id");
+			String iconpath = (String) map.get("icon");
+			int spanX = 1;
+			int spanY = 1;
+			int container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+//			int container = (Integer) map.get("container");
+            
+			ContentValues values = new ContentValues();
+			values.clear();
+			long id = generateNewId();
+			values.put(LauncherSettings.Favorites._ID, id);
+			values.put(LauncherSettings.Favorites.CONTAINER, container);
+			values.put(LauncherSettings.Favorites.NATURE_ID, natureId);
+			values.put(LauncherSettings.Favorites.SCREEN, screen);
+			values.put(LauncherSettings.Favorites.CELLX, x);
+			values.put(LauncherSettings.Favorites.CELLY, y);
+			values.put(LauncherSettings.Favorites.SPANX, spanX);
+			values.put(LauncherSettings.Favorites.SPANY, spanY);
+			values.put(LauncherSettings.Favorites.TITLE, title);
+			values.put(LauncherSettings.Favorites.ICON_TYPE,
+					LauncherSettings.BaseLauncherColumns.ICON_TYPE_BITMAP);
+			values.put(Favorites.ITEM_TYPE, Favorites.ITEM_TYPE_FOLDER);
+			values.put(Favorites.ICON_PATH, iconpath);
+
+			if (dbInsertAndCheck(db, TABLE_FAVORITES, null, values) <= 0) {
+				return -1;
+			} else {
+				return id;
+			}
+		}
+
+        //add built-in widgets
+        private LauncherAppWidgetInfo addBuiltInWidget(SQLiteDatabase db, Map<String, Object> map){
+        	if (map == null) {
+				return null;
+			}
+
+    		String packageName = (String) map.get("packageName");
+            String className = (String) map.get("className");
+            int screen = (Integer) map.get("screen");
+            int x = (Integer) map.get("x");
+            int y = (Integer) map.get("y");
+            int spanX = (Integer) map.get("spanX");
+            int spanY = (Integer) map.get("spanY");
+
+        	ComponentName cn = new ComponentName(packageName, className);
+        	
+        	int appWidgetId = mAppWidgetHost.allocateAppWidgetId();
+        	
+        	LauncherAppWidgetInfo info = new LauncherAppWidgetInfo(appWidgetId,cn);
+        	info.container = LauncherSettings.Favorites.CONTAINER_DESKTOP;
+        	info.natureId = ItemInfo.LOCAL;
+        	info.screen = Integer.valueOf(screen);
+        	info.cellX = Integer.valueOf(x);
+        	info.cellY = Integer.valueOf(y);
+        	info.spanX = Integer.valueOf(spanX);
+        	info.spanY = Integer.valueOf(spanY);
+        	info.id = generateNewId();
+        	info.appWidgetId = appWidgetId;
+        	info.itemType = Favorites.ITEM_TYPE_APPWIDGET;
+        	info.providerName = cn;
+
+        	return info;
         }
     }
     /**

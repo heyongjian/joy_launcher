@@ -30,8 +30,6 @@ import android.util.Log;
  */
 public class ItemInfo {
     public static final int LOCAL = -1;
-    public static final int ONLINE = LOCAL+1;
-    public static final int ONLINE_1 = ONLINE+1;
     public int natureId = LOCAL;
 
     static final int NO_ID = -1;

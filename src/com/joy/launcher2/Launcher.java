@@ -2237,7 +2237,7 @@ public final class Launcher extends Activity
 		}
     }
     /**
-     * 添加到桌�?
+     * 添加到桌�?
      */
     public void showAddToDesktop(){
 		LayoutInflater inflater = getLayoutInflater();
@@ -2279,7 +2279,7 @@ public final class Launcher extends Activity
         addWidgetByMenu = true;
     }
     /**
-     * 弹出添加在线文件的窗�?
+     * 弹出添加在线文件的窗�?
      * @param natureId
      * @return
      */
@@ -4330,7 +4330,7 @@ public final class Launcher extends Activity
                     break;
                 case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
                 	FolderIcon newFolder = null;
-    				if(item.natureId == ItemInfo.ONLINE||item.natureId == ItemInfo.ONLINE_1){
+    				if(item.natureId != ItemInfo.LOCAL){
     					newFolder = JoyFolderIcon.fromXml(R.layout.joy_folder_icon,this, 
     							(ViewGroup) workspace.getChildAt(workspace.getCurrentPage()), (FolderInfo) item);
     				}else{
