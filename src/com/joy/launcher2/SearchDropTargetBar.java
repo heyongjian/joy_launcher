@@ -19,10 +19,12 @@ package com.joy.launcher2;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
@@ -57,6 +59,7 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
 
     private Drawable mPreviousBackground;
     private boolean mEnableDropDownDropTargets;
+	private static String TAG = "SearchDropTargetBar";
 
     public SearchDropTargetBar(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -123,6 +126,7 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
             mQSBSearchBar.setVisibility(View.GONE);
         }
 
+        Log.e(TAG , "---onFinishInflate()   mEnableDropDownDropTargets: " + mEnableDropDownDropTargets);
         // Create the various fade animations
         if (mEnableDropDownDropTargets) {
             mDropTargetBar.setTranslationY(-mBarHeight);
@@ -151,8 +155,9 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
      */
     public void showSearchBar(boolean animated) {
         if (!mIsSearchBarHidden) return;
+        boolean animate = true;
         if (mShowQSBSearchBar) {
-            if (animated) {
+            if (animate) {
                 prepareStartAnimation(mQSBSearchBar);
                 mQSBSearchBarAnim.reverse();
             } else {
@@ -167,6 +172,8 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
         mIsSearchBarHidden = false;
     }
     public void hideSearchBar(boolean animated) {
+//        Log.e(TAG , "---onFinishInflate()   mEnableDropDownDropTargets: " + mEnableDropDownDropTargets);
+
         if (mIsSearchBarHidden) return;
         if (mShowQSBSearchBar) {
             if (animated) {
@@ -227,7 +234,8 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
         }
     }
 
-    public void onSearchPackagesChanged(boolean searchVisible, boolean voiceVisible) {
+    @SuppressLint("NewApi")
+	public void onSearchPackagesChanged(boolean searchVisible, boolean voiceVisible) {
         if (mQSBSearchBar != null) {
             Drawable bg = mQSBSearchBar.getBackground();
             if (bg != null && (!searchVisible && !voiceVisible)) {
