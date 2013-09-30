@@ -160,7 +160,7 @@ public class SystemInfo {
 
 	public void initSystemInfo() {
 
-		channel = "channel";
+		channel = "1001";
 		vcode = Integer.valueOf(0);
 		vname = "my_launcher";
 

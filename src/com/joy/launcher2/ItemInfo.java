@@ -101,6 +101,7 @@ public class ItemInfo {
      * Title of the item
      */
     public CharSequence title;
+    public CharSequence iconPath;
 
     /**
      * The position of the item in a drag-and-drop operation.
@@ -152,6 +153,7 @@ public class ItemInfo {
         values.put(LauncherSettings.Favorites.CELLY, cellY);
         values.put(LauncherSettings.Favorites.SPANX, spanX);
         values.put(LauncherSettings.Favorites.SPANY, spanY);
+        values.put(LauncherSettings.Favorites.ICON_PATH, (String) iconPath);
     }
 
     void updateValuesWithCoordinates(ContentValues values, int cellX, int cellY) {

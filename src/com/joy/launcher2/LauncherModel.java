@@ -29,9 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.joy.launcher2.R;
-import com.joy.launcher2.preference.PreferencesProvider;
-
 import android.app.SearchManager;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
@@ -52,6 +49,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -61,6 +60,9 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
+
+import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.util.Util;
 
 /**
  * Maintains in-memory state of the Launcher. It is expected that there should be only one
@@ -670,7 +672,7 @@ public class LauncherModel extends BroadcastReceiver {
      * @param context
      * @param item
      */
-    static void deleteItemFromDatabase(Context context, final ItemInfo item) {
+    public static void deleteItemFromDatabase(Context context, final ItemInfo item) {
         final ContentResolver cr = context.getContentResolver();
         final Uri uriToDelete = LauncherSettings.Favorites.getContentUri(item.id, false);
 
@@ -1351,6 +1353,8 @@ public class LauncherModel extends BroadcastReceiver {
                             (LauncherSettings.Favorites.SPANX);
                     final int spanYIndex = c.getColumnIndexOrThrow(
                             LauncherSettings.Favorites.SPANY);
+                    final int iconPathIndex = c.getColumnIndexOrThrow(
+                            LauncherSettings.Favorites.ICON_PATH);
 
                     ShortcutInfo info;
                     String intentDescription;
@@ -1372,12 +1376,11 @@ public class LauncherModel extends BroadcastReceiver {
                                 } catch (URISyntaxException e) {
                                     continue;
                                 }
-                            int shortcutType = (Integer)intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
-
-                            if(shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL||
-                            		shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL){
+                            int shortcutType = (Integer)intent.getExtra(ShortcutInfo.SHORTCUT_TYPE, ShortcutInfo.SHORTCUT_TYPE_NORMAL);
+                            if(shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL||
+                            		shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL){
                             	//load from db
-                            	info = getShortcutInfo(c, context, iconIndex, titleIndex);
+                            	info = getShortcutInfo(c, context, iconIndex, titleIndex,iconPathIndex);
                             } else 
                                 if (itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
                                     info = getShortcutInfo(manager, intent, context, c, iconIndex,
@@ -1414,7 +1417,7 @@ public class LauncherModel extends BroadcastReceiver {
                                     info.screen = c.getInt(screenIndex);
                                     info.cellX = c.getInt(cellXIndex);
                                     info.cellY = c.getInt(cellYIndex);
-
+                                    info.iconPath = c.getString(iconPathIndex);
                                     // check & update map of what's occupied
                                     if (!checkItemPlacement(occupied, info)) {
                                         break;
@@ -1461,7 +1464,7 @@ public class LauncherModel extends BroadcastReceiver {
                                 folderInfo.screen = c.getInt(screenIndex);
                                 folderInfo.cellX = c.getInt(cellXIndex);
                                 folderInfo.cellY = c.getInt(cellYIndex);
-
+                                folderInfo.iconPath = c.getString(iconPathIndex);
                                 // check & update map of what's occupied
                                 if (!checkItemPlacement(occupied, folderInfo)) {
                                     break;
@@ -2253,13 +2256,24 @@ public class LauncherModel extends BroadcastReceiver {
      * @param titleIndex
      * @return
      */
-    public ShortcutInfo getShortcutInfo(Cursor c,Context context,int iconIndex,int titleIndex){
+    public ShortcutInfo getShortcutInfo(Cursor c,Context context,int iconIndex,int titleIndex,int iconPathIndex){
     	Bitmap icon = null;
     	final ShortcutInfo info = new ShortcutInfo();
     	info.itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
         info.title = c.getString(titleIndex);
 
-    	icon = getIconFromCursor(c, iconIndex, context);
+        if(icon == null){
+    		String iconpath = c.getString(iconPathIndex);
+    		if(iconpath != null){
+    			Bitmap bitmap = Util.getBitmapFromAssets(iconpath);
+                Drawable drawable = new BitmapDrawable(bitmap);
+                icon = Utilities.createIconBitmap(drawable, context);
+    		}
+    	}
+        if(icon == null){
+        	icon = getIconFromCursor(c, iconIndex, context);
+        }
+    	
         if (icon == null) {
             icon = getFallbackIcon();
             info.customIcon = false;
@@ -2278,16 +2292,16 @@ public class LauncherModel extends BroadcastReceiver {
      * @param cn
      * @return
      */
-    public ShortcutInfo getShortcutInfo(Context context,Bitmap icon,String title,ComponentName cn){
+    public ShortcutInfo getShortcutInfo(Context context,Bitmap icon,String title,ComponentName cn,int shortcutType){
     	final ShortcutInfo info = new ShortcutInfo();
     	 Intent intent = new Intent();
          intent.setComponent(cn);
          intent.setComponent(cn);
-         intent.putExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL);
+         intent.putExtra(ShortcutInfo.SHORTCUT_TYPE, shortcutType);
          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                  Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         info.intent = intent;
-    	info.itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
+    	info.itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
         info.title = title;
 
         if (icon == null) {

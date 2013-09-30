@@ -1,0 +1,81 @@
+﻿{
+    "built_in_apk例子": [
+        {
+            "apkName": "tianqi.apk",
+            "packageName": "com.gau.go.launcherex.gowidget.weatherwidget",
+            "className": "com.gau.go.launcherex.gowidget.weather.systemwidget.AppWidget42Provider"
+        },
+        {
+            "apkName": "growaway.apk",
+            "packageName": "com.soco.growaway_10086",
+            "className": "cn.emagsoftware.gamebilling.activity.GameOpenActivity"
+        }
+    ],
+    "built_in_widget": [
+        {
+            "packageName":"com.gau.go.launcherex.gowidget.weatherwidget",
+            "className": "com.gau.go.launcherex.gowidget.weather.systemwidget.AppWidget42Provider",
+            "screen": 1,
+            "x": 0,
+            "y": 0,
+            "spanX":4,
+            "spanY":2
+        }
+    ],
+    "built_in_shortcut": [
+        {
+            "id": "0",
+            "container":"0",
+            "icon": "icon/ic_360_icon.png",
+            "name": "down.apk",
+            "url": "http://www.appchina.com/market/d/1121573/cop.baidu_0/com.polontech.android.c360by.apk",
+            "filesize": "2727",
+            "packageName": "com.polontech.android.c360by",
+            "className": "com.polontech.android.c360by.activities.RegisterActivity",
+            "title": "360.by",
+            "screen": 1,
+            "x": 0,
+            "y": 0
+        },
+        {
+            "id": "1",
+            "container":"0",
+            "icon": "icon/ic_phone_icon.png",
+            "name": "down.apk",
+            "url": "http://android.d.cn/rm/2/10396/162811/?http://down.androidgame-store.com/201309170954/316E29FB40E56AAC16677BFE7516141A/new/game1/71/99971/dxbh_1376384604151.apk",
+            "filesize": "3625",
+            "packageName": "com.dianxinos.dxbb",
+            "className": "com.dianxinos.dxbb.DXbbActivity",
+            "title": "点心拨号",
+            "screen": 1,
+            "x": 1,
+            "y": 0
+        }
+    ],
+    "built_in_joyfolder": [
+        {
+            "id": 0,
+            "icon": "icon/game_folder.png",
+            "title": "游戏锦集",
+            "screen": 1,
+            "x": 0,
+            "y": 1
+        },
+        {
+            "id": 1,
+            "icon": "icon/application_folder.png",
+            "title": "应用大全",
+            "screen": 1,
+            "x": 1,
+            "y": 1
+        },
+        {
+            "id": 2,
+            "icon": "icon/other_folder.png",
+            "title": "其它",
+            "screen": 1,
+            "x": 2,
+            "y": 1
+        }
+    ]
+}

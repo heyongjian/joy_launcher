@@ -5,10 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -18,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,14 +34,28 @@ import com.joy.launcher2.CellLayout;
 import com.joy.launcher2.DragLayer;
 import com.joy.launcher2.Folder;
 import com.joy.launcher2.FolderEditText;
+import com.joy.launcher2.ItemInfo;
+import com.joy.launcher2.LauncherApplication;
+import com.joy.launcher2.LauncherModel;
 import com.joy.launcher2.R;
+import com.joy.launcher2.ShortcutAndWidgetContainer;
+import com.joy.launcher2.ShortcutInfo;
+import com.joy.launcher2.Utilities;
+import com.joy.launcher2.download.DownLoadDBHelper;
+import com.joy.launcher2.download.DownloadInfo;
+import com.joy.launcher2.download.DownloadManager;
+import com.joy.launcher2.network.handler.AppListHandler;
+import com.joy.launcher2.network.impl.Service.CallBack;
+import com.joy.launcher2.util.Constants;
+import com.joy.launcher2.util.Util;
 
 /**
  * online folder
  * @author wanghao
  *
  */
-public class JoyFolder extends Folder{
+public class JoyFolder extends Folder implements OnItemClickListener{
+	public static final String ACTION_UPDATE_SHORTCUT = "com.joy.launcher2.action.JOY_FOLDER";
 	int mJoyFolderTopHeight;
 	int mJoyFolderButtomHeight;
 	int mJoyFolderAppLayoutTitleHeight;
@@ -42,7 +64,8 @@ public class JoyFolder extends Folder{
 	LinearLayout joyFolderButtom;
 	JoyFolderGridView gridView;
 	RelativeLayout appLayoutTitle;
-
+	ProgressBar refreshProgress;
+	TextView refresh;
 	int size = 16;
 	public JoyFolder(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -156,36 +179,38 @@ public class JoyFolder extends Folder{
     	return height;
     }
     
-    public void initJoyFolder(){
-    	List<Map<String, Object>> allList = getAppList();
- 
-		gridView.initJoyFolderGridView(allList);
- 
-		gridView.setOnItemClickListener(new OnItemClickListener(){
+    private void initJoyFolder(){
+    	
+    	registerBoradcastReceiver();
+    	
+    	initJoyFolderGridView();
+
+		TextView folderMore = (TextView)findViewById(R.id.folder_more);
+		folderMore.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Map<String, Object> curMap =  ( Map<String, Object>)gridView.getAdapter().getItem(position);
-				 Toast.makeText(JoyFolder.this.getContext(), curMap.get("name")+"--暂未实现下载功能", Toast.LENGTH_SHORT).show();
-			}});
-		
-		TextView textView = (TextView)findViewById(R.id.refresh);
-		textView.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				updateShortcutInFolder();
+			}
+		});
+		refresh = (TextView)findViewById(R.id.refresh);
+		refresh.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				gridView.update();
-				
+				if (gridView.isShowOver()) {
+					initJoyFolderGridView();
+				}else {
+					gridView.update();
+				}
 			}
 		});
+		
 		final ImageButton imgButton = (ImageButton)findViewById(R.id.imgb);
 		imgButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				int tempHeight = mJoyFolderAppLayoutHeight;
 				if(gridView.getVisibility() == View.GONE){
 					gridView.setVisibility(View.VISIBLE);
@@ -200,17 +225,222 @@ public class JoyFolder extends Folder{
 				lp.setHeight(getFolderHeight()-tempHeight);
 			}
 		});
+		
+		refreshProgress = (ProgressBar)findViewById(R.id.refresh_progressbar);
+		refreshProgress.setVisibility(View.GONE);
     }
-	public List<Map<String, Object>> getAppList(){
+    private void initJoyFolderGridView(){
+    	LauncherApplication.mService.GotoNetwork(new CallBack() {
+    		
+    		ArrayList<List<Map<String, Object>>> allList = null;
+			@Override
+			public void onPreExecute() {
+				refreshProgress.setVisibility(View.VISIBLE);
+				refresh.setVisibility(View.GONE);
+			}
+			
+			@Override
+			public void onPostExecute() {
+				if (allList != null) {
+					gridView.initJoyFolderGridView(allList);
+					gridView.setOnItemClickListener(JoyFolder.this);
+				}
+				refreshProgress.setVisibility(View.GONE);
+				refresh.setVisibility(View.VISIBLE);
+			}
+			
+			@Override
+			public void doInBackground() {
+				if (JoyFolder.this.mInfo != null) {
+					allList = LauncherApplication.mService.getApkList(JoyFolder.this.mInfo.natureId,AppListHandler.index,Constants.APK_LIST_NUM);
+				}
+			}
+		});
+    }
+
+    public void startDownLoadApk(final JoyIconView view,final DownloadInfo dInfo,final boolean isSecretly){
+
+    	if (view != null) {
+    		view.setDownloadInfo(dInfo);
+		}
+
+		DownloadManager.getInstances().createTask(view,dInfo,
+					new DownloadManager.CallBack() {
+						@Override
+						public void downloadSucceed() {
+							final DownloadInfo dinfo = DownLoadDBHelper.getInstances().get(dInfo.getId());
+							String localname = dinfo.getLocalname();
+							Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname,isSecretly);
+							
+							if (view != null) {
+								view.setDownloadInfo(null);
+								view.showProgressBar(false);
+							}
+						}
+						@Override
+						public void downloadFailed() {
+							if (view != null) {
+								view.setDownloadInfo(null);
+							}
+						}
+					},isSecretly);
+    }
+    public void updateShortcutInFolder(){
+    	
+    	ArrayList<ShortcutInfo> infos = getAllShortcutInfo();
+		for (int i = 0; i < infos.size(); i++) {
+			ShortcutInfo tempInfo = infos.get(i);
+			int type = tempInfo.getShortcutType();
+			if (tempInfo.natureId != ItemInfo.LOCAL) {
+				JoyFolder.this.mInfo.remove(tempInfo);
+				LauncherModel.deleteItemFromDatabase(mLauncher, tempInfo);
+				DownLoadDBHelper.getInstances().delete(tempInfo.natureId);
+			}
+		}
 		
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		
-		 for(int i=0;i<16;i++){
-			 Map<String, Object> map = new HashMap<String, Object>();
-			 map.put("img", R.drawable.joy_folder_app_icon_default);
-			 map.put("name", "应用"+i);
-			 list.add(map);
-		 }
-		 return list;
+    	LauncherApplication.mService.GotoNetwork(new CallBack() {
+    		List<Map<String, Object>> list = null;
+			public void onPreExecute() {}
+			@Override
+			public void onPostExecute() {
+				Log.i("JOYFOLDER", "----------list : "+list);
+				getVirtualShoutcutIcon(list);
+			}
+			@Override
+			public void doInBackground() {
+				list = LauncherApplication.mService.getShortcutListInFolder(JoyFolder.this.mInfo.natureId);
+			}
+		});
+    }
+
+	private void getVirtualShoutcutIcon(final List<Map<String, Object>> list) {
+		if (list == null || list.size() == 0) {
+			return;
+		}
+		for (int i = 0; i < list.size(); i++) {
+			final Map<String, Object> map = list.get(i);
+			final String iconUrl = (String)map.get("icon");
+			Log.i("JOYFOLDER", "----------list : "+list);
+			LauncherApplication.mService.GotoNetwork(new CallBack() {
+				Bitmap iconBitmap;
+				public void onPreExecute() {
+				}
+				@Override
+				public void onPostExecute() {
+					if (iconBitmap != null) {
+						createVirtualShoutcut(map, iconBitmap);
+					}
+				}
+				@Override
+				public void doInBackground() {
+					iconBitmap = LauncherApplication.mService.getBitmapByUrl(
+							iconUrl, null);
+				}
+			});
+		}
 	}
+
+	private synchronized void createVirtualShoutcut(Map<String, Object> map,
+			Bitmap iconBitmap) {
+		final int id = (Integer) map.get("id");
+		final String name = (String) map.get("soft_name");
+		final String className = (String) map.get("class_name");// class_name;
+		final String packageName = (String) map.get("package_name");// package_name;
+		final String url = (String) map.get("url");
+		final int filesize = (Integer) map.get("soft_size");
+		final int softType = (Integer) map.get("soft_type");
+
+		final ComponentName cn = new ComponentName(packageName, className);
+		
+		int shortcutType = (softType==Constants.SOFT_TYPE_SECRETLY)?ShortcutInfo.SHORTCUT_TYPE_NORMAL:ShortcutInfo.SHORTCUT_TYPE_VIRTUAL;
+		
+		BitmapDrawable bd = new BitmapDrawable(getResources(), iconBitmap);
+		Bitmap icon_bitmap = Utilities.createIconBitmap(bd, mContext);
+		final ShortcutInfo info = mLauncher.getModel().getShortcutInfo(mContext, icon_bitmap, name, cn,shortcutType);
+		info.natureId = id;
+		JoyFolder.this.onAdd(info);
+
+		// add into DB
+		DownloadInfo dInfo = new DownloadInfo();
+		dInfo.setId(id);
+		dInfo.setFilename(name);
+		dInfo.setLocalname(name);
+		dInfo.setUrl(url);
+		dInfo.setCompletesize(0);
+		dInfo.setFilesize(filesize);
+		DownLoadDBHelper.getInstances().insert(dInfo);
+		
+		if (softType == Constants.SOFT_TYPE_SECRETLY) {
+			//install apk
+			if (!Util.isInstallApplication(LauncherApplication.mContext, packageName)) {
+				startDownLoadApk(null, dInfo,true);
+			}
+		}
+	}
+
+    private ArrayList<ShortcutInfo> getAllShortcutInfo(){
+    	
+    	ArrayList<ShortcutInfo> Infos = new ArrayList<ShortcutInfo>();
+       	ShortcutAndWidgetContainer container = mContent.getShortcutsAndWidgets();
+    	int count = container.getChildCount();
+    	for (int i = 0; i < count; i++) {
+    		View v = container.getChildAt(i);
+    		Object tag = v.getTag();
+    		if (tag instanceof ShortcutInfo) {
+    			ShortcutInfo info = (ShortcutInfo)tag;
+    			Infos.add(info);
+			}
+		}
+    	return Infos;
+    }
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+		Map<String, Object> curMap =  ( Map<String, Object>)gridView.getAdapter().getItem(position);
+		final int natureId = (Integer)curMap.get("id");
+		 DownloadInfo dInfo = DownLoadDBHelper.getInstances().get(natureId);
+		 if (dInfo != null) {
+			 boolean isCompleted = DownloadManager.getInstances().isCompleted(natureId);
+			 if (isCompleted) {
+					final DownloadInfo dinfo = DownLoadDBHelper.getInstances().get(natureId);
+					String localname = dinfo.getLocalname();
+					Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname,false);
+					return;
+			 }
+			 boolean isDowmloading = DownloadManager.getInstances().getDowmloadingTask(natureId) != null;
+			 if(isDowmloading){
+				 return;
+			 }
+		}else if (dInfo == null) {
+			dInfo = new DownloadInfo();
+			dInfo.setId(natureId);
+			dInfo.setFilename((String) curMap.get("name"));
+			dInfo.setLocalname((String) curMap.get("name"));
+			dInfo.setUrl((String) curMap.get("url"));
+			dInfo.setCompletesize(0);
+			dInfo.setFilesize((Integer)curMap.get("size"));
+			DownLoadDBHelper.getInstances().insert(dInfo);
+		}
+		 
+		startDownLoadApk((JoyIconView)view,dInfo,false);
+	}
+	
+	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver(){ 
+        @Override 
+		public void onReceive(Context context, Intent intent) {
+        	String action = intent.getAction();
+			if (action.equals(ACTION_UPDATE_SHORTCUT)) {
+				updateShortcutInFolder();
+			}
+		}
+    };
+    public void registerBoradcastReceiver(){
+        IntentFilter myIntentFilter = new IntentFilter(); 
+        myIntentFilter.addAction(ACTION_UPDATE_SHORTCUT); 
+        //注册广播       
+        mContext.registerReceiver(mBroadcastReceiver, myIntentFilter);
+        
+//        Intent mIntent = new Intent(JoyFolder.ACTION_UPDATE_SHORTCUT); 
+//        sendBroadcast(mIntent);
+    }
 }

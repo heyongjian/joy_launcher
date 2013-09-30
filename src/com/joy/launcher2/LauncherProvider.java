@@ -82,13 +82,6 @@ public class LauncherProvider extends ContentProvider {
             "com.joy.launcher2.action.APPWIDGET_DEFAULT_WORKSPACE_CONFIGURE";
 
     /**
-     * ??????????????
-     */
-    static final String SHORTCUT_TYPE = "virtual_Shortcut_add_by_wanghao";
-    static final int SHORTCUT_TYPE_NORMAL = 0;//normal app icon
-    static final int SHORTCUT_TYPE_VIRTUAL = 1;//virtual app icon
-    static final int SHORTCUT_TYPE_VIRTUAL_TO_NORMAL = 2;//virtual to normal
-    /**
      * {@link Uri} triggered at any registered {@link android.database.ContentObserver} when
      * {@link AppWidgetHost#deleteHost()} is called during database creation.
      * Use this to recall {@link AppWidgetHost#startListening()} if needed.
@@ -298,6 +291,7 @@ public class LauncherProvider extends ContentProvider {
                     "iconType INTEGER," +
                     "iconPackage TEXT," +
                     "iconResource TEXT," +
+                    "iconPath TEXT," +
                     "icon BLOB" +
                     ");");
 
@@ -640,12 +634,7 @@ public class LauncherProvider extends ContentProvider {
                     values.put(LauncherSettings.Favorites.CELLY, y);
 
                     if (TAG_FAVORITE.equals(name)) {
-                    	long id = -1;
-                    	if (natureId == ItemInfo.LOCAL) {
-                    		id = addAppShortcut(db, values, a, packageManager, intent);
-						}else {
-							 id = addVirtualShortcut(db, values, a);
-						}
+                    	long id = addAppShortcut(db, values, a, packageManager, intent);
                         added = id >= 0;
                     } else if (TAG_SEARCH.equals(name)) {
                         added = addSearchWidget(db, values);
@@ -690,12 +679,7 @@ public class LauncherProvider extends ContentProvider {
                             values.put(LauncherSettings.Favorites.CONTAINER, folderId);
                             values.put(LauncherSettings.Favorites.NATURE_ID, natureIdr);
                             if (TAG_FAVORITE.equals(folder_item_name) && folderId >= 0) {
-                            	long id = -1;
-                            	if (natureIdr == ItemInfo.LOCAL) {
-                            		id = addAppShortcut(db, values, ar, packageManager, intent);
-        						}else {
-        							 id = addVirtualShortcut(db, values, ar);
-        						}
+                            	long id = addAppShortcut(db, values, ar, packageManager, intent);
                                 if (id >= 0) {
                                     folderItems.add(id);
                                 }
@@ -723,11 +707,6 @@ public class LauncherProvider extends ContentProvider {
                         }
                     }
                     if (added) i++;
-                    if (!added) {
-                    	if (TAG_APPWIDGET.equals(name)) {
-                    		addUnInstalledWidget(a, container, natureId, screen, x, y);
-                    	}
-					}
                     a.recycle();
                 }
             } catch (XmlPullParserException e) {
@@ -1030,7 +1009,7 @@ public class LauncherProvider extends ContentProvider {
             Intent intent = new Intent();
             long id = generateNewId();
             intent.setComponent(cn);
-            intent.putExtra(SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL);
+//            intent.putExtra(SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_VIRTUAL);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                     Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             values.put(Favorites.INTENT, intent.toUri(0));
