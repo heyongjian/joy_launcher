@@ -28,9 +28,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -59,7 +61,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     private CheckLongPressHelper mLongPressHelper;
 
     // The number of icons to display in the
-    private static final int NUM_ITEMS_IN_PREVIEW = 3;
+    private static final int NUM_ITEMS_IN_PREVIEW = 9;
     private static final int CONSUMPTION_ANIMATION_DURATION = 100;
     protected static final int DROP_IN_ANIMATION_DURATION = 400;
     protected static final int INITIAL_ITEM_ANIMATION_DURATION = 350;
@@ -69,7 +71,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     private static final float INNER_RING_GROWTH_FACTOR = 0.15f;
 
     // The degree to which the outer ring is scaled in its natural state
-    private static final float OUTER_RING_GROWTH_FACTOR = 0.3f;
+    private static final float OUTER_RING_GROWTH_FACTOR = 0.13f;
 
     // The amount of vertical spread between items in the stack [0...1]
     private static final float PERSPECTIVE_SHIFT_FACTOR = 0.24f;
@@ -103,6 +105,9 @@ public class FolderIcon extends LinearLayout implements FolderListener {
 
     //add by huangming for icon size.
     protected static int mPreviewSize = -1;
+    //end
+    //add by huangming for ios folder.
+    public static int sFolderMarginTop = 0;
     //end
     
     public FolderIcon(Context context, AttributeSet attrs) {
@@ -158,6 +163,13 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         {
         	LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)icon.mPreviewBackground.getLayoutParams();
         	lp.width = lp.height = previewSize;
+        	//add by huangming for theme.
+        	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+        	{
+        		lp.topMargin = sFolderMarginTop = icon.mFolderName.getPaddingTop() + (int)res.getDimension(R.dimen.app_icon_drawable_padding);
+            	lp.bottomMargin = (int)res.getDimension(R.dimen.app_icon_drawable_padding) - icon.mFolderName.getPaddingTop();
+        	}
+        	//end
         }
         //end
         
@@ -227,8 +239,20 @@ public class FolderIcon extends LinearLayout implements FolderListener {
                 }
             	//end         
                 sPreviewPadding = res.getDimensionPixelSize(R.dimen.folder_preview_padding);
-                sSharedOuterRingDrawable = res.getDrawable(R.drawable.portal_ring_outer_holo);
-                sSharedInnerRingDrawable = res.getDrawable(R.drawable.portal_ring_inner_holo);
+                /*sSharedOuterRingDrawable = res.getDrawable(R.drawable.portal_ring_outer_holo);
+                sSharedInnerRingDrawable = res.getDrawable(R.drawable.portal_ring_inner_holo);*/
+                //modify by huangming for theme.
+            	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+            	{
+            		sSharedOuterRingDrawable = res.getDrawable(R.drawable.joy_folder_icon_bg);
+                    sSharedInnerRingDrawable = res.getDrawable(R.drawable.portal_ring_inner_holo);
+            	}
+            	else
+            	{
+            		sSharedOuterRingDrawable = res.getDrawable(R.drawable.portal_ring_outer_holo);
+                    sSharedInnerRingDrawable = res.getDrawable(R.drawable.portal_ring_inner_holo);
+            	}
+                //end
                 sSharedFolderLeaveBehind = res.getDrawable(R.drawable.portal_ring_rest);
                 sStaticValuesDirty = false;
             }
@@ -475,7 +499,17 @@ public class FolderIcon extends LinearLayout implements FolderListener {
             final int previewSize = FolderRingAnimator.sPreviewSize;
             final int previewPadding = FolderRingAnimator.sPreviewPadding;
 
-            mAvailableSpaceInPreview = (previewSize - 2 * previewPadding);
+            //modify by huangming for theme
+            if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+            {
+            	mAvailableSpaceInPreview = (mIntrinsicIconSize - 2 * previewPadding);
+            }
+            else
+            {
+            	mAvailableSpaceInPreview = (previewSize - 2 * previewPadding);
+            }
+            
+            //end
             // cos(45) = 0.707  + ~= 0.1) = 0.8f
             int adjustedAvailableSpace = (int) ((mAvailableSpaceInPreview / 2) * (1 + 0.8f));
 
@@ -486,7 +520,16 @@ public class FolderIcon extends LinearLayout implements FolderListener {
             mMaxPerspectiveShift = mBaselineIconSize * PERSPECTIVE_SHIFT_FACTOR;
 
             mPreviewOffsetX = (mTotalWidth - mAvailableSpaceInPreview) / 2;
-            mPreviewOffsetY = previewPadding;
+            //modify by huangming for theme
+            if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+            {
+                mPreviewOffsetY = previewPadding + sFolderMarginTop;
+            }
+            else
+            {
+            	mPreviewOffsetY = previewPadding;
+            }
+            //end
         }
     }
 
@@ -537,6 +580,54 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         float transX = offset + scaleOffsetCorrection;
         float totalScale = mBaselineIconScale * scale;
         final int overlayAlpha = (int) (80 * (1 - r));
+        //add by huangming for theme
+        if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+    	{
+        	int previewPadding = FolderRingAnimator.sPreviewPadding / 2;
+            int itemSpace = (mAvailableSpaceInPreview - 2 * previewPadding) / 3;
+            totalScale = (mAvailableSpaceInPreview - 2 * previewPadding) / (float)(mIntrinsicIconSize * 3) ;
+            //float mItemScale = 0.25f;
+    		switch (index) {
+    		case 0:
+                transX = 2 * previewPadding + 2 * itemSpace;
+                transY = 2 * previewPadding + 2 * itemSpace;
+    			break;
+    		case 1:
+    			transX = previewPadding + itemSpace;;
+                transY = 2 * previewPadding + 2 * itemSpace;;
+    			break;
+    		case 2:
+    			transX = 0;
+                transY = 2 * previewPadding + 2 * itemSpace;
+    			break;
+    		case 3:
+    			transX = 2 * previewPadding + 2 * itemSpace;
+                transY = previewPadding + itemSpace;
+    			break;
+    		case 4:
+    			transX = previewPadding + itemSpace;
+                transY = previewPadding + itemSpace;
+    			break;
+    		case 5:
+    			transX = 0;
+                transY = previewPadding + itemSpace;
+    			break;
+    		case 6:
+    			transX = 2 * previewPadding + 2 * itemSpace;
+                transY = 0;
+    			break;
+    		case 7:
+    			transX = previewPadding + itemSpace;
+                transY = 0;
+    			break;
+    		case 8:
+    			transX = 0;
+                transY = 0;
+    			break;
+    		}
+    	
+    	}
+        //end
 
         if (params == null) {
             params = new PreviewItemDrawingParams(transX, transY, totalScale, overlayAlpha);
