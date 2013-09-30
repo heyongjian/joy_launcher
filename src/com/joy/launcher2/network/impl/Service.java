@@ -119,6 +119,36 @@ public class Service {
 		
 		return iStream;
 	}
+     //add by huangming for push.
+	
+    public InputStream getDownLoadPushApkInputStream(int id){
+		
+		Protocal protocal = pfactory.downloadPushApkProtocal(id);
+		InputStream iStream = cs.getInputStream(protocal);
+		return iStream;
+	}
+    
+    public InputStream getDownLoadPushApkInputStream(String url){
+		
+		Protocal protocal = pfactory.downloadPushApkProtocal(url);
+		InputStream iStream = cs.getInputStream(protocal);
+		return iStream;
+	}
+    
+   public Bitmap getDownLoadPushImage(int id){
+		
+		Protocal protocal = pfactory.downloadPushImageProtocal(id);
+		Bitmap image = cs.getBitmap(protocal);
+		return image;
+	}
+   
+   public Bitmap getDownLoadPushImage(String url){
+		
+		Protocal protocal = pfactory.downloadPushImageProtocal(url);
+		Bitmap image = cs.getBitmap(protocal);
+		return image;
+	}
+   //end
 
 	public boolean activateLauncher(){
 		// TODO Auto-generated method stub
@@ -169,4 +199,45 @@ public class Service {
 		AppListHandler handler = new AppListHandler();
 		return handler.getAppList(string,4,type);
 	}
+	 
+	//add by huangming for push.
+	public JSONObject getPushSettings()
+	{
+		Protocal protocal = pfactory.pushSettingsProtocal();
+		JSONObject json = null;;
+		try {
+			json = cs.request(protocal);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return json;
+	}
+	
+	public JSONObject getPushList()
+	{
+		Protocal protocal = pfactory.pushListProtocal();
+		JSONObject json = null;;
+		try {
+			json = cs.request(protocal);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return json;
+	}
+	
+	public JSONObject getPushDetail(int id)
+	{
+		Protocal protocal = pfactory.pushDetailProtocal(id);
+		JSONObject json = null;;
+		try {
+			json = cs.request(protocal);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return json;
+	}
+	//end 
 }

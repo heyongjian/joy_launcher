@@ -27,6 +27,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.os.Handler;
@@ -34,7 +35,9 @@ import android.os.Handler;
 import com.joy.launcher2.cache.BitmapCache;
 import com.joy.launcher2.network.impl.Service;
 import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.push.PushUtils;
 import com.joy.launcher2.util.SystemInfo;
+import com.joy.launcher2.util.SystemInfo.PushListenner;
 public class LauncherApplication extends Application {
 	public static Service mService;
 	public static Context mContext;
@@ -111,6 +114,26 @@ public class LauncherApplication extends Application {
 		}
 		
 		mSystemInfo = SystemInfo.getInstance();
+		
+		SharedPreferences sp = getSharedPreferences(PreferencesProvider.PREFERENCES_KEY, 0);
+		SystemInfo.channel = sp.getString("channel", "");
+		mSystemInfo.setPushListenner(new PushListenner() {
+			
+			@Override
+			public void onReceiveCompleted() {
+				// TODO Auto-generated method stub
+				 //add by huangming for push.
+		        PushUtils.startPushBroacast(LauncherApplication.mContext, -1, PushUtils.PUSH_ACTION, PushUtils.PUSH_SETTINGS_TYPE);
+		        //end
+			}
+			@Override
+			public void onReceiveFailed() {
+				// TODO Auto-generated method stub
+//				mSystemInfo.initSystemInfo();
+			
+			}
+		});
+		
     }
 
     /**

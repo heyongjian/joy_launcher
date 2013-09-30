@@ -52,4 +52,14 @@ public interface ClientInterface {
 	 */
 	public boolean isOK();
 	
+	
+	//add by huangming for online wallpaer
+		/**
+		 * 通过网络协议获得bitmap
+		 * @param protocal
+		 * @return Bitmap
+		 */
+    public Bitmap getBitmap(Protocal protocal);
+    //end
+	
 }

@@ -333,4 +333,6 @@
     <string name="download_error">网络不给力，请设置好网络后再来！</string>
     <string name="loading">加载中,请稍后...</string>
     
+    <!-- add by huangming for push -->
+ 	<string name="push_download_text">下载</string>
 </resources>
