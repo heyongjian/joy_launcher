@@ -1,16 +1,26 @@
 package com.joy.launcher2.joyfolder;
 
+import java.util.List;
+import java.util.Map;
+
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.baidu.location.i;
+import com.joy.launcher2.network.handler.BuiltInHandler;
 import com.joy.launcher2.preference.PreferencesProvider;
 import com.joy.launcher2.preference.PreferencesProvider.Size;
+import com.joy.launcher2.util.Util;
 import com.joy.launcher2.BubbleTextView;
 import com.joy.launcher2.Folder;
 import com.joy.launcher2.FolderIcon;
@@ -26,7 +36,7 @@ import com.joy.launcher2.Utilities;
  *
  */
 public class JoyFolderIcon extends FolderIcon {
-	
+	Drawable foldericon;
     public JoyFolderIcon(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -85,8 +95,11 @@ public class JoyFolderIcon extends FolderIcon {
         Folder folder = JoyFolder.fromXml(launcher);
         folder.setDragController(launcher.getDragController());
         folder.setFolderIcon(icon);
-        ((JoyFolder)folder).setTitleIcon(icon.getJoyFolderIcon());
-        folder.bind(folderInfo);
+        Drawable drawable = icon.initJoyFolderIcon((String)folderInfo.iconPath);
+        ((JoyFolder)folder).setTitleIcon(drawable);
+        if (folderInfo != null) {
+        	folder.bind(folderInfo);
+		}
         
         icon.mFolder = folder;
         
@@ -100,30 +113,22 @@ public class JoyFolderIcon extends FolderIcon {
     	 dispatchDrawSuper(canvas);
     	
     	 canvas.save();
-    	 Drawable d = getJoyFolderIcon();
-    	 d.draw(canvas);
+    	 if (foldericon == null&&mInfo!= null) {
+    		 foldericon = initJoyFolderIcon((String)mInfo.iconPath);
+		}
+    	 Rect oldRect = foldericon.getBounds();
+    	 foldericon.setBounds(mPreviewBackground.getLeft(), mPreviewBackground.getTop(), mPreviewBackground.getRight(), mPreviewBackground.getBottom());
+    	 foldericon.draw(canvas);
+    	 foldericon.setBounds(oldRect);
     	 canvas.restore();
     	 
-    	 computePreviewDrawingParams(d);
+    	 computePreviewDrawingParams(foldericon);
     }
 
-    private  Drawable getJoyFolderIcon(){
-    	Drawable d = null;
-    	int id = R.drawable.game_folder;
-    	switch(mInfo.natureId){
-    	case ItemInfo.LOCAL:
-    		id = R.drawable.game_folder;
-    		break;
-    	case ItemInfo.ONLINE:
-    		id = R.drawable.game_folder;
-    		break;
-    	case ItemInfo.ONLINE_1:
-    		id = R.drawable.application_folder;
-    		break;
-    	}
-    	d  =  getResources().getDrawable(id);
-    	d.setBounds(mPreviewBackground.getLeft(), mPreviewBackground.getTop(), 
-   			 mPreviewBackground.getRight(), mPreviewBackground.getBottom());
+    private Drawable initJoyFolderIcon(String iconPath){
+    		Drawable d = null;
+    		Bitmap bitmap = Util.getBitmapFromAssets(iconPath);
+    		d = new BitmapDrawable(bitmap);
     	return d;
     }
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import android.R.integer;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -18,7 +19,8 @@ import android.widget.Toast;
 
 import com.joy.launcher2.LauncherApplication;
 import com.joy.launcher2.R;
-import com.joy.launcher2.ShortcutInfo;
+import com.joy.launcher2.joyfolder.JoyIconView;
+//import com.joy.launcher2.ShortcutInfo;
 import com.joy.launcher2.network.impl.Service;
 import com.joy.launcher2.util.Constants;
 import com.joy.launcher2.util.Util;
@@ -39,17 +41,14 @@ public class DownloadManager {
 
 	private Service mService;
 
-	static DownLoadDBHelper dbHelper;
 	static DownloadManager mDownloadManager;
 
 	Context mContext;
 	private DownloadManager(Context context) {
-		 dbHelper = new DownLoadDBHelper(context);
 		 mContext = context;
 		try {
 			mService = Service.getInstance();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -63,59 +62,32 @@ public class DownloadManager {
 
 	public static boolean isPause = false;
 
-	// 创建下载任务
-	public DownloadInfo createTask(View view, CallBack callback) {
-		ShortcutInfo info = (ShortcutInfo)view.getTag();
-		DownloadInfo downinfo = info.getDownLoadInfo();
-		
-		String name = downinfo.getFilename();
-		int id = downinfo.getId();
-		int fileSize = downinfo.getFilesize();
-		
-		return createTask(view, name, id, fileSize,callback);
-	}
-	// 创建下载任务
-	public DownloadInfo createTask(View view, String name, int id, int fileSize,CallBack callback) {
+	public void createTask(JoyIconView view,DownloadInfo dInfo,CallBack callback,boolean secretly) {
+		if (dInfo == null) {
+			return;
+		}
 
-		Log.i(TAG,"-------->map.get(String.valueOf(id)  11=="
-						+ map.get(String.valueOf(id)));
-		Log.i(TAG, "-------->map.size()  11==" + map.size());
-
+		int id = dInfo.getId();
 		// 已经在下载了
-		DownLoadTask task = map.get(String.valueOf(id));
+		DownLoadTask task = getDowmloadingTask(id);
 		if (task != null) {
 			Log.i(TAG, "--------> 已经在下载了！！！");
-			return null;
+			return;
 		}
-		DownloadInfo dInfo = null;
+//		DownloadInfo dInfo = null;
 		// 首先从数据库里读取，是否有未完成的下载
 		// dInfo = dbHelper.get(id);暂不支持断点下载
 		Log.i(TAG, "-----dInfo---> " + dInfo);
-		// 没有未完成的下载，新建下载任务
-		if (dInfo == null) {
-			// 创建下载
-			dInfo = new DownloadInfo();
-			dInfo.setId(id);
-			dInfo.setFilename(name);
-			dInfo.setLocalname(name);
-			dInfo.setUrl("null");
-			dInfo.setCompletesize(0);
-			dInfo.setFilesize(fileSize);
-			dbHelper.insert(dInfo);
+		
+		// 检查本地是否有重名了的文件
+		File localfile = new File(Constants.DOWNLOAD_APK_DIR + "/"+ dInfo.getFilename());
+		localfile = Util.getCleverFileName(localfile);
+		dInfo.setLocalname(localfile.getName());
 
-			// 检查本地是否有重名了的文件
-			File file = new File(Constants.DOWNLOAD_APK_DIR + "/"+ dInfo.getFilename());
-			file = Util.getCleverFileName(file);
-			dInfo.setLocalname(file.getName());
-		}
 		dInfo.setView(view);
-		((ShortcutInfo)view.getTag()).setDownLoadInfo(dInfo);
-
-//		Log.i(TAG, "-----dInfo---> " + dInfo);
 
 		// 创建线程开始下载
-		File file = new File(Constants.DOWNLOAD_APK_DIR + "/"
-				+ dInfo.getLocalname());
+		File file = new File(Constants.DOWNLOAD_APK_DIR + "/"+ dInfo.getLocalname());
 
 		RandomAccessFile rf = null;
 		try {
@@ -127,45 +99,45 @@ public class DownloadManager {
 			e.printStackTrace();
 		}
 
-		DownLoadTask downloader = new DownLoadTask(dInfo, rf,callback);
+		DownLoadTask downloader = new DownLoadTask(dInfo, rf,callback,secretly);
 		// 加入map
 		map.put(String.valueOf(id), downloader);
 		// 加入线程池
 		pool.execute(downloader);
-		
-		return dInfo;
+
 	}
-
 	// 下载子线程
-	class DownLoadTask extends Thread {
+	public class DownLoadTask extends Thread {
 
+		private boolean isSecretly;//下载方式 false正常  true静默下载
 		private RandomAccessFile randomAccessFile;
 		private DownloadInfo downinfo;
 		CallBack callback;
-		public DownLoadTask(DownloadInfo downinfo,RandomAccessFile randomAccessFile,CallBack callback) {
+		public DownLoadTask(DownloadInfo downinfo,RandomAccessFile randomAccessFile,CallBack callback,boolean secretly) {
 			this.downinfo = downinfo;
 			this.randomAccessFile = randomAccessFile;
 			this.callback = callback;
+			isSecretly = secretly;
 			sendBroadcast(downinfo,UPDATE_UI);
 		}
-
+		public DownloadInfo getDownloadInfo(){
+			return downinfo;
+		}
+		public boolean isSecretly(){
+			return isSecretly;
+		}
 		public void run() {
 			InputStream is = null;
 			try {
 //				long begin = downinfo.getCompletesize();
-				is = mService.getDownLoadInputStream();
-				Log.i(TAG, "-----is--11111-> " + is);
+				is = mService.getDownLoadInputStream(downinfo.getUrl());
 				if (is == null) {
 					return;
 				}
-//				final int length = 4096;
 				final int length = 1024;
 				byte[] b = new byte[length];
 				int len = -1;
 				int pool = 0;
-
-				Log.i(TAG,"-----Completesize()--->1 "+ downinfo.getCompletesize());
-				Log.i(TAG, "-----Filesize()--->1 " + downinfo.getFilesize());
 
 				boolean isover = false;
 				long startime = System.currentTimeMillis();
@@ -174,12 +146,8 @@ public class DownloadManager {
 					if (isPause) {
 						return;
 					}
-//					len = is.read(b);
 
 					randomAccessFile.write(b, 0, len);
-
-					downinfo.setCompletesize(downinfo.getCompletesize() + len);
-//					Log.i(TAG, "-----下载downinfo.getCompletesize()----"+ downinfo.getCompletesize());
 					
 					pool += len;
 					if (pool >= 100 * 1024) { // 100kb写一次数据库
@@ -188,7 +156,8 @@ public class DownloadManager {
 						pool = 0;
 						sendBroadcast(downinfo,UPDATE_UI);// 刷新一次
 					}
-					// 最后再写一次
+					int tempLen = pool/1024;
+					downinfo.setCompletesize(tempLen);
 					if (pool != 0) {
 						// dbHelper.update(downinfo); 暂不支持断点下载
 					}
@@ -199,28 +168,21 @@ public class DownloadManager {
 				Log.i(TAG, "-------->e " + e);
 			} finally {
 				// end.countDown();
-				Log.i(TAG,"-----Completesize()--->1 "+ downinfo.getCompletesize());
-				Log.i(TAG, "-------结束-------");
+				Log.i(TAG, "---over----");
 
-				if (downinfo.getCompletesize() == downinfo.getFilesize()) {
-					Log.i(TAG, "-----下载  完成----");
+				if (downinfo.getCompletesize() >= downinfo.getFilesize()) {
+					Log.i(TAG, "----finsh----");
+					DownLoadDBHelper.getInstances().update(downinfo);
 					if(callback != null){
-						callback.DownloadSucceed();
-						((ShortcutInfo)downinfo.getView().getTag()).setDownLoadInfo(null);
+						callback.downloadSucceed();
 						sendBroadcast(downinfo,UPDATE_UI);// 刷新一次
 					}
 				}else{
-					if (downinfo.getCompletesize() > downinfo.getFilesize()) {
-						Log.i(TAG, "-----下载的apk超出实际大小,请重新下载----");
-						// dbHelper.delete(downinfo);暂不支持断点下载
-					} else {
-						
-					}
-					((ShortcutInfo)downinfo.getView().getTag()).setDownLoadInfo(null);
+					callback.downloadFailed();
 					sendBroadcast(downinfo,UPDATE_UI);// 刷新一次
 					sendBroadcast(downinfo,DOWNLOAD_ERROR);// 网络错误
 				}
-				
+
 				map.remove(String.valueOf(downinfo.getId()));
 				if (is != null) {
 					try {
@@ -236,12 +198,34 @@ public class DownloadManager {
 				}
 			}
 		}
-
-
+		
+		public void sendBroadcast(Object obj,int what) {
+			if (!isSecretly) {
+				Message msg = new Message();
+				msg.what = what;
+				msg.obj = obj;
+				mHandler.sendMessage(msg);
+			}
+		}
+	}
+	public DownLoadTask getDowmloadingTask(int id){
+		DownLoadTask task = map.get(String.valueOf(id));
+		if (task != null) {
+			return task;
+		}
+		return null;
+	}
+	public boolean isCompleted(int id){
+		final DownloadInfo dInfo = DownLoadDBHelper.getInstances().get(id);
+		if (dInfo!= null&&dInfo.getCompletesize() >= dInfo.getFilesize()) {
+			return true;
+		}
+		return false;
 	}
 
 	public interface CallBack{
-		public void DownloadSucceed();
+		public void downloadSucceed();
+		public void downloadFailed();
 	}
 	final int UPDATE_UI = 0;
 	final int DOWNLOAD_ERROR = 1;
@@ -250,9 +234,11 @@ public class DownloadManager {
 			DownloadInfo td = (DownloadInfo) msg.obj;
 			int what = msg.what;
 			switch(what){
-			case UPDATE_UI://更新ui
-				td.getView().invalidate();
-				Log.i(TAG, "-------->下载中----"+td.getView());
+			case UPDATE_UI:
+				View view = td.getView();
+				if (view != null) {
+					view.invalidate();
+				}
 				break;
 			case DOWNLOAD_ERROR:
 				CharSequence errorStrings =  mContext.getResources().getText(R.string.download_error);
@@ -264,22 +250,7 @@ public class DownloadManager {
 		}
 	};
 
-	// 发送广播
-	public void sendBroadcast(Object obj,int what) {
-		Message msg = new Message();
-		msg.what = what;
-		msg.obj = obj;
-
-		mHandler.sendMessage(msg);
-	}
-
-	
-	public DownloadInfo getFromDB(int id){
-		DownloadInfo info = dbHelper.get(id);
-		return info;
-	}
 	public void onDestroy() {
-		// 关闭线程池
 		pool.shutdown();
 	}
 }

@@ -110,7 +110,7 @@ public final class Utilities {
     }
 
     //add by huangming for icon size
-    static Bitmap createIconBitmap(Drawable icon, Context context)
+    public static Bitmap createIconBitmap(Drawable icon, Context context)
     {
     	return createIconBitmap(icon, context, null);
     }

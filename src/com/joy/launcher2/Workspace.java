@@ -3862,7 +3862,7 @@ public class Workspace extends PagedView
                         (ShortcutInfo) info);
                 break;
             case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
-            	if (info.natureId == ItemInfo.ONLINE||info.natureId == ItemInfo.ONLINE_1) {
+            	if (info.natureId != ItemInfo.LOCAL) {
 					view = JoyFolderIcon.fromXml(R.layout.joy_folder_icon,
 							mLauncher, cellLayout, (FolderInfo) info);
 				} else {
@@ -4526,39 +4526,6 @@ public class Workspace extends PagedView
                                 info.updateIcon(mIconCache);
                                 info.title = app.title.toString();
                                 shortcut.applyFromShortcutInfo(info, mIconCache);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    //add by wanghao
-    void updateVirtualShortcuts(ArrayList<ApplicationInfo> apps) {
-    	ArrayList<ShortcutAndWidgetContainer> childrenLayouts = getAllShortcutAndWidgetContainers();
-        for (ShortcutAndWidgetContainer layout: childrenLayouts) {
-            int childCount = layout.getChildCount();
-            for (int j = 0; j < childCount; j++) {
-                final View view = layout.getChildAt(j);
-                Object tag = view.getTag();
-                if (tag instanceof ShortcutInfo) {
-                    ShortcutInfo info = (ShortcutInfo)tag;
-
-                    final Intent intent = info.intent;
-                    final ComponentName name = intent.getComponent();
-                    int shortcutType = (Integer) intent.getExtra(LauncherProvider.SHORTCUT_TYPE, LauncherProvider.SHORTCUT_TYPE_NORMAL);
-                    boolean isVirtualToNormal = (shortcutType == LauncherProvider.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL);
-                    
-                    if (isVirtualToNormal && name != null) {
-                        final int appCount = apps.size();
-                        for (ApplicationInfo app : apps) {
-                            if (app.componentName.equals(name)) {
-                            	info.title = app.title;
-                                info.setIcon(mIconCache.getIcon(info.intent));
-                                ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(null,
-                                        new FastBitmapDrawable(info.getIcon(mIconCache)),
-                                        null, null);
-                                mLauncher.updateVirtualShortcut(info);
                             }
                         }
                     }

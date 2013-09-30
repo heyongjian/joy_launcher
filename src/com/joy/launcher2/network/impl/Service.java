@@ -1,6 +1,9 @@
 package com.joy.launcher2.network.impl;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.json.JSONObject;
 
@@ -10,11 +13,12 @@ import android.os.Message;
 
 import com.joy.launcher2.cache.ImageOption;
 import com.joy.launcher2.network.handler.ActivateHanlder;
+import com.joy.launcher2.network.handler.AppListHandler;
 import com.joy.launcher2.network.handler.BitmapHandler;
+import com.joy.launcher2.network.handler.VirtualShortcutListHandler;
 import com.joy.launcher2.network.util.ClientHttp;
 import com.joy.launcher2.network.util.ClientInterface;
 import com.joy.launcher2.network.util.Protocal;
-import com.joy.launcher2.util.Constants;
 
 /**
  * 联网接口的具体实现
@@ -99,17 +103,6 @@ public class Service {
 		return cs.isOK();
 	}
 
-	public String getTestData() throws Exception {
-		// TODO Auto-generated method stub
-		String url = Constants.TEST_URL;
-		Protocal protocal = pfactory.bitmapProtocal(url);
-		JSONObject json = cs.request(protocal);
-		if (json == null) {
-			return null;
-		}
-		return json.toString();
-	}
-
 	public Bitmap getBitmapByUrl(String url, ImageOption... option) {
 		// TODO Auto-generated method stub
 		Protocal protocal = pfactory.bitmapProtocal(url);
@@ -119,9 +112,9 @@ public class Service {
 		return bp;
 	}
 
-	public InputStream getDownLoadInputStream(){
+	public InputStream getDownLoadInputStream(String url){
 		
-		Protocal protocal = pfactory.downloadApkProtocal();
+		Protocal protocal = pfactory.downloadApkProtocal(url);
 		InputStream iStream = cs.getInputStream(protocal);
 		
 		return iStream;
@@ -141,5 +134,39 @@ public class Service {
 		boolean isActivate = activate.isActivate(result);
 	
 		return isActivate;
+	}
+
+	/**
+	 * 获取在线文件夹软件列表
+	 * @param folderType  0:game folder     1:application folder
+	 */
+	public List<Map<String, Object>> getShortcutListInFolder(int folderType){
+		Protocal protocal = pfactory.getAppInFolderProtocal(folderType);
+		JSONObject result = null;
+		try {
+			result = cs.request(protocal);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		VirtualShortcutListHandler handler = new VirtualShortcutListHandler();
+	
+		return handler.geShortcutList(result);
+	}
+	
+	/**
+	 * 获取游戏、应用列表
+	 * @param folderType  0:game     1:application
+	 */
+	public ArrayList<List<Map<String, Object>>> getApkList(int type,int index,int num){
+		Protocal protocal = pfactory.getApkListProtocal(type,index,num);
+		String string = null;
+		try {
+			string = cs.getString(protocal);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		AppListHandler handler = new AppListHandler();
+		return handler.getAppList(string,4,type);
 	}
 }
