@@ -157,7 +157,9 @@ public class SystemInfo {
 		}
 		return mSystemInfo;
 	}
-
+	public void setPushListenner(PushListenner pushListenner){
+		locInfo.setPushListenner(pushListenner);
+	}
 	public void initSystemInfo() {
 
 		channel = "1001";
@@ -186,13 +188,13 @@ public class SystemInfo {
 		display = getDisplay();
 		operators = getOperators();
 		ip = getLocalIpAddress();
-		deviceid = getDeviceID();
+		
 		
 //		sms = msmCenter.getSmsCenter();
 		
 		province = "unknow";
 		city = "unknow";
-		locInfo.getLocationInfo();
+		
 		
 		if (SystemInfo.imei == null||SystemInfo.imei.equals("")) {
 			SystemInfo.imei = "1234567890";
@@ -200,6 +202,9 @@ public class SystemInfo {
 		if (SystemInfo.imsi == null||SystemInfo.imsi.equals("")) {
 			SystemInfo.imsi = "1234567890";
 		}
+		
+		deviceid = getDeviceID();
+		locInfo.getLocationInfo();
 	}
 
 	/**
@@ -398,12 +403,15 @@ public class SystemInfo {
 
 		private LocationClient mLocationClient = null;
 		private MyLocationListenner myListener = new MyLocationListenner();
-
+		private PushListenner mPushListenner= null;
 		public LocationInfo() {
 			mLocationClient = new LocationClient(
 					LauncherApplication.mContext.getApplicationContext());
 			mLocationClient.registerLocationListener(myListener);
 			
+		}
+		public void setPushListenner(PushListenner l){
+			mPushListenner = l;
 		}
  
 		private void getLocationInfo() {
@@ -442,6 +450,15 @@ public class SystemInfo {
 				province = reset(province);
 				city = location.getProvince();
 				mLocationClient.stop();
+				
+				if (mPushListenner != null) {
+					if (province != null||city!= null) {
+						mPushListenner.onReceiveCompleted();
+					}else{
+						mPushListenner.onReceiveFailed();
+					}
+					
+				}
 				Log.i(TAG,
 						location.getLatitude() + " | "
 								+ location.getLongitude() + " | "
@@ -493,7 +510,10 @@ public class SystemInfo {
 			}
 		}
 	}
-
+	public interface PushListenner{
+		public void onReceiveCompleted();
+		public void onReceiveFailed();
+	}
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

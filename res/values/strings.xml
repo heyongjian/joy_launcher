@@ -518,5 +518,6 @@ s -->
  	<string name="download_error">after the network is not to force, please set up the network again</string>
  	<string name="loading">loading...</string>
  	
- 	
+ 	<!-- add by huangming for push -->
+ 	<string name="push_download_text">Download</string>
 </resources>
