@@ -54,7 +54,12 @@ public class LauncherApplication extends Application {
     private static int sLongPressTimeout = 300;
     private static final String sSharedPreferencesKey = "com.joy.launcher2.prefs";
     WeakReference<LauncherProvider> mLauncherProvider;
-
+    
+    
+    public final static int THEME_DEFAULT = 0;
+    public final static int THEME_IOS = 1;
+    public static int sTheme = THEME_DEFAULT;
+    
     @Override
     public void onCreate() {
         super.onCreate();
@@ -101,6 +106,9 @@ public class LauncherApplication extends Application {
         resolver.registerContentObserver(LauncherSettings.Favorites.CONTENT_URI, true,
                 mFavoritesObserver);
         initLauncher();
+        //add by huangming for theme
+        sTheme = THEME_IOS;
+        //END
     }
     
     public void initLauncher(){
