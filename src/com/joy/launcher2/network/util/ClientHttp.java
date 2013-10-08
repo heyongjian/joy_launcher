@@ -2,6 +2,7 @@ package com.joy.launcher2.network.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,6 +28,8 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.joy.launcher2.network.impl.ProtocalFactory;
@@ -228,6 +231,59 @@ public class ClientHttp implements ClientInterface {
 			return false;
 		}
 
+	}
+	
+	//add by huangming for online wallpaper.
+	@Override
+	public Bitmap getBitmap(Protocal protocal) {
+		// TODO Auto-generated method stub
+		Bitmap bm = null;
+		InputStream is = getInputStream(protocal);
+		FilterInputStream fit = null;
+		try {
+	           fit = new FlushedInputStream(is);
+	           bm = BitmapFactory.decodeStream(fit);
+	    } 
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally {      
+	            try {
+	            	if (is != null)is.close();
+	            	if(fit!= null)fit.close();
+				} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+				}
+	            is = null;
+	           
+	    }
+		return bm;
+	}
+		
+	static class FlushedInputStream extends FilterInputStream {
+	    public FlushedInputStream(InputStream inputStream) {
+	        super(inputStream);
+	    }
+	                                                       
+	    @Override
+	    public long skip(long n) throws IOException {
+	        long totalBytesSkipped = 0L;
+	        while (totalBytesSkipped < n) {
+	            long bytesSkipped = in.skip(n - totalBytesSkipped);
+	            if (bytesSkipped == 0L) {
+	                int b = read();
+	                if (b < 0) {
+	                    break;  // we reached EOF
+	                } else {
+	                    bytesSkipped = 1; // we read one byte
+	                }
+	            }
+	            totalBytesSkipped += bytesSkipped;
+	        }
+	        return totalBytesSkipped;
+	    }
 	}
 
 }

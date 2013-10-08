@@ -18,6 +18,15 @@ public class ProtocalFactory{
 	public static final int OP_BACKUP = 1111;//备份
 	public static final int OP_APKLIST = 2011;//游戏应用列表
 	public static final int OP_APP_IN_FOLDER = 4002;//文件夹里的虚框软件
+    // add by huangming for push.
+	public static final int OP_PUSH_IMAGE = 9006;
+	public static final int OP_PUSH_APK = 9005;
+	public static final int OP_PUSH_SETTINGS = 3000;
+	public static final int OP_PUSH_LIST = 3001;
+	public static final int OP_PUSH_DETAIL = 3002;
+	public static final String HOST_PUSH = "http://c.app.cloud.joy.cn/app/api.do";
+    public static final String HOST_MUTUAL = "http://c.client.cloud.joy.cn/client/api.do";	
+    public static final String HOST_UPLOAD = "http://c.client.cloud.joy.cn/client/upload.do";
 	public static final String HOST = "http://192.168.164.134:8080/client/upload.do";
 	public static String SIGN_KEY = "deskt0pj@y";//约定字符串
 	
@@ -28,7 +37,7 @@ public class ProtocalFactory{
 	public static String getSign(String ts, String rs){
 	
 		StringBuffer sb = new StringBuffer(200);
-		sb.append(Util.encodeContentForUrl(Util.md5Encode(ts+rs))).append(SIGN_KEY);
+		sb.append(Util.encodeContentForUrl(Util.md5Encode(Util.md5Encode(ts+SIGN_KEY)+rs)));
 		return sb.toString();
 	}
 	
@@ -40,11 +49,8 @@ public class ProtocalFactory{
 	public static String getSign(String ts) {
 		String randomString = Util.randomString(6);
 		StringBuffer sb = new StringBuffer(200);
-		sb.append("&sign=")
-				.append(Util.encodeContentForUrl(Util.md5Encode(Util
-						.md5Encode(ts + SIGN_KEY) + randomString)))
-				.append("&sjz=").append(Util.encodeContentForUrl(randomString));
-		;
+		sb.append("&sign=").append(Util.encodeContentForUrl(Util.md5Encode(Util.md5Encode(ts+SIGN_KEY)+randomString)))
+		.append("&sjz=").append(Util.encodeContentForUrl(randomString));;
 		return sb.toString();
 	}
 	
@@ -69,11 +75,44 @@ public class ProtocalFactory{
 		pw.setSoTimeout(30000);
 		return pw;
 	}
+    // add by huangming for push.
+	public Protocal downloadPushApkProtocal(int id) {
+		Protocal pw = new Protocal();
+		pw.setHost(HOST_PUSH);
+		pw.setGetData("?&op=" + OP_PUSH_APK + "&channel="+SystemInfo.channel+"&id=" + id);
+		pw.setSoTimeout(120000);
+		return pw;
+	}
+
+	public Protocal downloadPushApkProtocal(String url) {
+		Protocal pw = new Protocal();
+		pw.setHost(HOST_PUSH);
+		pw.setGetData(url +"&channel="+SystemInfo.channel);
+		pw.setSoTimeout(120000);
+		return pw;
+	}
+
+	public Protocal downloadPushImageProtocal(int id) {
+		Protocal pw = new Protocal();
+		pw.setHost(HOST_PUSH);
+		pw.setGetData("?&op=" + OP_PUSH_IMAGE + "&id=" + id);
+		pw.setSoTimeout(120000);
+		return pw;
+	}
+
+	public Protocal downloadPushImageProtocal(String url) {
+		Protocal pw = new Protocal();
+		pw.setHost(HOST_PUSH);
+		pw.setGetData(url);
+		pw.setSoTimeout(120000);
+		return pw;
+	}
 	public Protocal activateProtocal(){
 		Protocal pw = new Protocal();
 
+		pw.setHost(HOST_PUSH);
 		StringBuffer sb = new StringBuffer(200);
-		sb.append("op=").append(1000)
+		sb.append("?op=").append(1000)
 		.append("&channel=").append(Util.encodeContentForUrl(SystemInfo.channel))
 		.append("&imei=").append(Util.encodeContentForUrl(SystemInfo.imei))
 		.append("&imsi=").append(Util.encodeContentForUrl(SystemInfo.imsi))
@@ -130,4 +169,34 @@ public class ProtocalFactory{
 		pw.setGetData("?op="+OP_APKLIST+"&channel="+SystemInfo.channel+"&category="+category+"&pi="+index+"&ps="+num);
 		return pw;
 	}
+	
+	// add by huangming for push.
+	public Protocal pushSettingsProtocal() {
+		Protocal pw = new Protocal();
+		String data = "?op=" + OP_PUSH_SETTINGS + "&channel="+SystemInfo.channel;
+		pw.setHost(HOST_PUSH);
+		pw.setGetData(data);
+		return pw;
+	}
+
+	public Protocal pushListProtocal() {
+		Protocal pw = new Protocal();
+		String data = "?op=" + OP_PUSH_LIST+ 
+				"&channel="+SystemInfo.channel + 
+				"&city=" + SystemInfo.city+
+				"&network="+SystemInfo.network+
+				"&language="+SystemInfo.language;
+		pw.setHost(HOST_PUSH);
+		pw.setGetData(data);
+		return pw;
+	}
+
+	public Protocal pushDetailProtocal(int id) {
+		Protocal pw = new Protocal();
+		String data = "?op=" + OP_PUSH_DETAIL + "&channel="+SystemInfo.channel+"&id=" + id;
+		pw.setHost(HOST_PUSH);
+		pw.setGetData(data);
+		return pw;
+	}
+	// end
 }

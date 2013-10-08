@@ -351,14 +351,15 @@ public class Util {
 	 * 
 	 * @param bm
 	 */
-	public static void saveFileToSD(InputStream is, String path) {
+	public static boolean saveFileToSD(InputStream is, String path) {
 		if (!hasSdcard()) {
-			return;
+			return false;
 		}
 		if (is == null) {
-			return;
+			return false;
 		}
 		FileOutputStream fos = null;
+		boolean success = false;
 		try {
 			File file = new File(path).getParentFile();
 			if (!file.exists()) {
@@ -370,6 +371,7 @@ public class Util {
 			while ((len = is.read(b)) != -1) {
 				fos.write(b, 0, len);
 			}
+			success = true;
 		} catch (Exception e) {
 		} finally {
 			if (fos != null) {
@@ -385,6 +387,7 @@ public class Util {
 				}
 			}
 		}
+		return success;
 	}
 	/**
 	 * 将字符串以utf8保存到sd卡 hao.wang
