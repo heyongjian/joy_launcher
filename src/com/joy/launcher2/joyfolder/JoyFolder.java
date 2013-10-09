@@ -145,21 +145,31 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 	@Override
 	public void animateOpen() {
 		// TODO Auto-generated method stub
-		super.animateOpen();
+		super.animateOpenDefault();
 		if(gridView != null){
 			gridView.setVisibility(View.VISIBLE);
 			gridView.requestLayout(); 
 		}
 	}
+	@Override
+	public void animateClosed() {
+		// TODO Auto-generated method stub
+		super.animateClosedDefault();
+	}
     protected void setFolderLayoutParams(int left,int top,int width,int height) {
     	
     	DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
-    	int WorkspaceWidth = mLauncher.getWorkspace().getMeasuredWidth();
+    	CellLayout currentPage = mLauncher.getWorkspace().getCurrentDropLayout();
     	lp.width = width;
         lp.height = height;
-        lp.x = (WorkspaceWidth-width)/2;
+        lp.x = (currentPage.getMeasuredWidth()-width)/2;
         lp.y = top;
 	}
+    @Override
+    protected void setGridSize(int countX, int countY) {
+    	// TODO Auto-generated method stub
+    	mContent.setGridSize(countX, countY);
+    }
 	@Override
 	public void getHitRect(Rect outRect) {
 		// TODO Auto-generated method stub
