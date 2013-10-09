@@ -335,4 +335,25 @@
     
     <!-- add by huangming for push -->
  	<string name="push_download_text">下载</string>
+ 	
+ 	<!-- add by huangming for wallpaper -->
+    
+    <string name="title">桌面壁纸</string>
+    <string name="native_wallpaper_tab">本地</string>
+    <string name="online_wallpaper_tab">在线</string>
+    <string name="other_wallpaper_tab">其它</string>
+    <string name="recommend_title">推荐</string>
+    
+    <string name="preview_text">预览</string>
+    <string name="download_text">下载</string>
+    <string name="apply_text">应用</string>
+    
+    <string name="apply_error">应用错误</string>
+    <string name="apply_success">应用成功</string>
+    <string name="download_success">下载成功</string>
+   <!--  <string name="download_error">下载错误</string> -->
+    
+    <string name="network_error">网络错误</string>
+    <string name="flip_tips">再次拖至底部，即可翻页.</string>
+ 	
 </resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <include 
+        layout="@layout/joy_wallpaper_recommend"
+        android:id="@+id/recommend"
+        android:visibility="gone"/>
+        
+
+   <RelativeLayout android:layout_width="match_parent"
+       android:layout_height="@dimen/recommend_select_height"
+       android:layout_marginTop="@dimen/recommend_select_margin_top"
+       android:background="@drawable/joy_wallpaper_textview_click_style"
+       android:clickable="true"
+       android:id="@+id/select_rl"
+       android:orientation="horizontal">
+       
+       <TextView  
+           android:layout_width="wrap_content"
+           android:layout_height="match_parent"
+           android:textSize="@dimen/recommend_select_text_size"
+           android:id="@+id/recommend_tv"
+           android:paddingLeft="@dimen/recommend_select_text_padding_left"
+           android:layout_alignParentLeft="true"           
+           android:gravity="center_vertical"/>
+       <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/down_or_up"
+            android:paddingRight="@dimen/recommend_select_image_padding_right"
+            android:layout_alignParentRight="true"           
+            android:gravity="center_vertical"
+            android:src="@drawable/joy_wallpaper_arrow_down"/>
+       
+   </RelativeLayout>
+   
+    <include 
+        layout="@layout/joy_wallpaper_gridview"
+        android:id="@+id/gridview_online"/>
+
+</LinearLayout>

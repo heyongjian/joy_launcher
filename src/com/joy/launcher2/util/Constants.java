@@ -34,4 +34,18 @@ public class Constants {
 		
 		//每次获取apk列表个数
 		public static final int APK_LIST_NUM = 20;
+		
+		//add by huangming for online wallpaper.
+		public final static String ONLINE = "online";
+		public final static String THUMBNAIL = "_thumbnail";	
+		public final static String NATIVE = "native";
+		public final static String POSITION = "position";
+		public final static String CATEGORY_TYPE = "category_type";
+		public final static String CATEGORY_NAME ="category_name";
+		public final static String CATEGORY_URL = "category_url";
+		public final static String CATEGORY_DESCRIPTION = "category_description";
+				
+		public final static int CATEGORY_TYPE_NATIVE = 1;
+		public final static int CATEGORY_TYPE_ONLINE = 2;
+		//end
 }
