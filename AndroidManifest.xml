@@ -245,5 +245,19 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        
+        <activity
+            android:theme="@android:style/Theme.Light.NoTitleBar"
+            android:name="com.joy.launcher2.wallpaper.WallpaperActivity">
+        </activity>
+        
+        <activity
+            android:name="com.joy.launcher2.wallpaper.CategoryActivity"
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        </activity>
+         <activity 
+            android:name="com.joy.launcher2.wallpaper.PreviewActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+        
     </application>
 </manifest>

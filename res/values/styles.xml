@@ -203,4 +203,21 @@
         <item name="android:textColor">@color/joy_preference_category_line_color</item>
         <item name="android:textSize">16dp</item>
     </style>
+    
+    <!-- wallpaper title bar -->
+    <style name="TitleBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/title_bar_height</item>
+        <item name="android:textSize">@dimen/title_bar_text_size</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingLeft">@dimen/title_bar_padding_left</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+    
+    <style name="PreviewBtn">
+        <item name="android:layout_width">@dimen/preview_button_width</item>
+        <item name="android:layout_height">@dimen/preview_button_height</item>
+        <item name="android:textSize">@dimen/preview_button_text_size</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
 </resources>

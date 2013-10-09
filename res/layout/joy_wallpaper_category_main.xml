@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    
+   <include layout="@layout/joy_wallpaper_title_bar"
+            android:id="@+id/category_title"
+            android:text="category"/>
+   
+    <TextView  
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:textSize="@dimen/category_description_text_size"
+           android:id="@+id/category_discription"
+           android:paddingLeft="@dimen/category_description_padding_left"
+           android:gravity="center_vertical"
+           android:background="@drawable/joy_wallpaper_resource_list_title"/>
+
+    <include 
+        layout="@layout/joy_wallpaper_gridview"
+        android:id="@+id/gridview_category"/>
+
+    </LinearLayout>
+</FrameLayout>
