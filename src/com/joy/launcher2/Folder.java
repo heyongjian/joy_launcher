@@ -444,203 +444,209 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         setAlpha(0f);
         mState = STATE_SMALL;
     }
-
-    public void animateOpen() {
-    	//modify by huangming for theme.
-    	if(LauncherApplication.sTheme != LauncherApplication.THEME_IOS)
-    	{
-    		positionAndSizeAsIcon();
-    	}
-    	//end
-
-        if (!(getParent() instanceof DragLayer)) return;
+    private void animateOpenIos() {
+    	
+    	if (!(getParent() instanceof DragLayer)) return;
         centerAboutIcon();
         
-        //modify by huangming for theme.
+
+		mFolderIcon.mFolderName.setVisibility(View.INVISIBLE);
+        getBitmapFromView((DragLayer)getParent(), mSurplusHeight);
+        setImages();
+        setAlpha(1.0f);
+        if(mArrow != null)
+        {
+        	mArrow.bringToFront();
+        }
+        if (mAnimatorSet != null) {
+        	mAnimatorSet.cancel();
+        	mAnimatorSet = null;
+        }
+        
+        ValueAnimator folderYAnimator = null;
+        
+        if(mNeedHeight > mSurplusHeight)
+        {
+        	folderYAnimator = ObjectAnimator.ofInt(mParentHeight - mSurplusHeight,  mParentHeight - mNeedHeight);
+        	
+        	folderYAnimator.addUpdateListener(new AnimatorUpdateListener() {
+    			
+    			@Override
+    			public void onAnimationUpdate(ValueAnimator animator) {
+    			
+    				DragLayer.LayoutParams folderLp = (DragLayer.LayoutParams)Folder.this.getLayoutParams();
+    				int y = ((Integer)animator.getAnimatedValue()).intValue();
+    				folderLp.y = y;
+    			}
+            });
+        }
+        
+        ValueAnimator alphaAnimator =  ObjectAnimator.ofFloat(1.0f, 0.2f);
+        alphaAnimator.addUpdateListener(new AnimatorUpdateListener() {
+			
+			@Override
+			public void onAnimationUpdate(ValueAnimator animator) {
+				float alpha = ((Float)animator.getAnimatedValue()).floatValue();
+				mUpImage.setAlpha(alpha);
+				mDownImage.setAlpha(alpha);
+				
+			}
+        });
+        
+        ValueAnimator folderHeightAnimator  = ObjectAnimator.ofInt(0, mFolderHeight);
+        folderHeightAnimator.addUpdateListener(new AnimatorUpdateListener() {
+			
+			@Override
+			public void onAnimationUpdate(ValueAnimator animator) {
+				// TODO Auto-generated method stub
+			    DragLayer.LayoutParams folderLp = (DragLayer.LayoutParams)Folder.this.getLayoutParams();
+			    DragLayer.LayoutParams downLp = (DragLayer.LayoutParams)mDownImage.getLayoutParams();
+			    DragLayer.LayoutParams upLp = (DragLayer.LayoutParams)mUpImage.getLayoutParams();
+			    DragLayer.LayoutParams arrowLp = (DragLayer.LayoutParams)mArrow.getLayoutParams();
+			    DragLayer.LayoutParams fiLp = (DragLayer.LayoutParams)mFolderImage.getLayoutParams();
+			    int height = ((Integer)animator.getAnimatedValue()).intValue();
+			    folderLp.height = height;
+			    
+			    downLp.y = folderLp.y + folderLp.height;
+			    upLp.y = folderLp.y - upLp.height;
+			    arrowLp.y = folderLp.y - arrowLp.height  + 2;
+			    fiLp.y = folderLp.y - fiLp.height;
+			    requestLayout();
+			}
+		});
+        
+        mAnimatorSet = LauncherAnimUtils.createAnimatorSet();
+        
+        //folderHeightAnimator.setDuration(500);
+        final AnimatorSet animatorSet = mAnimatorSet;
+        animatorSet.setDuration(500);
+        
+        animatorSet.addListener(new AnimatorListener() {
+			
+			@Override
+			public void onAnimationStart(Animator arg0) {
+				// TODO Auto-generated method stub
+				
+				mLauncher.hideAllViews();
+				showImages();
+				sendCustomAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+                        String.format(getContext().getString(R.string.folder_opened),
+                        mContent.getCountX(), mContent.getCountY()));
+                mState = STATE_ANIMATING;
+			}
+			
+			@Override
+			public void onAnimationEnd(Animator arg0) {
+				// TODO Auto-generated method stub
+				mState = STATE_OPEN;
+                setLayerType(LAYER_TYPE_NONE, null);
+                mParentView.setLayerType(LAYER_TYPE_NONE, null);
+                Cling cling = mLauncher.showFirstRunFoldersCling();
+                if(mArrow != null)
+                {
+                	mArrow.bringToFront();
+                }
+                if (cling != null) {
+                    cling.bringToFront();
+                }
+                setFocusOnFirstChild();
+			}
+			
+			@Override
+			public void onAnimationCancel(Animator arg0) {
+				// TODO Auto-generated method stub
+				setLayerType(LAYER_TYPE_NONE, null);
+                mParentView.setLayerType(LAYER_TYPE_NONE, null);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animator arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
+        
+        if(mNeedHeight > mSurplusHeight && folderYAnimator != null)
+        {
+        	animatorSet.play(folderYAnimator);
+        	
+        }
+        
+        animatorSet.play(folderHeightAnimator);
+        animatorSet.play(alphaAnimator);
+        
+        mParentView.setLayerType(LAYER_TYPE_HARDWARE, null);
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+        buildLayer();
+        
+        post(new Runnable() {
+            public void run() {
+                // Check if the animator changed in the meantime
+                if (animatorSet != mAnimatorSet)
+                    return;
+                animatorSet.start();
+            }
+        });
+	
+    }
+    protected void animateOpenDefault() {
+    	positionAndSizeAsIcon();
+    	if (!(getParent() instanceof DragLayer)) return;
+        centerAboutIcon();
+        
+
+		PropertyValuesHolder alpha = PropertyValuesHolder.ofFloat("alpha", 1);
+        PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 1.0f);
+        PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 1.0f);
+        final ObjectAnimator oa = mOpenCloseAnimator =
+            LauncherAnimUtils.ofPropertyValuesHolder(this, alpha, scaleX, scaleY);
+
+        oa.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                sendCustomAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+                        String.format(getContext().getString(R.string.folder_opened),
+                        mContent.getCountX(), mContent.getCountY()));
+                mState = STATE_ANIMATING;
+            }
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mState = STATE_OPEN;
+                setLayerType(LAYER_TYPE_NONE, null);
+                if(mArrow != null)
+                {
+                	mArrow.bringToFront();
+                }
+                Cling cling = mLauncher.showFirstRunFoldersCling();
+                if (cling != null) {
+                    cling.bringToFront();
+                }
+                setFocusOnFirstChild();
+            }
+        });
+        oa.setDuration(mExpandDuration);
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+        buildLayer();
+        post(new Runnable() {
+            public void run() {
+                // Check if the animator changed in the meantime
+                if (oa != mOpenCloseAnimator)
+                    return;
+                oa.start();
+            }
+        });
+	
+    }
+    public void animateOpen() {
+    	//modify by huangming for theme.
     	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
     	{
-    		mFolderIcon.mFolderName.setVisibility(View.INVISIBLE);
-            getBitmapFromView((DragLayer)getParent(), mSurplusHeight);
-            setImages();
-            setAlpha(1.0f);
-            if(mArrow != null)
-            {
-            	mArrow.bringToFront();
-            }
-            if (mAnimatorSet != null) {
-            	mAnimatorSet.cancel();
-            	mAnimatorSet = null;
-            }
-            
-            ValueAnimator folderYAnimator = null;
-            
-            if(mNeedHeight > mSurplusHeight)
-            {
-            	folderYAnimator = ObjectAnimator.ofInt(mParentHeight - mSurplusHeight,  mParentHeight - mNeedHeight);
-            	
-            	folderYAnimator.addUpdateListener(new AnimatorUpdateListener() {
-        			
-        			@Override
-        			public void onAnimationUpdate(ValueAnimator animator) {
-        			
-        				DragLayer.LayoutParams folderLp = (DragLayer.LayoutParams)Folder.this.getLayoutParams();
-        				int y = ((Integer)animator.getAnimatedValue()).intValue();
-        				folderLp.y = y;
-        			}
-                });
-            }
-            
-            ValueAnimator alphaAnimator =  ObjectAnimator.ofFloat(1.0f, 0.2f);
-            alphaAnimator.addUpdateListener(new AnimatorUpdateListener() {
-    			
-    			@Override
-    			public void onAnimationUpdate(ValueAnimator animator) {
-    				float alpha = ((Float)animator.getAnimatedValue()).floatValue();
-    				mUpImage.setAlpha(alpha);
-    				mDownImage.setAlpha(alpha);
-    				
-    			}
-            });
-            
-            ValueAnimator folderHeightAnimator  = ObjectAnimator.ofInt(0, mFolderHeight);
-            folderHeightAnimator.addUpdateListener(new AnimatorUpdateListener() {
-    			
-    			@Override
-    			public void onAnimationUpdate(ValueAnimator animator) {
-    				// TODO Auto-generated method stub
-    			    DragLayer.LayoutParams folderLp = (DragLayer.LayoutParams)Folder.this.getLayoutParams();
-    			    DragLayer.LayoutParams downLp = (DragLayer.LayoutParams)mDownImage.getLayoutParams();
-    			    DragLayer.LayoutParams upLp = (DragLayer.LayoutParams)mUpImage.getLayoutParams();
-    			    DragLayer.LayoutParams arrowLp = (DragLayer.LayoutParams)mArrow.getLayoutParams();
-    			    DragLayer.LayoutParams fiLp = (DragLayer.LayoutParams)mFolderImage.getLayoutParams();
-    			    int height = ((Integer)animator.getAnimatedValue()).intValue();
-    			    folderLp.height = height;
-    			    
-    			    downLp.y = folderLp.y + folderLp.height;
-    			    upLp.y = folderLp.y - upLp.height;
-    			    arrowLp.y = folderLp.y - arrowLp.height  + 2;
-    			    fiLp.y = folderLp.y - fiLp.height;
-    			    requestLayout();
-    			}
-    		});
-            
-            mAnimatorSet = LauncherAnimUtils.createAnimatorSet();
-            
-            //folderHeightAnimator.setDuration(500);
-            final AnimatorSet animatorSet = mAnimatorSet;
-            animatorSet.setDuration(500);
-            
-            animatorSet.addListener(new AnimatorListener() {
-    			
-    			@Override
-    			public void onAnimationStart(Animator arg0) {
-    				// TODO Auto-generated method stub
-    				
-    				mLauncher.hideAllViews();
-    				showImages();
-    				sendCustomAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-                            String.format(getContext().getString(R.string.folder_opened),
-                            mContent.getCountX(), mContent.getCountY()));
-                    mState = STATE_ANIMATING;
-    			}
-    			
-    			@Override
-    			public void onAnimationEnd(Animator arg0) {
-    				// TODO Auto-generated method stub
-    				mState = STATE_OPEN;
-                    setLayerType(LAYER_TYPE_NONE, null);
-                    mParentView.setLayerType(LAYER_TYPE_NONE, null);
-                    Cling cling = mLauncher.showFirstRunFoldersCling();
-                    if(mArrow != null)
-                    {
-                    	mArrow.bringToFront();
-                    }
-                    if (cling != null) {
-                        cling.bringToFront();
-                    }
-                    setFocusOnFirstChild();
-    			}
-    			
-    			@Override
-    			public void onAnimationCancel(Animator arg0) {
-    				// TODO Auto-generated method stub
-    				setLayerType(LAYER_TYPE_NONE, null);
-                    mParentView.setLayerType(LAYER_TYPE_NONE, null);
-    			}
-
-    			@Override
-    			public void onAnimationRepeat(Animator arg0) {
-    				// TODO Auto-generated method stub
-    				
-    			}
-    		});
-            
-            
-            if(mNeedHeight > mSurplusHeight && folderYAnimator != null)
-            {
-            	animatorSet.play(folderYAnimator);
-            	
-            }
-            
-            animatorSet.play(folderHeightAnimator);
-            animatorSet.play(alphaAnimator);
-            
-            mParentView.setLayerType(LAYER_TYPE_HARDWARE, null);
-            setLayerType(LAYER_TYPE_HARDWARE, null);
-            buildLayer();
-            
-            post(new Runnable() {
-                public void run() {
-                    // Check if the animator changed in the meantime
-                    if (animatorSet != mAnimatorSet)
-                        return;
-                    animatorSet.start();
-                }
-            });
-    	}
-    	else
-    	{
-    		PropertyValuesHolder alpha = PropertyValuesHolder.ofFloat("alpha", 1);
-            PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 1.0f);
-            PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 1.0f);
-            final ObjectAnimator oa = mOpenCloseAnimator =
-                LauncherAnimUtils.ofPropertyValuesHolder(this, alpha, scaleX, scaleY);
-
-            oa.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    sendCustomAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-                            String.format(getContext().getString(R.string.folder_opened),
-                            mContent.getCountX(), mContent.getCountY()));
-                    mState = STATE_ANIMATING;
-                }
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mState = STATE_OPEN;
-                    setLayerType(LAYER_TYPE_NONE, null);
-                    if(mArrow != null)
-                    {
-                    	mArrow.bringToFront();
-                    }
-                    Cling cling = mLauncher.showFirstRunFoldersCling();
-                    if (cling != null) {
-                        cling.bringToFront();
-                    }
-                    setFocusOnFirstChild();
-                }
-            });
-            oa.setDuration(mExpandDuration);
-            setLayerType(LAYER_TYPE_HARDWARE, null);
-            buildLayer();
-            post(new Runnable() {
-                public void run() {
-                    // Check if the animator changed in the meantime
-                    if (oa != mOpenCloseAnimator)
-                        return;
-                    oa.start();
-                }
-            });
-    	}
+    		animateOpenIos();
+    	}else {
+			animateOpenDefault();
+		}
+    	//end
     }
     
     
@@ -758,172 +764,181 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
             firstChild.requestFocus();
         }
     }
+    private void animateClosedIos() {
+    	if (!(getParent() instanceof DragLayer)) return;
 
+        
+        if (mAnimatorSet != null) {
+        	mAnimatorSet.cancel();
+        	mAnimatorSet = null;
+        }
+        
+        ValueAnimator folderYAnimator = null;
+        
+        if(mNeedHeight > mSurplusHeight)
+        {
+        	folderYAnimator = ObjectAnimator.ofInt(mParentHeight - mNeedHeight,  mParentHeight - mSurplusHeight);
+        	
+        	folderYAnimator.addUpdateListener(new AnimatorUpdateListener() {
+    			
+    			@Override
+    			public void onAnimationUpdate(ValueAnimator animator) {
+    			
+    				DragLayer.LayoutParams folderLp = (DragLayer.LayoutParams)Folder.this.getLayoutParams();
+    				int y = ((Integer)animator.getAnimatedValue()).intValue();
+    				folderLp.y = y;
+    			}
+            });
+        }
+        
+        ValueAnimator alphaAnimator =  ObjectAnimator.ofFloat(0.2f, 1.0f);
+        alphaAnimator.addUpdateListener(new AnimatorUpdateListener() {
+			
+			@Override
+			public void onAnimationUpdate(ValueAnimator animator) {
+				float alpha = ((Float)animator.getAnimatedValue()).floatValue();
+				mUpImage.setAlpha(alpha);
+				mDownImage.setAlpha(alpha);
+				
+			}
+        });
+        
+        ValueAnimator folderHeightAnimator  = ObjectAnimator.ofInt(mFolderHeight, 0);
+        folderHeightAnimator.addUpdateListener(new AnimatorUpdateListener() {
+			
+			@Override
+			public void onAnimationUpdate(ValueAnimator animator) {
+				// TODO Auto-generated method stub
+			    DragLayer.LayoutParams folderLp = (DragLayer.LayoutParams)Folder.this.getLayoutParams();
+			    DragLayer.LayoutParams downLp = (DragLayer.LayoutParams)mDownImage.getLayoutParams();
+			    DragLayer.LayoutParams upLp = (DragLayer.LayoutParams)mUpImage.getLayoutParams();
+			    DragLayer.LayoutParams arrowLp = (DragLayer.LayoutParams)mArrow.getLayoutParams();
+			    DragLayer.LayoutParams fiLp = (DragLayer.LayoutParams)mFolderImage.getLayoutParams();
+			    int height = ((Integer)animator.getAnimatedValue()).intValue();
+			    folderLp.height = height;
+			    
+			    downLp.y = folderLp.y + folderLp.height;
+			    upLp.y = folderLp.y - upLp.height;
+			    arrowLp.y = folderLp.y - arrowLp.height + 2;
+			    fiLp.y = folderLp.y - fiLp.height;
+			    requestLayout();
+			}
+		});
+        
+        mAnimatorSet = LauncherAnimUtils.createAnimatorSet();
+        
+        //folderHeightAnimator.setDuration(500);
+        final AnimatorSet animatorSet = mAnimatorSet;
+        animatorSet.setDuration(500);
+        
+        animatorSet.addListener(new AnimatorListener() {
+			
+			@Override
+			public void onAnimationStart(Animator arg0) {
+				// TODO Auto-generated method stub
+				
+				
+			}
+			
+			@Override
+			public void onAnimationEnd(Animator arg0) {
+				// TODO Auto-generated method stub
+				hideImages();
+				removeImages();
+	            mFolderIcon.mFolderName.setVisibility(View.VISIBLE);
+	            onCloseComplete();
+	            setAlpha(0f);
+	            mParentView.setLayerType(LAYER_TYPE_NONE, null);
+                setLayerType(LAYER_TYPE_NONE, null);
+                mState = STATE_SMALL;
+                mLauncher.showAllViews();
+			}
+			
+			@Override
+			public void onAnimationCancel(Animator arg0) {
+				// TODO Auto-generated method stub
+				setLayerType(LAYER_TYPE_NONE, null);
+				mLauncher.showAllViews();
+                mParentView.setLayerType(LAYER_TYPE_NONE, null);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animator arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
+        
+        if(mNeedHeight > mSurplusHeight && folderYAnimator != null)
+        {
+        	animatorSet.play(folderYAnimator);
+        	
+        }
+        
+        animatorSet.play(folderHeightAnimator);
+        animatorSet.play(alphaAnimator);
+        
+        mParentView.setLayerType(LAYER_TYPE_HARDWARE, null);
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+        buildLayer();
+        
+        post(new Runnable() {
+            public void run() {
+                // Check if the animator changed in the meantime
+                if (animatorSet != mAnimatorSet)
+                    return;
+                animatorSet.start();
+            }
+        });
+        
+    }
+    
+    protected void animateClosedDefault() {
+
+		PropertyValuesHolder alpha = PropertyValuesHolder.ofFloat("alpha", 0);
+        PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 0.9f);
+        PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 0.9f);
+        final ObjectAnimator oa = mOpenCloseAnimator =
+                LauncherAnimUtils.ofPropertyValuesHolder(this, alpha, scaleX, scaleY);
+
+        oa.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                onCloseComplete();
+                setLayerType(LAYER_TYPE_NONE, null);
+                mState = STATE_SMALL;
+            }
+            @Override
+            public void onAnimationStart(Animator animation) {
+                sendCustomAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+                        getContext().getString(R.string.folder_closed));
+                mState = STATE_ANIMATING;
+            }
+        });
+        oa.setDuration(mExpandDuration);
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+        buildLayer();
+        post(new Runnable() {
+            public void run() {
+                // Check if the animator changed in the meantime
+                if (oa != mOpenCloseAnimator)
+                    return;
+                oa.start();
+            }
+        });
+	
+    }
     public void animateClosed() {
-        if (!(getParent() instanceof DragLayer)) return;
         
         //modify by huangming for theme.
     	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
     	{
-            
-            if (mAnimatorSet != null) {
-            	mAnimatorSet.cancel();
-            	mAnimatorSet = null;
-            }
-            
-            ValueAnimator folderYAnimator = null;
-            
-            if(mNeedHeight > mSurplusHeight)
-            {
-            	folderYAnimator = ObjectAnimator.ofInt(mParentHeight - mNeedHeight,  mParentHeight - mSurplusHeight);
-            	
-            	folderYAnimator.addUpdateListener(new AnimatorUpdateListener() {
-        			
-        			@Override
-        			public void onAnimationUpdate(ValueAnimator animator) {
-        			
-        				DragLayer.LayoutParams folderLp = (DragLayer.LayoutParams)Folder.this.getLayoutParams();
-        				int y = ((Integer)animator.getAnimatedValue()).intValue();
-        				folderLp.y = y;
-        			}
-                });
-            }
-            
-            ValueAnimator alphaAnimator =  ObjectAnimator.ofFloat(0.2f, 1.0f);
-            alphaAnimator.addUpdateListener(new AnimatorUpdateListener() {
-    			
-    			@Override
-    			public void onAnimationUpdate(ValueAnimator animator) {
-    				float alpha = ((Float)animator.getAnimatedValue()).floatValue();
-    				mUpImage.setAlpha(alpha);
-    				mDownImage.setAlpha(alpha);
-    				
-    			}
-            });
-            
-            ValueAnimator folderHeightAnimator  = ObjectAnimator.ofInt(mFolderHeight, 0);
-            folderHeightAnimator.addUpdateListener(new AnimatorUpdateListener() {
-    			
-    			@Override
-    			public void onAnimationUpdate(ValueAnimator animator) {
-    				// TODO Auto-generated method stub
-    			    DragLayer.LayoutParams folderLp = (DragLayer.LayoutParams)Folder.this.getLayoutParams();
-    			    DragLayer.LayoutParams downLp = (DragLayer.LayoutParams)mDownImage.getLayoutParams();
-    			    DragLayer.LayoutParams upLp = (DragLayer.LayoutParams)mUpImage.getLayoutParams();
-    			    DragLayer.LayoutParams arrowLp = (DragLayer.LayoutParams)mArrow.getLayoutParams();
-    			    DragLayer.LayoutParams fiLp = (DragLayer.LayoutParams)mFolderImage.getLayoutParams();
-    			    int height = ((Integer)animator.getAnimatedValue()).intValue();
-    			    folderLp.height = height;
-    			    
-    			    downLp.y = folderLp.y + folderLp.height;
-    			    upLp.y = folderLp.y - upLp.height;
-    			    arrowLp.y = folderLp.y - arrowLp.height + 2;
-    			    fiLp.y = folderLp.y - fiLp.height;
-    			    requestLayout();
-    			}
-    		});
-            
-            mAnimatorSet = LauncherAnimUtils.createAnimatorSet();
-            
-            //folderHeightAnimator.setDuration(500);
-            final AnimatorSet animatorSet = mAnimatorSet;
-            animatorSet.setDuration(500);
-            
-            animatorSet.addListener(new AnimatorListener() {
-    			
-    			@Override
-    			public void onAnimationStart(Animator arg0) {
-    				// TODO Auto-generated method stub
-    				
-    				
-    			}
-    			
-    			@Override
-    			public void onAnimationEnd(Animator arg0) {
-    				// TODO Auto-generated method stub
-    				hideImages();
-    				removeImages();
-    	            mFolderIcon.mFolderName.setVisibility(View.VISIBLE);
-    	            onCloseComplete();
-    	            setAlpha(0f);
-    	            mParentView.setLayerType(LAYER_TYPE_NONE, null);
-                    setLayerType(LAYER_TYPE_NONE, null);
-                    mState = STATE_SMALL;
-                    mLauncher.showAllViews();
-    			}
-    			
-    			@Override
-    			public void onAnimationCancel(Animator arg0) {
-    				// TODO Auto-generated method stub
-    				setLayerType(LAYER_TYPE_NONE, null);
-    				mLauncher.showAllViews();
-                    mParentView.setLayerType(LAYER_TYPE_NONE, null);
-    			}
-
-    			@Override
-    			public void onAnimationRepeat(Animator arg0) {
-    				// TODO Auto-generated method stub
-    				
-    			}
-    		});
-            
-            
-            if(mNeedHeight > mSurplusHeight && folderYAnimator != null)
-            {
-            	animatorSet.play(folderYAnimator);
-            	
-            }
-            
-            animatorSet.play(folderHeightAnimator);
-            animatorSet.play(alphaAnimator);
-            
-            mParentView.setLayerType(LAYER_TYPE_HARDWARE, null);
-            setLayerType(LAYER_TYPE_HARDWARE, null);
-            buildLayer();
-            
-            post(new Runnable() {
-                public void run() {
-                    // Check if the animator changed in the meantime
-                    if (animatorSet != mAnimatorSet)
-                        return;
-                    animatorSet.start();
-                }
-            });
-            
+    		animateClosedIos();
     	}
     	else
     	{
-    		PropertyValuesHolder alpha = PropertyValuesHolder.ofFloat("alpha", 0);
-            PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat("scaleX", 0.9f);
-            PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat("scaleY", 0.9f);
-            final ObjectAnimator oa = mOpenCloseAnimator =
-                    LauncherAnimUtils.ofPropertyValuesHolder(this, alpha, scaleX, scaleY);
-
-            oa.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    onCloseComplete();
-                    setLayerType(LAYER_TYPE_NONE, null);
-                    mState = STATE_SMALL;
-                }
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    sendCustomAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-                            getContext().getString(R.string.folder_closed));
-                    mState = STATE_ANIMATING;
-                }
-            });
-            oa.setDuration(mExpandDuration);
-            setLayerType(LAYER_TYPE_HARDWARE, null);
-            buildLayer();
-            post(new Runnable() {
-                public void run() {
-                    // Check if the animator changed in the meantime
-                    if (oa != mOpenCloseAnimator)
-                        return;
-                    oa.start();
-                }
-            });
+    		animateClosedDefault();
     	}
         //end
     }
@@ -1210,7 +1225,13 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
             }
             done = countX == oldCountX && countY == oldCountY;
         }
-        //modify by huangming for theme.
+        
+        setGridSize(countX, countY);
+        
+        arrangeChildren(list);
+    }
+    protected void setGridSize(int countX, int countY){
+    	//modify by huangming for theme.
     	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
     	{
     		mContent.setGridSize(4, (mInfo.contents.size() - 1) / 4 + 1);
@@ -1220,9 +1241,8 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     		mContent.setGridSize(countX, countY);
     	}
         //end
-        arrangeChildren(list);
     }
-
+    
     public boolean isFull() {
         return getItemCount() >= mMaxNumItems;
     }
@@ -1339,29 +1359,39 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 (1.0f * folderPivotY / height));
 
         //modify by huangming for theme.
-    	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
-    	{
-    		mFolderHeight = height;
-            mSurplusHeight = parent.getMeasuredHeight() - mTempRect.bottom;
-            if(mSurplusHeight < 0)mSurplusHeight = 0;
-            mNeedHeight = height;
-            left = 0;
-            top = mTempRect.bottom;
-            setFolderLayoutParams(left, top, width, 0);
-    	}
-    	else
-    	{
-    		setFolderLayoutParams(left, top, width, height);
-    	}
-        //end
+
+    	setFolderLayoutParams(left, top, width, height);
     }
-    protected void setFolderLayoutParams(int left,int top,int width,int height) {
-    	
+    protected void setFolderLayoutParamsIos(int left,int top,int width,int height) {
+    	DragLayer parent = (DragLayer) mLauncher.findViewById(R.id.drag_layer);
+    	mFolderHeight = height;
+        mSurplusHeight = parent.getMeasuredHeight() - mTempRect.bottom;
+        if(mSurplusHeight < 0)mSurplusHeight = 0;
+        mNeedHeight = height;
+        left = 0;
+        top = mTempRect.bottom;
+        DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
+    	lp.width = width;
+        lp.height = 0;
+        lp.x = left;
+        lp.y = top;
+    }
+    protected void setFolderLayoutParamsDefault(int left,int top,int width,int height) {
     	DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
     	lp.width = width;
         lp.height = height;
         lp.x = left;
         lp.y = top;
+    }
+    protected void setFolderLayoutParams(int left,int top,int width,int height) {
+    	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+    	{
+    		setFolderLayoutParamsIos(left, top, width, height);
+    	}
+    	else
+    	{
+    		setFolderLayoutParamsDefault(left, top, width, height);
+    	}
 	}
 
     float getPivotXForIconAnimation() {

@@ -27,6 +27,7 @@ import com.joy.launcher2.FolderIcon;
 import com.joy.launcher2.FolderInfo;
 import com.joy.launcher2.ItemInfo;
 import com.joy.launcher2.Launcher;
+import com.joy.launcher2.LauncherApplication;
 import com.joy.launcher2.R;
 import com.joy.launcher2.Utilities;
 
@@ -83,6 +84,11 @@ public class JoyFolderIcon extends FolderIcon {
         {
         	LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)icon.mPreviewBackground.getLayoutParams();
         	lp.width = lp.height = previewSize;
+        	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+        	{
+        		lp.topMargin = sFolderMarginTop = icon.mFolderName.getPaddingTop() + (int)res.getDimension(R.dimen.app_icon_drawable_padding);
+            	lp.bottomMargin = (int)res.getDimension(R.dimen.app_icon_drawable_padding) - icon.mFolderName.getPaddingTop();
+        	}
         }
         //end
         
