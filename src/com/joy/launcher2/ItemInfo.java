@@ -31,6 +31,7 @@ import android.util.Log;
 public class ItemInfo {
     public static final int LOCAL = -1;
     public int natureId = LOCAL;
+    public int categoryId = LOCAL;
 
     static final int NO_ID = -1;
 
@@ -146,6 +147,7 @@ public class ItemInfo {
         values.put(LauncherSettings.BaseLauncherColumns.ITEM_TYPE, itemType);
         values.put(LauncherSettings.Favorites.CONTAINER, container);
         values.put(LauncherSettings.Favorites.NATURE_ID, natureId);
+        values.put(LauncherSettings.Favorites.CATEGORY_ID, categoryId);
         values.put(LauncherSettings.Favorites.SCREEN, screen);
         values.put(LauncherSettings.Favorites.CELLX, cellX);
         values.put(LauncherSettings.Favorites.CELLY, cellY);

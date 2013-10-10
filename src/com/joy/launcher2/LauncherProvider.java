@@ -307,6 +307,7 @@ public class LauncherProvider extends ContentProvider {
                     "intent TEXT," +
                     "container INTEGER," +
                     "natureId INTEGER," +
+                    "categoryId INTEGER," +
                     "screen INTEGER," +
                     "cellX INTEGER," +
                     "cellY INTEGER," +
@@ -383,6 +384,7 @@ public class LauncherProvider extends ContentProvider {
             final int iconResourceIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ICON_RESOURCE);
             final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
             final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
+            final int categoryIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CATEGORY_ID);
             final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
             final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
             final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
@@ -401,6 +403,7 @@ public class LauncherProvider extends ContentProvider {
                 values.put(LauncherSettings.Favorites.ICON_RESOURCE, c.getString(iconResourceIndex));
                 values.put(LauncherSettings.Favorites.CONTAINER, c.getInt(containerIndex));
                 values.put(LauncherSettings.Favorites.NATURE_ID, c.getInt(natureIdIndex));
+                values.put(LauncherSettings.Favorites.CATEGORY_ID, c.getInt(categoryIdIndex));
                 values.put(LauncherSettings.Favorites.ITEM_TYPE, c.getInt(itemTypeIndex));
                 values.put(LauncherSettings.Favorites.APPWIDGET_ID, -1);
                 values.put(LauncherSettings.Favorites.SCREEN, c.getInt(screenIndex));
@@ -751,24 +754,30 @@ public class LauncherProvider extends ContentProvider {
         	List<Map<String, Object>> builtInShortcutList = handler.getBuiltInShortcutList();
         	List<Map<String, Object>> builtInJoyFolderList = handler.getBuiltInJoyFolderList();
         	List<Map<String, Object>> builtInnWidgetList = handler.getBuiltInWidgetList();
-        	System.err.println("builtInShortcutList === "+builtInShortcutList);
-        	System.err.println("builtInShortcutList === "+builtInShortcutList.size());
-        	for (int i = 0; i < builtInJoyFolderList.size(); i++) {
-        		Map<String, Object> map = builtInJoyFolderList.get(i);
-        		addJoyFolder(db, map);
+ 
+        	if (builtInJoyFolderList != null) {
+        		for (int i = 0; i < builtInJoyFolderList.size(); i++) {
+            		Map<String, Object> map = builtInJoyFolderList.get(i);
+            		addJoyFolder(db, map);
+    			}
+			}
+        	if (builtInShortcutList != null) {
+        		for (int i = 0; i < builtInShortcutList.size(); i++) {
+            		Map<String, Object> map = builtInShortcutList.get(i);
+            		addVirtualShortcut(db, map);
+    			}
 			}
         	
-        	for (int i = 0; i < builtInShortcutList.size(); i++) {
-        		Map<String, Object> map = builtInShortcutList.get(i);
-        		addVirtualShortcut(db, map);
+        	if (builtInnWidgetList != null) {
+        		for (int i = 0; i < builtInnWidgetList.size(); i++) {
+            		Map<String, Object> map = builtInnWidgetList.get(i);
+            		LauncherAppWidgetInfo info = addBuiltInWidget(db, map);
+            		if (info != null) {
+    					Launcher.addBuiltInWidgetToList(info);
+    				}
+    			}
 			}
-        	for (int i = 0; i < builtInnWidgetList.size(); i++) {
-        		Map<String, Object> map = builtInnWidgetList.get(i);
-        		LauncherAppWidgetInfo info = addBuiltInWidget(db, map);
-        		if (info != null) {
-					Launcher.addBuiltInWidgetToList(info);
-				}
-			}
+        	
         }
         private long addAppShortcut(SQLiteDatabase db, ContentValues values, TypedArray a,
                 PackageManager packageManager, Intent intent) {
@@ -1036,10 +1045,10 @@ public class LauncherProvider extends ContentProvider {
             final ContentResolver cr = mContext.getContentResolver();
             Cursor c = cr.query(LauncherSettings.Favorites.CONTENT_URI, 
             		new String[] {LauncherSettings.Favorites.ITEM_TYPE,
-            		LauncherSettings.Favorites.NATURE_ID,
+            		LauncherSettings.Favorites.CATEGORY_ID,
             		LauncherSettings.Favorites._ID}, null, null, null);
             final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
-            final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
+            final int categoryIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CATEGORY_ID);
             final int idIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites._ID);
             int tempcontainer = LauncherSettings.Favorites.CONTAINER_DESKTOP;
             
@@ -1049,9 +1058,9 @@ public class LauncherProvider extends ContentProvider {
                 	boolean isover = false;
                     while (!isover&&c.moveToNext()) {
                     	int itemType = c.getInt(itemTypeIndex);
-                        int tempNatureId = c.getInt(natureIdIndex);
+                        int tempCategoryId = c.getInt(categoryIdIndex);
                         int id = c.getInt(idIndex);
-                         if (container==tempNatureId) {
+                         if (container==tempCategoryId) {
                              if (itemType == Favorites.ITEM_TYPE_FOLDER) {
                             	 tempcontainer = id;
                             	 isover = true;
@@ -1119,7 +1128,8 @@ public class LauncherProvider extends ContentProvider {
 			int screen =  (Integer) map.get("screen");
 			int x =  (Integer) map.get("x");
 			int y =  (Integer) map.get("y");
-			int natureId = (Integer) map.get("id");
+			int natureId = (Integer) map.get("natureId");
+			int categoryId = (Integer) map.get("id");
 			String iconpath = (String) map.get("icon");
 			int spanX = 1;
 			int spanY = 1;
@@ -1132,6 +1142,7 @@ public class LauncherProvider extends ContentProvider {
 			values.put(LauncherSettings.Favorites._ID, id);
 			values.put(LauncherSettings.Favorites.CONTAINER, container);
 			values.put(LauncherSettings.Favorites.NATURE_ID, natureId);
+			values.put(LauncherSettings.Favorites.CATEGORY_ID, categoryId);
 			values.put(LauncherSettings.Favorites.SCREEN, screen);
 			values.put(LauncherSettings.Favorites.CELLX, x);
 			values.put(LauncherSettings.Favorites.CELLY, y);
