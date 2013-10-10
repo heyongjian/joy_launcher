@@ -550,7 +550,7 @@ public class CellLayout extends ViewGroup {
             int centerY = mTempLocation[1] + previewOffset / 2;
 
             canvas.save();
-            canvas.translate(centerX - width / 2, centerY - height / 2 +  + FolderIcon.sFolderMarginTop);
+            canvas.translate(centerX - width / 2, centerY - height / 2 +  + ringAnimator.getFolderMarginTop());
             d.setBounds(0, 0, width, height);
             d.draw(canvas);
             canvas.restore();
@@ -564,7 +564,7 @@ public class CellLayout extends ViewGroup {
             centerX = mTempLocation[0] + mCellWidth / 2;
             centerY = mTempLocation[1] + previewOffset / 2;
             canvas.save();
-            canvas.translate(centerX - width / 2, centerY - width / 2 + FolderIcon.sFolderMarginTop);
+            canvas.translate(centerX - width / 2, centerY - width / 2 + ringAnimator.getFolderMarginTop());
             d.setBounds(0, 0, width, height);
             d.draw(canvas);
             canvas.restore();

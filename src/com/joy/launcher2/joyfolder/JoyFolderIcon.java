@@ -86,7 +86,7 @@ public class JoyFolderIcon extends FolderIcon {
         	lp.width = lp.height = previewSize;
         	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
         	{
-        		lp.topMargin = sFolderMarginTop = icon.mFolderName.getPaddingTop() + (int)res.getDimension(R.dimen.app_icon_drawable_padding);
+        		lp.topMargin = icon.mFolderMarginTop = icon.mFolderName.getPaddingTop() + (int)res.getDimension(R.dimen.app_icon_drawable_padding);
             	lp.bottomMargin = (int)res.getDimension(R.dimen.app_icon_drawable_padding) - icon.mFolderName.getPaddingTop();
         	}
         }
