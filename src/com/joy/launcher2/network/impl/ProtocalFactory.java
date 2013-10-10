@@ -4,6 +4,7 @@ import com.joy.launcher2.network.util.Protocal;
 import com.joy.launcher2.util.Constants;
 import com.joy.launcher2.util.SystemInfo;
 import com.joy.launcher2.util.Util;
+import com.joy.launcher2.wallpaper.ImageLoader;
 
 
 /**
@@ -199,4 +200,51 @@ public class ProtocalFactory{
 		return pw;
 	}
 	// end
+	
+	//add by huangming for online wallpaper
+	/**
+	 * 获得壁纸列表协议
+	 * @param category
+	 * @param previousPage
+	 * @return Protocal
+	 */
+	public Protocal wallpaperListProtocal(int category,  int previousPage){
+
+		Protocal pw = new Protocal();
+		String protocalData = "?op="+OP_WALLPAPER_LIST + "&category="+category+"&pi="+(previousPage+1)+"&ps=10";
+		pw.setHost(HOST_MUTUAL);
+		pw.setGetData(protocalData);
+		return pw;
+	}
+	
+	/**
+	 * 获得壁纸类别协议
+	 * @return Protocal
+	 */
+	public Protocal wallpaperCategoryProtocal()
+	{
+		Protocal pw = new Protocal();
+		String protocalData = "?op="+OP_WALLPAPER;
+		pw.setHost(HOST_MUTUAL);
+		pw.setGetData(protocalData);
+		return pw;
+	}
+	
+	/**
+	 * 获得网络图片协议
+	 * @param data
+	 * @return
+	 */
+	public Protocal wallpaperBitmapProtocal(String data)
+	{
+		Protocal pw = new Protocal();
+		pw.setHost(HOST_MUTUAL);
+		if(!data.startsWith("?"))
+		{
+			data = "?" + data;
+		}
+		pw.setGetData(data + "&channel="+SystemInfo.channel+"&width=" + ImageLoader.screenWidth + "&height=" + ImageLoader.screenHeight);
+		return pw;
+	}
+	//end	
 }

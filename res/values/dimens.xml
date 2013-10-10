@@ -224,5 +224,59 @@
     <dimen name="cell_h_margin_new">8dp</dimen>
     <dimen name="cell_v_margin_new">12dp</dimen>
     <dimen name="icon_text_size_default">13px</dimen>
+    
+    <!-- add by huangming for wallpaper -->
+    <!-- wallpaper Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="recommend_height">240dp</dimen>
+    <dimen name="recommend_width_gap">4dp</dimen>
+    <dimen name="recommend_height_gap">4dp</dimen>
+    
+    
+    <!-- wallpaper indicator -->
+    <dimen name="indicator_width">15dip</dimen>
+    <dimen name="indicator_height">9dip</dimen>
+    
+    <!-- wallpaper title bar -->
+    <dimen name="title_bar_height">45dip</dimen>
+    <dimen name="title_bar_padding_left">10dip</dimen>
+    <dimen name="title_bar_text_size">22sp</dimen>
+    
+    <!-- wallpaper tab textview -->
+    <dimen name="tab_textview_height">45dip</dimen>
+    <dimen name="tab_textview_text_size">20sp</dimen>
+    
+    <!-- wallpaper item -->
+    <dimen name="wallpaper_item_height">150dip</dimen>
+    
+    <!-- wallpaper category description -->
+    <dimen name="category_description_text_size">15sp</dimen>
+    <dimen name="category_description_padding_left">10dip</dimen>
+    
+    <!-- wallpaper preview button -->
+    <dimen name="preview_button_width">100dip</dimen>
+    <dimen name="preview_button_height">40dip</dimen>
+    <dimen name="preview_button_text_size">18sp</dimen>
+    <dimen name="preview_button_container_height">80dip</dimen>
+    
+    <!-- wallpaper other wallpaper listview item -->
+    <dimen name="app_image_width">70dip</dimen>
+    <dimen name="app_image_height">70dip</dimen>
+    <dimen name="app_image_padding">5dip</dimen>    
+    <dimen name="app_name_text_size">18sp</dimen>
+    <dimen name="app_name_margin_bottom">5dip</dimen>
+    
+    <!-- wallpaper gridview -->
+    <dimen name="gridview_padding_left">3dip</dimen>
+    <dimen name="gridview_horizontal_spacing">6dip</dimen>
+    <dimen name="gridview_vertical_spacing">6dip</dimen>
+    
+    <!-- wallpaper recommend select -->
+    <dimen name="recommend_select_height">35dip</dimen>
+    <dimen name="recommend_select_margin_top">3dip</dimen>
+    <dimen name="recommend_select_text_size">20sp</dimen>
+    <dimen name="recommend_select_text_padding_left">3dip</dimen>
+    <dimen name="recommend_select_image_padding_right">3dip</dimen>
 
 </resources>

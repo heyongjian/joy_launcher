@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<GridView  xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:numColumns="2"
+       android:paddingLeft="@dimen/gridview_padding_left"
+       android:horizontalSpacing="@dimen/gridview_horizontal_spacing"
+       android:verticalSpacing="@dimen/gridview_vertical_spacing"
+       android:id="@+id/native_wps"/>

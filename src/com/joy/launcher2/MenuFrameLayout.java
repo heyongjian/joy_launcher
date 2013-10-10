@@ -173,8 +173,8 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 //	        Intent chooser = Intent.createChooser(pickWallpaper,
 //	        		getContext().getResources().getString(R.string.chooser_wallpaper));
 	        Intent chooser = new Intent();
-	        ComponentName componentName = new ComponentName("com.joy.launcher.wallpaper",
-	        		"com.joy.launcher.wallpaper.WallpaperActivity");
+	        ComponentName componentName = new ComponentName("com.joy.launcher2",
+	        		"com.joy.launcher2.wallpaper.WallpaperActivity");
 	        chooser.setComponent(componentName);
 	        
 	        itemInfo = new MenuItemInfo();

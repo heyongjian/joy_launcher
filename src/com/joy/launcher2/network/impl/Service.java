@@ -240,4 +240,67 @@ public class Service {
 		return json;
 	}
 	//end 
+	
+	//add by huangming for online wallpaper
+	/**
+	 * 获得壁纸列表json对象
+	 * @param category
+	 * @param previousPage
+	 * @return JSONObject
+	 */
+	public JSONObject getWallPaperListJson(int category,  int previousPage) 
+	{
+		Protocal protocal = pfactory.wallpaperListProtocal(category, previousPage);
+		JSONObject result = null;
+		try {
+			result = cs.request(protocal);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}	
+		
+		/**
+		 *  获得壁纸类别json对象
+		 * @return JSONObject
+		 */
+	public JSONObject getWallpaperCategoryJson()
+	{
+		Protocal protocal = pfactory.wallpaperCategoryProtocal();
+		JSONObject result = null;
+		try {
+			result = cs.request(protocal);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}	
+		
+	/**
+	 * 通过data获得bitmap
+	 * @param data
+	 * @return Bitmap
+	 */
+	public Bitmap getWallpaperBitmap(String data)
+	{
+		Protocal protocal = pfactory.wallpaperBitmapProtocal(data);
+		Bitmap bm = cs.getBitmap(protocal);
+		return bm;
+	}
+	
+	/**
+	 * 通过data获得流对象
+	 * @param data
+	 * @return InputStream
+	 */
+	public InputStream getWallpaperInputStream(String data)
+	{
+		Protocal protocal = pfactory.wallpaperBitmapProtocal(data);
+		InputStream is = cs.getInputStream(protocal);
+		return is;
+	}
+	//end	
+
 }

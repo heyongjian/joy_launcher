@@ -520,4 +520,24 @@ s -->
  	
  	<!-- add by huangming for push -->
  	<string name="push_download_text">Download</string>
+ 	
+ 	<!-- add by huangming for wallpaper -->
+    
+    <string name="title">Desktop wallpaper</string>
+    <string name="native_wallpaper_tab">Native</string>
+    <string name="online_wallpaper_tab">Online</string>
+    <string name="other_wallpaper_tab">Other</string>
+    <string name="recommend_title">Recommend</string>
+    <string name="preview_text">preview</string>
+    <string name="download_text">download</string>
+    <string name="apply_text">apply</string>
+    
+    <string name="apply_error">apply error</string>
+    <string name="apply_success">apply success</string>
+    <string name="download_success">download success</string>
+    <!-- <string name="download_error">download error</string> -->
+    
+    
+    <string name="network_error">network error</string>
+    <string name="flip_tips">Drag the bottom again, you can flip.</string>
 </resources>

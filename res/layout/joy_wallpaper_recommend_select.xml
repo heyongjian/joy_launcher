@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="120dip"
+        android:paddingTop="4dip"
+        android:paddingBottom="2dip"
+        android:orientation="horizontal">
+        <include layout="@layout/joy_wallpaper_recommend_image"/>
+        <include layout="@layout/joy_wallpaper_recommend_image"/>"
+    </LinearLayout>
+    
+     <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="120dip"
+        android:paddingTop="2dip"
+        android:paddingBottom="4dip"
+        android:orientation="horizontal">
+       <include layout="@layout/joy_wallpaper_recommend_image"/>
+       <include layout="@layout/joy_wallpaper_recommend_image"/>
+    </LinearLayout>
+    
+
+</LinearLayout>
