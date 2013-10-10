@@ -107,7 +107,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     protected static int mPreviewSize = -1;
     //end
     //add by huangming for ios folder.
-    public static int sFolderMarginTop = 0;
+    public int mFolderMarginTop = 0;
     //end
     
     public FolderIcon(Context context, AttributeSet attrs) {
@@ -166,7 +166,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         	//add by huangming for theme.
         	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
         	{
-        		lp.topMargin = sFolderMarginTop = icon.mFolderName.getPaddingTop() + (int)res.getDimension(R.dimen.app_icon_drawable_padding);
+        		lp.topMargin = icon.mFolderMarginTop = icon.mFolderName.getPaddingTop() + (int)res.getDimension(R.dimen.app_icon_drawable_padding);
             	lp.bottomMargin = (int)res.getDimension(R.dimen.app_icon_drawable_padding) - icon.mFolderName.getPaddingTop();
         	}
         	//end
@@ -341,6 +341,11 @@ public class FolderIcon extends LinearLayout implements FolderListener {
 
         public float getInnerRingSize() {
             return mInnerRingSize;
+        }
+        
+        public int getFolderMarginTop()
+        {
+        	return mFolderIcon != null?mFolderIcon.mFolderMarginTop:0;
         }
     }
 
@@ -523,7 +528,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
             //modify by huangming for theme
             if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
             {
-                mPreviewOffsetY = previewPadding + sFolderMarginTop;
+                mPreviewOffsetY = previewPadding + mFolderMarginTop;
             }
             else
             {

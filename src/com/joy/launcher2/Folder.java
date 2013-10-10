@@ -131,10 +131,14 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     Bitmap mUpBitmap;
     Bitmap mDownBitmap;
     Bitmap mFolderBitmap;
+    Drawable mArrowDrawable;
     int mSurplusHeight;
     int mNeedHeight;
     int mPatentWidth;
     int mParentHeight;
+    int mArrowWidth;
+    int mArrowHeight;
+    int mOverHeight;
     DragLayer mParentView;
     int mFolderHeight;
     
@@ -446,6 +450,13 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     }
     private void animateOpenIos() {
     	
+    	if(mArrowDrawable == null)
+    	{
+    		mArrowDrawable = getResources().getDrawable(R.drawable.joy_folder_arrow);
+    	}
+    	mArrowWidth = mArrowDrawable.getIntrinsicWidth();
+    	mArrowHeight = mArrowDrawable.getIntrinsicHeight();
+    	mOverHeight = mFolderIcon.getHeight() - mFolderIcon.mFolderName.getTop() - (mArrowHeight - 2);
     	if (!(getParent() instanceof DragLayer)) return;
         centerAboutIcon();
         
@@ -510,7 +521,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 			    downLp.y = folderLp.y + folderLp.height;
 			    upLp.y = folderLp.y - upLp.height;
 			    arrowLp.y = folderLp.y - arrowLp.height  + 2;
-			    fiLp.y = folderLp.y - fiLp.height;
+			    fiLp.y = folderLp.y - fiLp.height + mOverHeight;
 			    requestLayout();
 			}
 		});
@@ -662,10 +673,10 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     		return;
     	}
     	mParentView = parent;
-    	Drawable arrowDrawable = getResources().getDrawable(R.drawable.joy_folder_arrow);
+    	//Drawable arrowDrawable = getResources().getDrawable(R.drawable.joy_folder_arrow);
     	DragLayer.LayoutParams folderLp = (DragLayer.LayoutParams)getLayoutParams();
-    	int arrowWidth = arrowDrawable.getIntrinsicWidth();
-    	int arrowHeight = arrowDrawable.getIntrinsicHeight();
+    	//int arrowWidth = arrowDrawable.getIntrinsicWidth();
+    	//int arrowHeight = arrowDrawable.getIntrinsicHeight();
     	
     	if(mUpImage == null)
     	{
@@ -700,12 +711,12 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     		mArrow = new ImageView(mLauncher);
     	}
     	parent.addView(mArrow);
-    	mArrow.setImageDrawable(arrowDrawable);
+    	mArrow.setImageDrawable(mArrowDrawable);
     	DragLayer.LayoutParams arrowLp = new DragLayer.LayoutParams(0, 0);
-    	arrowLp.width = arrowWidth;
-    	arrowLp.height = arrowHeight;
-    	arrowLp.x = mTempRect.left + mTempRect.width() / 2 - arrowWidth / 2;
-    	arrowLp.y = folderLp.y - arrowHeight + 2;
+    	arrowLp.width = mArrowWidth;
+    	arrowLp.height = mArrowHeight;
+    	arrowLp.x = mTempRect.left + mTempRect.width() / 2 - mArrowWidth / 2;
+    	arrowLp.y = folderLp.y - mArrowHeight + 2;
     	arrowLp.customPosition = true;
     	mArrow.setLayoutParams(arrowLp);
     	
@@ -820,7 +831,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 			    downLp.y = folderLp.y + folderLp.height;
 			    upLp.y = folderLp.y - upLp.height;
 			    arrowLp.y = folderLp.y - arrowLp.height + 2;
-			    fiLp.y = folderLp.y - fiLp.height;
+			    fiLp.y = folderLp.y - fiLp.height + mOverHeight;
 			    requestLayout();
 			}
 		});
@@ -845,7 +856,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 				// TODO Auto-generated method stub
 				hideImages();
 				removeImages();
-	            mFolderIcon.mFolderName.setVisibility(View.VISIBLE);
+	            if(!(mFolderIcon.getParent().getParent().getParent() instanceof Hotseat))mFolderIcon.mFolderName.setVisibility(View.VISIBLE);
 	            onCloseComplete();
 	            setAlpha(0f);
 	            mParentView.setLayerType(LAYER_TYPE_NONE, null);
@@ -1279,28 +1290,31 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 		int height = view.getHeight();
 		mPatentWidth = width;
 		mParentHeight = height;
-		
+		if(downHeight <= 0)
+		{
+			height =height - downHeight;
+		}
+		height = Math.max(height, mTempRect.bottom);
 		Bitmap bm = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas();
 		canvas.setBitmap(bm);
-		view.layout(0, 0, width, height);
 		view.draw(canvas);
 		canvas.setBitmap(null);
 		
-		
-		mUpBitmap = Bitmap.createBitmap(bm, 0, 0, width, height - downHeight);
-		if(downHeight > 0)
+		if(downHeight <= 0)
 		{
-			mDownBitmap = Bitmap.createBitmap(bm, 0, height - downHeight, width, downHeight);
-		}
-		if(height < mTempRect.bottom)
-		{
-			mFolderBitmap = Bitmap.createBitmap(bm, mTempRect.left, mTempRect.top, mTempRect.width(), height - mTempRect.top);
+			mUpBitmap = Bitmap.createBitmap(bm, 0, 0, width, height);
+			
 		}
 		else
 		{
-			mFolderBitmap = Bitmap.createBitmap(bm, mTempRect.left, mTempRect.top, mTempRect.width(), mTempRect.height());
+			mUpBitmap = Bitmap.createBitmap(bm, 0, 0, width, height - downHeight);
+			mDownBitmap = Bitmap.createBitmap(bm, 0, height - downHeight, width, downHeight);
 		}
+    	mFolderBitmap = Bitmap.createBitmap( mTempRect.width(), mTempRect.height(), Bitmap.Config.ARGB_8888);
+    	canvas.setBitmap(mFolderBitmap);
+    	mFolderIcon.draw(canvas);
+    	canvas.setBitmap(null);
 		
 		if(bm != null && !bm.isRecycled())
 		{
@@ -1365,16 +1379,16 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     protected void setFolderLayoutParamsIos(int left,int top,int width,int height) {
     	DragLayer parent = (DragLayer) mLauncher.findViewById(R.id.drag_layer);
     	mFolderHeight = height;
-        mSurplusHeight = parent.getMeasuredHeight() - mTempRect.bottom;
-        if(mSurplusHeight < 0)mSurplusHeight = 0;
+    	
+        mSurplusHeight = parent.getMeasuredHeight() - mTempRect.bottom + mOverHeight;
         mNeedHeight = height;
-        left = 0;
-        top = mTempRect.bottom;
         DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
     	lp.width = width;
         lp.height = 0;
+        left = 0;
+        top = mTempRect.bottom;
         lp.x = left;
-        lp.y = top;
+        lp.y = top - mOverHeight;
     }
     protected void setFolderLayoutParamsDefault(int left,int top,int width,int height) {
     	DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
