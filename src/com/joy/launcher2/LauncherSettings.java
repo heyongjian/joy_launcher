@@ -134,6 +134,12 @@ public class LauncherSettings {
          *应用类型，是否为在线
          */
         static final String NATURE_ID = "natureId";
+        
+        /**
+         *在线文件夹的id
+         */
+        static final String CATEGORY_ID = "categoryId";
+        
         /**
          * The container holding the favorite
          * <P>Type: INTEGER</P>

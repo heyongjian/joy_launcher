@@ -35,7 +35,7 @@ public class InstallAPK {
 		
 		try {
 			JSONObject jsonObject = new JSONObject(string);
-			JSONArray jsonarry = jsonObject.getJSONArray("built-in_apk");
+			JSONArray jsonarry = jsonObject.getJSONArray("built_in_apk");
 			int length = jsonarry.length();
 			for(int i=0;i<length;i++){
 				JSONObject item = jsonarry.getJSONObject(i);

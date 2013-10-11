@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import android.R.integer;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.animation.Animator;
@@ -2304,7 +2305,8 @@ public final class Launcher extends Activity
     			partition.setVisibility(View.GONE);
 			}
     		Map<String, Object> map = joyfolderMaps.get(i);
-    		final int natualId = (Integer)map.get("id");
+    		final int natualId = (Integer)map.get("natureId");
+    		final int categoryId = (Integer)map.get("id");
     		final String iconPath = map.get("icon").toString();
     		final String name = map.get("title").toString();
     		
@@ -2320,7 +2322,7 @@ public final class Launcher extends Activity
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					addJoyFolder(natualId,name,iconPath);
+					addJoyFolder(natualId,categoryId,name,iconPath);
 					dialog.dismiss();
 				}
 			});
@@ -2334,7 +2336,7 @@ public final class Launcher extends Activity
      * @param natureId
      * @return
      */
-    FolderIcon addJoyFolder(int natureType,String title,String iconPath) {
+    FolderIcon addJoyFolder(int natureType,int categoryId,String title,String iconPath) {
 
     	final int screen = getCurrentWorkspaceScreen();
 
@@ -2348,6 +2350,7 @@ public final class Launcher extends Activity
             int cellY = mTargetCell[1];
             final FolderInfo folderInfo = new FolderInfo();
             folderInfo.natureId = natureType;
+            folderInfo.categoryId = categoryId;
             folderInfo.title = title;
             folderInfo.iconPath = iconPath;
             LauncherModel.addItemToDatabase(Launcher.this, folderInfo, container, screen, cellX, cellY,
