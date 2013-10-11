@@ -65,6 +65,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.joy.launcher2.preference.PreferencesProvider;
 import com.joy.launcher2.preference.PreferencesProvider.Size;
@@ -326,6 +327,7 @@ public class Workspace extends PagedView
     private int mPaddingTop = Integer.MAX_VALUE;
     private int mPaddingRight = Integer.MAX_VALUE;
     private int mPaddingBottom = Integer.MAX_VALUE;
+    private int mFolderIconMarginTop = Integer.MAX_VALUE;
     private Size mIconSize;
 
     /**
@@ -801,6 +803,12 @@ public class Workspace extends PagedView
         	mPaddingRight = child.getPaddingRight();
         	mPaddingBottom = child.getPaddingBottom();
         }
+        else if(child instanceof FolderIcon && mFolderIconMarginTop == Integer.MAX_VALUE)
+        {
+        	FolderIcon fi = (FolderIcon)child;
+    		LinearLayout.LayoutParams fiLp = (LinearLayout.LayoutParams)fi.mPreviewBackground.getLayoutParams();
+    		mFolderIconMarginTop = fiLp.topMargin;
+        }
         if(container == LauncherSettings.Favorites.CONTAINER_HOTSEAT)
         {
         	
@@ -812,6 +820,12 @@ public class Workspace extends PagedView
         				mPaddingRight, 
         				mPaddingBottom);
         	}
+        	else if(child instanceof FolderIcon && mIconSize == Size.Large)
+        	{
+        		FolderIcon fi = (FolderIcon)child;
+        		LinearLayout.LayoutParams fiLp = (LinearLayout.LayoutParams)fi.mPreviewBackground.getLayoutParams();
+        		fiLp.topMargin = fi.mFolderMarginTop = mFolderIconMarginTop / 4;
+        	}
         	
         }else if(container == LauncherSettings.Favorites.CONTAINER_DESKTOP)
         {
@@ -822,6 +836,12 @@ public class Workspace extends PagedView
         				mPaddingTop, 
         				mPaddingRight, 
         				mPaddingBottom);
+        	}
+        	else if(child instanceof FolderIcon)
+        	{
+        		FolderIcon fi = (FolderIcon)child;
+        		LinearLayout.LayoutParams fiLp = (LinearLayout.LayoutParams)fi.mPreviewBackground.getLayoutParams();
+        		fiLp.topMargin = fi.mFolderMarginTop = mFolderIconMarginTop;
         	}
         }
         //end
