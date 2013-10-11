@@ -68,7 +68,6 @@ public class BuiltInHandler {
 				JSONObject item = jsonarry.getJSONObject(i);
 				
 				map.put("id", item.getInt("id"));
-				map.put("natureId", item.getInt("natureId"));
 				map.put("icon", item.getString("icon"));
 				map.put("title", item.getString("title"));
 				map.put("screen", item.getInt("screen"));
@@ -111,5 +110,4 @@ public class BuiltInHandler {
 		}
 		return list;
 	}
-
 }

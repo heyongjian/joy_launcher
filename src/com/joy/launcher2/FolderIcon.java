@@ -354,7 +354,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
 
     private boolean willAcceptItem(ItemInfo item) {
         final int itemType = item.itemType;
-        boolean isJoyFolder = (itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER&&item.natureId!=ItemInfo.LOCAL);
+        boolean isJoyFolder = (itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER&&item.natureId!=-1);
         return ((itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION ||
                 itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT ||
                 itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) &&

@@ -159,11 +159,10 @@ public class JoyFolder extends Folder implements OnItemClickListener{
     protected void setFolderLayoutParams(int left,int top,int width,int height) {
     	
     	DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
-    	int WorkspaceWidth = mLauncher.getWorkspace().getMeasuredWidth();
+    	CellLayout currentPage = mLauncher.getWorkspace().getCurrentDropLayout();
     	lp.width = width;
         lp.height = height;
-//        lp.x = (currentPage.getMeasuredWidth()-width)/2;
-        lp.x = (WorkspaceWidth-width)/2;
+        lp.x = (currentPage.getMeasuredWidth()-width)/2;
         lp.y = top;
 	}
     @Override
@@ -319,7 +318,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 			}
 			@Override
 			public void doInBackground() {
-				list = LauncherApplication.mService.getShortcutListInFolder(JoyFolder.this.mInfo.categoryId);
+				list = LauncherApplication.mService.getShortcutListInFolder(JoyFolder.this.mInfo.natureId);
 			}
 		});
     }

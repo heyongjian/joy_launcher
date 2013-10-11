@@ -64,14 +64,14 @@ public class ProtocalFactory{
 	public Protocal bitmapProtocal(String url) {
 		Protocal pw = new Protocal();
 		// pw.setGetData("op=" + USER_LOGIN);
-		pw.setHost(HOST_MUTUAL);
+		pw.setHost(Constants.APK_LIST_HOST);
 		pw.setGetData(url);
 		return pw;
 	}
 
 	public Protocal downloadApkProtocal(String url) {
 		Protocal pw = new Protocal();
-		pw.setHost(HOST_MUTUAL);
+		pw.setHost(Constants.APK_LIST_HOST);
 		pw.setGetData(url + "&channel="+SystemInfo.channel);
 		pw.setSoTimeout(30000);
 		return pw;
@@ -146,12 +146,14 @@ public class ProtocalFactory{
 
 	public Protocal getAppInFolderProtocal(int type) {
 		Protocal pw = new Protocal();
-		pw.setHost(HOST_MUTUAL);
-		int id = type;
+		pw.setHost(Constants.APK_LIST_HOST);
+		int id = 2;//application
+		if (type == 0) {
+			id = 1;//game
+		}
 		pw.setGetData("?op="+OP_APP_IN_FOLDER+"&channel="+SystemInfo.channel+"&id="+id);
 		return pw;
 	}
-
 
 	/**
 	 * 获取游戏、应用列表
@@ -160,12 +162,14 @@ public class ProtocalFactory{
 	 */
 	public Protocal getApkListProtocal(int type, int index, int num) {
 		Protocal pw = new Protocal();
-		pw.setHost(HOST_MUTUAL);
-		int category = type;
+		pw.setHost(Constants.APK_LIST_HOST);
+		int category = 1;//application
+		if (type == 0) {
+			category = 2;//game
+		}
 		pw.setGetData("?op="+OP_APKLIST+"&channel="+SystemInfo.channel+"&category="+category+"&pi="+index+"&ps="+num);
 		return pw;
 	}
-
 	
 	// add by huangming for push.
 	public Protocal pushSettingsProtocal() {

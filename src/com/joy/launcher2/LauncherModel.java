@@ -404,7 +404,6 @@ public class LauncherModel extends BroadcastReceiver {
         final ContentValues values = new ContentValues();
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
         values.put(LauncherSettings.Favorites.NATURE_ID, item.natureId);
-        values.put(LauncherSettings.Favorites.CATEGORY_ID, item.categoryId);
         values.put(LauncherSettings.Favorites.CELLX, item.cellX);
         values.put(LauncherSettings.Favorites.CELLY, item.cellY);
         values.put(LauncherSettings.Favorites.SCREEN, item.screen);
@@ -439,7 +438,6 @@ public class LauncherModel extends BroadcastReceiver {
         final ContentValues values = new ContentValues();
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
         values.put(LauncherSettings.Favorites.NATURE_ID, item.natureId);
-        values.put(LauncherSettings.Favorites.CATEGORY_ID, item.categoryId);
         values.put(LauncherSettings.Favorites.CELLX, item.cellX);
         values.put(LauncherSettings.Favorites.CELLY, item.cellY);
         values.put(LauncherSettings.Favorites.SPANX, item.spanX);
@@ -486,14 +484,12 @@ public class LauncherModel extends BroadcastReceiver {
         final ContentResolver cr = context.getContentResolver();
         Cursor c = cr.query(LauncherSettings.Favorites.CONTENT_URI, new String[] {
                 LauncherSettings.Favorites.ITEM_TYPE, LauncherSettings.Favorites.CONTAINER,LauncherSettings.Favorites.NATURE_ID,
-                LauncherSettings.Favorites.CATEGORY_ID,
                 LauncherSettings.Favorites.SCREEN, LauncherSettings.Favorites.CELLX, LauncherSettings.Favorites.CELLY,
                 LauncherSettings.Favorites.SPANX, LauncherSettings.Favorites.SPANY }, null, null, null);
 
         final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
         final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
         final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
-        final int categoryIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CATEGORY_ID);
         final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
         final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
         final int cellYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLY);
@@ -509,7 +505,6 @@ public class LauncherModel extends BroadcastReceiver {
                 item.spanY = c.getInt(spanYIndex);
                 item.container = c.getInt(containerIndex);
                 item.natureId = c.getInt(natureIdIndex);//wanghao
-                item.categoryId = c.getInt(categoryIdIndex);//wanghao
                 item.itemType = c.getInt(itemTypeIndex);
                 item.screen = c.getInt(screenIndex);
 
@@ -539,7 +534,6 @@ public class LauncherModel extends BroadcastReceiver {
         final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
         final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
         final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
-        final int categoryIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CATEGORY_ID);
         final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
         final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
         final int cellYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLY);
@@ -564,7 +558,6 @@ public class LauncherModel extends BroadcastReceiver {
                 int spanY = c.getInt(spanYIndex);
                 int container = c.getInt(containerIndex);
                 int natureId = c.getInt(natureIdIndex);//wanghao
-                int categoryId = c.getInt(categoryIdIndex);
                 int iconType = c.getInt(iconTypeIndex);
                 int itemType = c.getInt(itemTypeIndex);
                 int screen = c.getInt(screenIndex);
@@ -600,7 +593,6 @@ public class LauncherModel extends BroadcastReceiver {
                 .append(split+"spanX"+equal+spanX)
                 .append(split+"spanY"+equal+spanY)
                 .append(split+"container"+equal+container)
-                .append(split+"categoryId"+equal+categoryId)
                 .append(split+"natureId"+equal+natureId)
                 .append(split+"iconType"+equal+iconType)
                 .append(split+"itemType"+equal+itemType)
@@ -661,7 +653,6 @@ public class LauncherModel extends BroadcastReceiver {
 			String spanY = map.get("spanY");
 			String container = map.get("container");
 			String natureId = map.get("natureId");
-			String categoryId = map.get("categoryId");
 			String iconType = map.get("iconType");
 			String itemType = map.get("itemType");
 			String screen = map.get("screen");
@@ -689,7 +680,6 @@ public class LauncherModel extends BroadcastReceiver {
 			values.put(LauncherSettings.Favorites._ID, _id);
     		values.put(LauncherSettings.Favorites.CONTAINER, container);
     		values.put(LauncherSettings.Favorites.NATURE_ID, natureId);
-    		values.put(LauncherSettings.Favorites.CATEGORY_ID, categoryId);
     		values.put(LauncherSettings.Favorites.CELLX, cellX);
     		values.put(LauncherSettings.Favorites.CELLY, cellY);
     		values.put(LauncherSettings.Favorites.SPANX, spanX);
@@ -725,11 +715,10 @@ public class LauncherModel extends BroadcastReceiver {
                 final int titleIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.TITLE);
                 final int containerIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CONTAINER);
                 final int natuareidIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
-                final int categoryIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CATEGORY_ID);
                 final int screenIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.SCREEN);
                 final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
                 final int cellYIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLY);
-                
+
                 FolderInfo folderInfo = null;
                 switch (c.getInt(itemTypeIndex)) {
                     case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
@@ -742,7 +731,6 @@ public class LauncherModel extends BroadcastReceiver {
                     folderInfo.id = id;
                     folderInfo.container = c.getInt(containerIndex);
                     folderInfo.natureId = c.getInt(natuareidIndex);
-                    folderInfo.categoryId = c.getInt(categoryIdIndex);
                     folderInfo.screen = c.getInt(screenIndex);
                     folderInfo.cellX = c.getInt(cellXIndex);
                     folderInfo.cellY = c.getInt(cellYIndex);
@@ -1532,8 +1520,6 @@ public class LauncherModel extends BroadcastReceiver {
                             LauncherSettings.Favorites.CONTAINER);
                 final int natureidIndex = c.getColumnIndexOrThrow(
                         LauncherSettings.Favorites.NATURE_ID);
-                final int categoryIdIndex = c.getColumnIndexOrThrow(
-                        LauncherSettings.Favorites.CATEGORY_ID);
                     final int itemTypeIndex = c.getColumnIndexOrThrow(
                             LauncherSettings.Favorites.ITEM_TYPE);
                     final int appWidgetIdIndex = c.getColumnIndexOrThrow(
@@ -1607,9 +1593,8 @@ public class LauncherModel extends BroadcastReceiver {
                                     info.intent = intent;
                                     info.id = c.getLong(idIndex);
                                     container = c.getInt(containerIndex);
-									info.container = container;
-									info.natureId = c.getInt(natureidIndex);
-									info.categoryId = c.getInt(categoryIdIndex);
+                                    info.container = container;
+                                info.natureId = c.getInt(natureidIndex);
                                     info.screen = c.getInt(screenIndex);
                                     info.cellX = c.getInt(cellXIndex);
                                     info.cellY = c.getInt(cellYIndex);
@@ -1657,7 +1642,6 @@ public class LauncherModel extends BroadcastReceiver {
                                 container = c.getInt(containerIndex);
                                 folderInfo.container = container;
                                 folderInfo.natureId = c.getInt(natureidIndex);//wanghao
-                                folderInfo.categoryId = c.getInt(categoryIdIndex);
                                 folderInfo.screen = c.getInt(screenIndex);
                                 folderInfo.cellX = c.getInt(cellXIndex);
                                 folderInfo.cellY = c.getInt(cellYIndex);
@@ -1702,7 +1686,7 @@ public class LauncherModel extends BroadcastReceiver {
                                     appWidgetInfo.spanX = c.getInt(spanXIndex);
                                     appWidgetInfo.spanY = c.getInt(spanYIndex);
                                     appWidgetInfo.natureId = c.getInt(natureidIndex);
-                                    appWidgetInfo.categoryId = c.getInt(categoryIdIndex);
+
                                     int[] minSpan = Launcher.getMinSpanForWidget(context, provider);
                                     appWidgetInfo.minSpanX = minSpan[0];
                                     appWidgetInfo.minSpanY = minSpan[1];

@@ -12,6 +12,8 @@ public class Constants {
 		
 		public static final String BASE_URL = "http://192.168.164.134:8080/app/api.do";
 		
+		public static final String APK_LIST_HOST = "http://192.168.164.134:8080/client/api.do";
+		
 		public static final int TIMEOUT = 15000; //超时时间
  
 		//SD卡存储根目录
