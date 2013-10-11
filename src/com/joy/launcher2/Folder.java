@@ -434,7 +434,19 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
      * @return A new UserFolder.
      */
     static Folder fromXml(Context context) {
-        return (Folder) LayoutInflater.from(context).inflate(R.layout.user_folder, null);
+    	Folder folder = (Folder) LayoutInflater.from(context).inflate(R.layout.user_folder, null);
+    	folder.mFolderName = (FolderEditText)folder.findViewById(R.id.folder_name);
+    	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+    	{
+    		int paddingLeft = folder.mFolderName.getPaddingLeft();
+    		int paddingTop = folder.mFolderName.getPaddingTop();
+    		int paddingRight = folder.mFolderName.getPaddingRight();
+    		int paddingBottom = folder.mFolderName.getPaddingBottom();
+    		folder.setBackgroundResource(R.drawable.joy_folder_bg);
+    		folder.mFolderName.setBackgroundResource(R.drawable.joy_edittext_bg);
+    		folder.mFolderName.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+    	}
+        return folder;
     }
 
     /**
