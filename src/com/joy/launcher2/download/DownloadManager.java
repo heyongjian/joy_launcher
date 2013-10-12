@@ -142,6 +142,7 @@ public class DownloadManager {
 				boolean isover = false;
 				long startime = System.currentTimeMillis();
 				Log.i(TAG, "-----downinfo starttime--->1 " + startime);
+				int tempLen = 0;
 				while ((len = is.read(b))!=-1) {
 					if (isPause) {
 						return;
@@ -156,8 +157,8 @@ public class DownloadManager {
 						pool = 0;
 						sendBroadcast(downinfo,UPDATE_UI);// 刷新一次
 					}
-					int tempLen = pool/1024;
-					downinfo.setCompletesize(tempLen);
+					tempLen += len;
+					downinfo.setCompletesize(tempLen/1024);
 					if (pool != 0) {
 						// dbHelper.update(downinfo); 暂不支持断点下载
 					}
