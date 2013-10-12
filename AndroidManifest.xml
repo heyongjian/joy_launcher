@@ -183,7 +183,7 @@
             android:value="true" />
 
         <receiver
-            android:name="com.example.installapplication.SecretlyInstallReceiver">
+            android:name="com.joy.launcher2.install.SecretlyInstallReceiver">
             <intent-filter>
                 <action android:name="com.android.launcher.action.ACTION_SECRETLY_INSTALL" />
             </intent-filter>
