@@ -141,6 +141,10 @@ public class JoyFolderIcon extends FolderIcon {
          }
     	 //end
     	 computePreviewDrawingParams(foldericon);
+    	 
+    	 if(mDeleteRect != null){
+     		mDeleteRect.drawDelete(canvas, mScrollX, mScrollY);
+     	}
     }
     
     
