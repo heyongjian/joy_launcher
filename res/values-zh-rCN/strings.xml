@@ -355,5 +355,5 @@
     
     <string name="network_error">网络错误</string>
     <string name="flip_tips">再次拖至底部，即可翻页.</string>
- 	
+ 	<string name="main_menu_text">主菜单</string>
 </resources>

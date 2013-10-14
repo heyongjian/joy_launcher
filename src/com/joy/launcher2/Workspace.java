@@ -392,6 +392,13 @@ public class Workspace extends PagedView
             cellCountX = PreferencesProvider.Interface.Homescreen.getCellCountX(cellCountX);
             cellCountY = PreferencesProvider.Interface.Homescreen.getCellCountY(cellCountY);
         }
+        //add by huangming for ios adaptation.
+        if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+        {
+        	cellCountX = 4;
+        	cellCountY = 5;
+        }
+        //end
 
         LauncherModel.updateWorkspaceLayoutCells(cellCountX, cellCountY);
         setHapticFeedbackEnabled(false);
@@ -754,10 +761,15 @@ public class Workspace extends PagedView
              */
             if(!mLauncher.getIsVertical() || !mShowText)
             {
+            	boolean showText = false;
+            	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+                {
+            		showText = true;
+                }
             	if (child instanceof FolderIcon) {
-                    ((FolderIcon) child).setTextVisible(false);
+                    ((FolderIcon) child).setTextVisible(showText);
                 } else if (child instanceof BubbleTextView) {
-                    ((BubbleTextView) child).setTextVisible(false);
+                    ((BubbleTextView) child).setTextVisible(showText);
                 }
             }
         } else {
