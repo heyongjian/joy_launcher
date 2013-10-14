@@ -163,7 +163,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
     	lp.width = width;
         lp.height = height;
         lp.x = (WorkspaceWidth-width)/2;
-        lp.y = top;
+        lp.y = top<0?0:top;
 	}
     @Override
     protected void setGridSize(int countX, int countY) {
