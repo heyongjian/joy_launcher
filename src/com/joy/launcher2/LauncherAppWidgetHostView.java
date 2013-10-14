@@ -18,12 +18,12 @@ package com.joy.launcher2;
 
 import android.appwidget.AppWidgetHostView;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RemoteViews;
-import com.joy.launcher2.R;
 
 /**
  * {@inheritDoc}
@@ -34,11 +34,14 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
     private Context mContext;
     private int mPreviousOrientation;
 
+    DeleteRect mDeleteRect;
+    
     public LauncherAppWidgetHostView(Context context) {
         super(context);
         mContext = context;
         mLongPressHelper = new CheckLongPressHelper(this);
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mDeleteRect = new DeleteRect(this);
     }
 
     @Override
@@ -59,12 +62,19 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+    	
         // Consume any touch events for ourselves after longpress is triggered
         if (mLongPressHelper.hasPerformedLongPress()) {
             mLongPressHelper.cancelLongPress();
             return true;
         }
-
+      	if(mDeleteRect != null){
+    		if(mDeleteRect.isDelete){
+    			if(mDeleteRect != null){
+    	    		return !mDeleteRect.onTouchEventDelete(false,ev);
+    	    	}
+    		}
+    	}
         // Watch for longpress events at this level to make sure
         // users can always pick up this widget
         switch (ev.getAction()) {
@@ -82,7 +92,15 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
         // Otherwise continue letting touch events fall through to children
         return false;
     }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean result = super.onTouchEvent(event);
 
+    	if(mDeleteRect != null){
+    		return mDeleteRect.onTouchEventDelete(result,event);
+    	}
+		return result;
+    }
     @Override
     public void cancelLongPress() {
         super.cancelLongPress();
@@ -94,4 +112,12 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView {
     public int getDescendantFocusability() {
         return ViewGroup.FOCUS_BLOCK_DESCENDANTS;
     }
+
+	@Override
+	protected void dispatchDraw(Canvas canvas) {
+		super.dispatchDraw(canvas);
+		if(mDeleteRect != null){
+			mDeleteRect.drawDelete(canvas, mScrollX, mScrollY);
+    	}
+	}
 }
