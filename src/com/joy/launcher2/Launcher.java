@@ -373,6 +373,7 @@ public final class Launcher extends Activity
     
     //add by wanghao,for issue-1:weather the widget is added by menu.
     private boolean addWidgetByMenu = false;
+    //test
     
     private Runnable mBuildLayersRunnable = new Runnable() {
         public void run() {
