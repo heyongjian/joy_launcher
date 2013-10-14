@@ -246,6 +246,7 @@ public final class Launcher extends Activity
     //added by huangming for menu.
     private MenuFrameLayout menuView;
     private Workspace mWorkspace;
+    private DesktopIndicator mDesktopIndicator;
     private View mQsbDivider;
     private View mDockDivider;
     private DragLayer mDragLayer;
@@ -1141,7 +1142,12 @@ public final class Launcher extends Activity
         mWorkspace = (Workspace) mDragLayer.findViewById(R.id.workspace);
         mQsbDivider = findViewById(R.id.qsb_divider);
         mDockDivider = findViewById(R.id.dock_divider);
-
+        // BEGIN: add by yongjian.he for ios-style indecator.
+        if (LauncherApplication.sTheme == LauncherApplication.THEME_IOS){
+        	mDesktopIndicator = (DesktopIndicator)mDragLayer.findViewById(R.id.desktop_indicator);
+        	mDockDivider.setVisibility(View.GONE);
+        }
+        // END on 2013-10-14.
         // Setup the drag layer
         mDragLayer.setup(this, dragController);
 
@@ -3245,6 +3251,10 @@ public final class Launcher extends Activity
         return mSearchDropTargetBar;
     }
 
+    DesktopIndicator getDesktopIndicator(){
+    	return mDesktopIndicator;
+    }
+    
     /**
      * Returns the CellLayout of the specified container at the specified screen.
      */
