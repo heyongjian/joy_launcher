@@ -111,8 +111,9 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     //add by huangming for ios folder.
     public int mFolderMarginTop = 0;
     //end
-    
     private static Canvas sCanvas = new Canvas();
+    
+    protected DeleteRect mDeleteRect;
     
     public FolderIcon(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -126,6 +127,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
 
     private void init() {
         mLongPressHelper = new CheckLongPressHelper(this);
+        mDeleteRect = new DeleteRect(this);
     }
 
     static FolderIcon fromXml(int resId, Launcher launcher, ViewGroup group,
@@ -696,6 +698,10 @@ public class FolderIcon extends LinearLayout implements FolderListener {
             drawPreviewItem(canvas, mAnimParams);
         }
         
+        if(mDeleteRect != null){
+    		mDeleteRect.drawDelete(canvas, mScrollX, mScrollY);
+    	}
+        
         //add by huangming for ios adaptation.
         if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
         {
@@ -835,6 +841,12 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         return mFolderName.getVisibility() == VISIBLE;
     }
 
+    public int getPreviewBackgroundLeft(){
+    	return mPreviewBackground.getLeft();
+    }
+    public int getPreviewBackgroundTop(){
+    	return mPreviewBackground.getTop();
+    }
     public void onItemsChanged() {
         invalidate();
         requestLayout();
@@ -862,6 +874,9 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         // isPressed() on an ACTION_UP
         boolean result = super.onTouchEvent(event);
 
+        if(mDeleteRect != null){
+        	return mDeleteRect.onTouchEventDelete(result ,event);
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mLongPressHelper.postCheckForLongPress();

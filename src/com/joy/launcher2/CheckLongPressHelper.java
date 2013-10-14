@@ -48,6 +48,16 @@ public class CheckLongPressHelper {
         mView.postDelayed(mPendingCheckForLongPress, LauncherApplication.getLongPressTimeout());
     }
 
+    //add by wanghao
+    public void postCheckForLongPress(int pressTime) {
+        mHasPerformedLongPress = false;
+
+        if (mPendingCheckForLongPress == null) {
+            mPendingCheckForLongPress = new CheckForLongPress();
+        }
+        mView.postDelayed(mPendingCheckForLongPress, pressTime);
+    }
+    
     public void cancelLongPress() {
         mHasPerformedLongPress = false;
         if (mPendingCheckForLongPress != null) {

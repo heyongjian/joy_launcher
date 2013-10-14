@@ -81,6 +81,9 @@ public class BubbleTextView extends JoyIconView implements ShortcutInfo.Shortcut
     private boolean mTextVisible = true;
     private CharSequence mVisibleText;
 
+    //add by wanghao
+    DeleteRect mDeleteRect;
+    private boolean mIsCanEdit = true;
     public BubbleTextView(Context context) {
         super(context);
         init();
@@ -139,6 +142,7 @@ public class BubbleTextView extends JoyIconView implements ShortcutInfo.Shortcut
         	setMaxLines(2);
         }
         //end
+        mDeleteRect = new DeleteRect(this);
     }
 
     public void applyFromShortcutInfo(ShortcutInfo info, IconCache iconCache) {
@@ -272,6 +276,9 @@ public class BubbleTextView extends JoyIconView implements ShortcutInfo.Shortcut
         // isPressed() on an ACTION_UP
         boolean result = super.onTouchEvent(event);
 
+        if(mDeleteRect != null){
+    		return mDeleteRect.onTouchEventDelete(result,event);
+    	}
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // So that the pressed outline is visible immediately when isPressed() is true,
@@ -456,8 +463,14 @@ public class BubbleTextView extends JoyIconView implements ShortcutInfo.Shortcut
 		}
 		return info.getDownLoadInfo();
     }
-
-    //add by huangming for ios adaptation.
+    
+    public void isCanEdit(boolean isCanEdit){
+    	mIsCanEdit = isCanEdit;
+    }
+    
+    public boolean isCanEdit(){
+    	return mIsCanEdit;
+    }
 	@Override
 	protected void onDraw(Canvas canvas) {
 		// TODO Auto-generated method stub
@@ -489,7 +502,12 @@ public class BubbleTextView extends JoyIconView implements ShortcutInfo.Shortcut
 		    	canvas.restore();
 		    	
 		    }
+    	if(mDeleteRect != null){
+    		if(isCanEdit()){
+    			mDeleteRect.drawDelete(canvas, mScrollX, mScrollY);
+    		}
         }
+	}
 	}
 	//end
 }

@@ -1988,6 +1988,9 @@ public final class Launcher extends Activity
         if (isWorkspaceLocked() && !isAllAppsVisible()) {
             return false;
         }
+        if (Workspace.mDeleteState != Workspace.DELETE_NONE) {
+			return false;
+		}
 
         super.onCreateOptionsMenu(menu);
 
@@ -2466,6 +2469,15 @@ public final class Launcher extends Activity
 
     @Override
     public void onBackPressed() {
+		if (Workspace.mDeleteState == Workspace.DELETE_DESKTOP) {
+			mWorkspace.toShake(Workspace.DELETE_DESKTOP,false);
+			mWorkspace.setDeleteState(Workspace.DELETE_NONE);
+			return;
+		}else if(Workspace.mDeleteState == Workspace.DELETE_FOLDER){
+			mWorkspace.toShake(Workspace.DELETE_FOLDER,false);
+			mWorkspace.setDeleteState(Workspace.DELETE_NONE);
+			return;
+		}
     	//modify by huangming for app show or hide
     	if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
     	{
@@ -2533,7 +2545,11 @@ public final class Launcher extends Activity
         if (v.getWindowToken() == null) {
             return;
         }
-
+        
+        if (Workspace.mDeleteState != Workspace.DELETE_NONE) {
+         	return;
+        }
+        
         if (!mWorkspace.isFinishedSwitchingState()) {
             return;
         }
@@ -3138,11 +3154,17 @@ public final class Launcher extends Activity
         }
         folder.animateOpen();
         if(LauncherApplication.sTheme == LauncherApplication.THEME_DEFAULT)growAndFadeOutFolderIcon(folderIcon);
+        
     }
 
     public void closeFolder() {
         Folder folder = mWorkspace.getOpenFolder();
         if (folder != null) {
+        	 if (Workspace.mDeleteState == Workspace.DELETE_FOLDER) {
+        		mWorkspace.toShake(Workspace.DELETE_FOLDER,false);
+        		mWorkspace.toShake(Workspace.DELETE_DESKTOP,true);
+        		mWorkspace.setDeleteState(Workspace.DELETE_DESKTOP);
+     		}
             if (folder.isEditingName()) {
                 folder.dismissEditingName();
             }
@@ -3212,14 +3234,16 @@ public final class Launcher extends Activity
         if (!(v instanceof CellLayout)) {
             v = (View) v.getParent().getParent();
         }
-
+        
+        
         resetAddInfo();
         CellLayout.CellInfo longClickCellInfo = (CellLayout.CellInfo) v.getTag();
         // This happens when long clicking an item with the dpad/trackball
         if (longClickCellInfo == null) {
             return true;
         }
-
+        
+        
         // The hotseat touch handling does not go through Workspace, and we always allow long press
         // on hotseat items.
         final View itemUnderLongClick = longClickCellInfo.cell;
@@ -3232,6 +3256,10 @@ public final class Launcher extends Activity
 
                 startWallpaper();
             } else {
+                if (Workspace.mDeleteState == Workspace.DELETE_NONE) {
+                	mWorkspace.setDeleteState(Workspace.DELETE_DESKTOP);
+                   	 mWorkspace.toShake(Workspace.DELETE_DESKTOP,true);
+           		}
                 if (!(itemUnderLongClick instanceof Folder)) {
                     // User long pressed on an item
                     mWorkspace.startDrag(longClickCellInfo);

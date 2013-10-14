@@ -205,6 +205,9 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
      */
     @Override
     public void onDragStart(DragSource source, Object info, int dragAction) {
+    	if (Workspace.mDeleteState != Workspace.DELETE_NONE) {
+			return;
+		}
         // Animate out the QSB search bar, and animate in the drop target bar
         prepareStartAnimation(mDropTargetBar);
         mDropTargetBarAnim.start();
@@ -220,6 +223,9 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
 
     @Override
     public void onDragEnd() {
+    	if (Workspace.mDeleteState != Workspace.DELETE_NONE) {
+			return;
+		}
         if (!mDeferOnDragEnd) {
             // Restore the QSB search bar, and animate out the drop target bar
             prepareStartAnimation(mDropTargetBar);
