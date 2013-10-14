@@ -24,10 +24,12 @@ import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.Bitmap.Config;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
@@ -110,6 +112,8 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     public int mFolderMarginTop = 0;
     //end
     
+    private static Canvas sCanvas = new Canvas();
+    
     public FolderIcon(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
@@ -167,7 +171,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         {
         	LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)icon.mPreviewBackground.getLayoutParams();
         	lp.width = lp.height = previewSize;
-        	lp.topMargin = icon.mFolderMarginTop = icon.mFolderName.getPaddingTop() + (int)res.getDimension(R.dimen.app_icon_drawable_padding);
+        	lp.topMargin = icon.mFolderMarginTop = icon.mFolderName.getPaddingTop();
             lp.bottomMargin = (int)res.getDimension(R.dimen.app_icon_drawable_padding) - icon.mFolderName.getPaddingTop();
         }
         //end
@@ -691,7 +695,92 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         } else {
             drawPreviewItem(canvas, mAnimParams);
         }
+        
+        //add by huangming for ios adaptation.
+        if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+        {
+			boolean isOnHotseat = Hotseat.isViewOnHotseat(this);
+		    
+		    if(isOnHotseat)
+		    {
+		    	drawIos(canvas, getResources().getDrawable(R.drawable.joy_folder_icon_bg));
+		    }
+        }
+        //end
     }
+    
+    //add by huangming for ios adaptation.
+	protected void drawIos(Canvas canvas, Drawable originalDrawable)
+    {
+    	if(originalDrawable == null)return;
+    	int width = getWidth();
+    	int height = getHeight();
+    	int pWidth = mPreviewBackground.getWidth();
+    	int pHeight = mPreviewBackground.getHeight();
+    	if(width <= 0 || height <= 0 || pWidth <= 0 || pHeight <= 0)return;
+    	int lastHeight = Math.min(pHeight, height - mPreviewBackground.getBottom());
+    	if(lastHeight <= 0)return;
+    	canvas.save();
+    	Bitmap originalImage = getOriginalImage(
+    			originalDrawable, 
+    			pWidth, 
+    			pHeight, 
+    			lastHeight);
+    	Bitmap reflectionImage = Hotseat.createReflectedImage(originalImage);
+    	
+    	canvas.translate(mPreviewBackground.getLeft(), mPreviewBackground.getBottom());
+    	canvas.drawBitmap(reflectionImage, 0, 0, null);
+    	
+    	canvas.restore();
+    }
+	
+	protected Bitmap getOriginalImage(Drawable originalDrawable, int width, int height, int lastHeight)
+	{
+		Bitmap bm = Bitmap.createBitmap(width, height, Config.ARGB_8888);
+		final Canvas canvas = sCanvas;
+		canvas.setBitmap(bm);
+		Rect oldRect = originalDrawable.getBounds();
+		originalDrawable.setBounds(0, 0, width, height);
+		originalDrawable.draw(canvas);
+		originalDrawable.setBounds(oldRect);
+		ArrayList<View> items = mFolder.getItemsInReadingOrder(false);
+		int nItemsInPreview = Math.min(items.size(), NUM_ITEMS_IN_PREVIEW);
+		
+		int previewPadding = FolderRingAnimator.sPreviewPadding / 2;
+        float scale = (mAvailableSpaceInPreview - 2 * previewPadding) / (float)(mIntrinsicIconSize * 3) ;
+		int sWidth =  (int)(scale * width);
+		int sHeight = (int)(scale * height);
+		int wGap = (width - 3 * sWidth) / 4;
+		int hGap = (height - 3 * sHeight) / 4;
+		for (int i = nItemsInPreview - 1; i >= 0; i--) {
+			int h = i % 3;
+		    int v = i / 3;
+			TextView tv = (TextView) items.get(i);
+			Drawable d = tv.getCompoundDrawables()[1];
+			canvas.save();
+	        canvas.translate(wGap + (wGap + sWidth) * h, hGap + (hGap + sHeight) * v);
+	        canvas.scale(scale, scale);
+
+	        if (d != null) {
+	            d.setBounds(0, 0, mIntrinsicIconSize, mIntrinsicIconSize);
+	            d.draw(canvas);
+	        }
+	        canvas.restore();
+		}
+		canvas.setBitmap(null);
+		/*Rect oldRect = d.getBounds();
+		d.setBounds(0, 0, width, height);
+		canvas.setBitmap(bm);
+		d.draw(canvas);
+		d.setBounds(oldRect);
+		canvas.setBitmap(null);*/
+		if(lastHeight < height)
+		{
+			bm = Bitmap.createBitmap(bm, 0, height - lastHeight, width, lastHeight);
+		}
+		return bm;
+	}
+	//end
 
     private void animateFirstItem(final Drawable d, int duration, final boolean reverse,
             final Runnable onCompleteRunnable) {
