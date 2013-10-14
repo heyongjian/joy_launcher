@@ -67,13 +67,12 @@ import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.joy.launcher2.preference.PreferencesProvider;
-import com.joy.launcher2.preference.PreferencesProvider.Size;
-import com.joy.launcher2.R;
+
 import com.joy.launcher2.FolderIcon.FolderRingAnimator;
 import com.joy.launcher2.LauncherSettings.Favorites;
 import com.joy.launcher2.joyfolder.JoyFolderIcon;
 import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.preference.PreferencesProvider.Size;
 
 /**
  * The workspace is a wide area with a wallpaper and a finite number of pages.
@@ -154,7 +153,8 @@ public class Workspace extends PagedView
     private Launcher mLauncher;
     private IconCache mIconCache;
     private DragController mDragController;
-
+    private DesktopIndicator mDesktopIndicator;
+    
     // These are temporary variables to prevent having to allocate a new object just to
     // return an (x, y) value from helper functions. Do NOT use them to maintain other state.
     private int[] mTempCell = new int[2];
@@ -402,7 +402,7 @@ public class Workspace extends PagedView
         if (mDefaultHomescreen >= mNumberHomescreens) {
             mDefaultHomescreen = mNumberHomescreens / 2;
         }
-
+        
         mStretchScreens = PreferencesProvider.Interface.Homescreen.getStretchScreens();
         mShowSearchBar = PreferencesProvider.Interface.Homescreen.getShowSearchBar();
         mShowHotseat = PreferencesProvider.Interface.Dock.getShowDock();
@@ -1804,7 +1804,10 @@ public class Workspace extends PagedView
     protected void screenScrolled(int screenScroll) {
         super.screenScrolled(screenScroll);
         enableHwLayersOnVisiblePages();
-
+        
+        if (mDesktopIndicator != null){
+        	mDesktopIndicator.indicate((float)mScroller.getCurrX()/(float)(getChildCount()*getWidth()));
+        }
         if (isSwitchingState()) return;
         if (isSmall()) {
             for (int i = 0; i < getChildCount(); i++) {
@@ -4111,6 +4114,14 @@ public class Workspace extends PagedView
         mSpringLoadedDragController = new SpringLoadedDragController(mLauncher);
         mDragController = dragController;
 
+        // BEGIN: add by yongjian.he for ios-style indecator.
+        // mHandleScrollIndicator = true to handle indicator ourself.
+        if (mLauncher.getDesktopIndicator() != null && 
+        		LauncherApplication.sTheme == LauncherApplication.THEME_IOS){
+            mHandleScrollIndicator = true;
+            mDesktopIndicator = mLauncher.getDesktopIndicator();
+        }
+        // END on 2013-10-14.
         // hardware layers on children are enabled on startup, but should be disabled until
         // needed
         updateChildrenLayersEnabled(false);
