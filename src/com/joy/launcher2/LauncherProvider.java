@@ -751,23 +751,28 @@ public class LauncherProvider extends ContentProvider {
         	List<Map<String, Object>> builtInShortcutList = handler.getBuiltInShortcutList();
         	List<Map<String, Object>> builtInJoyFolderList = handler.getBuiltInJoyFolderList();
         	List<Map<String, Object>> builtInnWidgetList = handler.getBuiltInWidgetList();
-        	System.err.println("builtInShortcutList === "+builtInShortcutList);
-        	System.err.println("builtInShortcutList === "+builtInShortcutList.size());
-        	for (int i = 0; i < builtInJoyFolderList.size(); i++) {
-        		Map<String, Object> map = builtInJoyFolderList.get(i);
-        		addJoyFolder(db, map);
+
+        	if (builtInJoyFolderList != null) {
+        		for (int i = 0; i < builtInJoyFolderList.size(); i++) {
+            		Map<String, Object> map = builtInJoyFolderList.get(i);
+            		addJoyFolder(db, map);
+    			}
 			}
-        	
-        	for (int i = 0; i < builtInShortcutList.size(); i++) {
-        		Map<String, Object> map = builtInShortcutList.get(i);
-        		addVirtualShortcut(db, map);
+        	if (builtInShortcutList != null) {
+        	 	for (int i = 0; i < builtInShortcutList.size(); i++) {
+            		Map<String, Object> map = builtInShortcutList.get(i);
+            		addVirtualShortcut(db, map);
+    			}
 			}
-        	for (int i = 0; i < builtInnWidgetList.size(); i++) {
-        		Map<String, Object> map = builtInnWidgetList.get(i);
-        		LauncherAppWidgetInfo info = addBuiltInWidget(db, map);
-        		if (info != null) {
-					Launcher.addBuiltInWidgetToList(info);
-				}
+       
+        	if (builtInnWidgetList != null) {
+        		for (int i = 0; i < builtInnWidgetList.size(); i++) {
+            		Map<String, Object> map = builtInnWidgetList.get(i);
+            		LauncherAppWidgetInfo info = addBuiltInWidget(db, map);
+            		if (info != null) {
+    					Launcher.addBuiltInWidgetToList(info);
+    				}
+    			}
 			}
         }
         private long addAppShortcut(SQLiteDatabase db, ContentValues values, TypedArray a,
