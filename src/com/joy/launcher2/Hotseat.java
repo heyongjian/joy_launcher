@@ -21,7 +21,15 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.Bitmap.Config;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Shader.TileMode;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -30,6 +38,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import com.joy.launcher2.R;
 import com.joy.launcher2.preference.PreferencesProvider;
@@ -51,6 +60,8 @@ public class Hotseat extends PagedView {
     private int mWidth = 0;
     private int mHeight = 0;
     //add end
+    
+    private static Canvas sCanvas = new Canvas();
 
     public Hotseat(Context context) {
         this(context, null);
@@ -94,6 +105,12 @@ public class Hotseat extends PagedView {
         mCellCount = a.getInt(R.styleable.Hotseat_cellCount, DEFAULT_CELL_COUNT);
         mCellCount = PreferencesProvider.Interface.Dock.getNumberIcons(mCellCount);
 
+        if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+        {
+        	setBackgroundResource(R.drawable.joy_ios_hotseat_bg);
+        	mCellCount = 4;
+        	mAllAppsButtonRank = 3;
+        }
         LauncherModel.updateHotseatLayoutCells(mCellCount);
 
         mVertical = hasVerticalHotseat();
@@ -139,7 +156,94 @@ public class Hotseat extends PagedView {
         resetLayout();
     }
 
-    void resetLayout() {
+    void resetLayout()
+    {
+    	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+        {
+    		//resetLayoutIos();
+    		resetLayoutDefault();
+        }
+    	else
+    	{
+    		resetLayoutDefault();
+    	}
+    }
+    
+    //add by huangming for ios adaptation.
+    void resetLayoutIos()
+    {
+    	
+    }
+    
+    public static boolean isViewOnHotseat(View view)
+    {
+    	boolean isOnHotseat = false;
+    	if(view == null)return false;
+    	ViewParent parent = view.getParent();
+	    while(parent != null && !isOnHotseat)
+	    {
+	    	if(parent instanceof Hotseat)
+	    	{
+	    		isOnHotseat = true;
+	    		break;
+	    	}
+	    	parent = parent.getParent();
+	    }
+	    return isOnHotseat;
+    }
+    
+    
+    public static Bitmap getOriginalImage(Drawable d, int lastHeight)
+	{
+		int width = d.getIntrinsicWidth();
+		int height = d.getIntrinsicHeight();
+		return getOriginalImage(d, width, height, lastHeight);
+	}
+    
+    public static Bitmap getOriginalImage(Drawable d, int width, int height, int lastHeight)
+    {
+		Bitmap bm = Bitmap.createBitmap(width, height, Config.ARGB_8888);
+		final Canvas canvas = sCanvas;
+		Rect oldRect = d.getBounds();
+		d.setBounds(0, 0, width, height);
+		canvas.setBitmap(bm);
+		d.draw(canvas);
+		d.setBounds(oldRect);
+		canvas.setBitmap(null);
+		if(lastHeight < height)
+		{
+			bm = Bitmap.createBitmap(bm, 0, height - lastHeight, width, lastHeight);
+		}
+		return bm;
+    }
+	
+	public static Bitmap createReflectedImage(Bitmap originalImage) {
+        int width = originalImage.getWidth();
+        int height = originalImage.getHeight();
+
+        Matrix matrix = new Matrix();
+        matrix.preScale(1, -1);
+        
+        Bitmap reflectionImage = Bitmap.createBitmap(originalImage, 0, 0, width,
+        		height, matrix, false);
+        
+        final Canvas canvas = sCanvas;
+        canvas.setBitmap(reflectionImage);
+		Paint shaderPaint = new Paint();
+		
+		LinearGradient shader = new LinearGradient(0, 0, 0, height, 0x70ffffff,
+				0x00ffffff, TileMode.MIRROR);
+		shaderPaint.setShader(shader);
+		shaderPaint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
+		
+		canvas.drawRect(0, 0, width, height, shaderPaint);
+		canvas.setBitmap(null);
+		
+        return reflectionImage;
+    }
+	//end
+    
+    void resetLayoutDefault() {
     	Context context = getContext();
     	LayoutInflater inflater = LayoutInflater.from(context);
     	int count = getChildCount();
@@ -157,7 +261,16 @@ public class Hotseat extends PagedView {
     			//modify by huangming for icon size
     			BubbleTextView allAppsButton = (BubbleTextView)
     	                inflater.inflate(R.layout.application, cl, false);
-    	        Drawable d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
+    	        Drawable d = null;
+    	        if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+    	        {
+    	        	d = context.getResources().getDrawable(R.drawable.joy_ios_all_apps_button_icon);
+    	        	allAppsButton.setText(R.string.main_menu_text);
+    	        }
+    	        else
+    	        {
+    	        	d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
+    	        }
     	        Bitmap b = Utilities.createIconBitmap(d, context);
     	        allAppsButton.setCompoundDrawablesWithIntrinsicBounds(null,
     	                new FastBitmapDrawable(b), null, null);

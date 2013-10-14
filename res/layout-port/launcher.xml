@@ -66,6 +66,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom" />
 
+    <com.joy.launcher2.DesktopIndicator
+    android:id="@+id/desktop_indicator"
+    android:visibility="gone"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:layout_marginBottom="@dimen/button_bar_height"
+/>
     <include layout="@layout/hotseat"
         android:id="@+id/hotseat"
         android:layout_width="match_parent"
@@ -74,7 +82,8 @@
 
     <include
         android:id="@+id/qsb_bar"
-        layout="@layout/qsb_bar" />
+        layout="@layout/qsb_bar" 
+        android:visibility="gone"/>
 
     <com.joy.launcher2.DrawableStateProxyView
         android:id="@+id/voice_button_proxy"
