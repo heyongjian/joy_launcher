@@ -261,6 +261,7 @@ public class Hotseat extends PagedView {
     			//modify by huangming for icon size
     			BubbleTextView allAppsButton = (BubbleTextView)
     	                inflater.inflate(R.layout.application, cl, false);
+    			allAppsButton.isCanEdit(false);
     	        Drawable d = null;
     	        if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
     	        {
@@ -294,7 +295,9 @@ public class Hotseat extends PagedView {
     	            public boolean onTouch(View v, MotionEvent event) {
     	                if (mLauncher != null &&
     	                    (event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN) {
-    	                    mLauncher.onTouchDownAllAppsButton(v);
+    	                	if (Workspace.mDeleteState == Workspace.DELETE_NONE) {
+    	                		mLauncher.onTouchDownAllAppsButton(v);
+							}
     	                }
     	                return false;
     	            }
@@ -304,7 +307,9 @@ public class Hotseat extends PagedView {
     	            @Override
     	            public void onClick(android.view.View v) {
     	                if (mLauncher != null) {
-    	                    mLauncher.onClickAllAppsButton(v);
+    	                	if (Workspace.mDeleteState == Workspace.DELETE_NONE) {
+    	                		 mLauncher.onClickAllAppsButton(v);
+    	                	}
     	                }
     	            }
     	        });
