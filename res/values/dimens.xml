@@ -79,6 +79,7 @@
 
     <!-- height of the bottom row of controls -->
     <dimen name="button_bar_height">108dip</dimen>
+    <dimen name="desktop_indicator_margin_bottom">90dp</dimen>
     <!-- Because portal animations go beyond the bounds of an icon, we need
          to make the dock layout slightly larger than the button_bar_height -->
     <dimen name="button_bar_height_top_padding">0dp</dimen>

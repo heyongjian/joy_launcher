@@ -3193,9 +3193,14 @@ public final class Launcher extends Activity
     		mWorkspace.setVisibility(View.INVISIBLE);
     	}
     	
-    	if(mDockDivider != null && mDockDivider.getVisibility() == View.VISIBLE)
+    	//modify by huangming for ios indicator.
+    	/*if(mDockDivider != null && mDockDivider.getVisibility() == View.VISIBLE)
     	{
     		mDockDivider.setVisibility(View.INVISIBLE);
+    	}*/
+    	if(mDesktopIndicator != null && mDesktopIndicator.getVisibility() == View.VISIBLE)
+    	{
+    		mDesktopIndicator.setVisibility(View.INVISIBLE);
     	}
     	
     	if(mHotseat != null && mHotseat.getVisibility() == View.VISIBLE)
@@ -3214,10 +3219,16 @@ public final class Launcher extends Activity
     		mWorkspace.setVisibility(View.VISIBLE);
     	}
     	
-    	if(mDockDivider != null && mDockDivider.getVisibility() != View.VISIBLE)
+    	//modify by huangming for ios indicator.
+    	/*if(mDockDivider != null && mDockDivider.getVisibility() != View.VISIBLE)
     	{
     		mDockDivider.setVisibility(View.VISIBLE);
+    	}*/
+    	if(mDesktopIndicator != null && mDesktopIndicator.getVisibility() != View.VISIBLE)
+    	{
+    		mDesktopIndicator.setVisibility(View.VISIBLE);
     	}
+    	
     	
     	if(mHotseat != null && mHotseat.getVisibility() != View.VISIBLE)
     	{
@@ -3807,7 +3818,7 @@ public final class Launcher extends Activity
             }
 
             // We only need to animate in the dock divider if we're going from spring loaded mode
-            showDockDivider(animated && wasInSpringLoadedMode);
+            if(LauncherApplication.sTheme != LauncherApplication.THEME_IOS)showDockDivider(animated && wasInSpringLoadedMode);
         }
 
         mWorkspace.flashScrollingIndicator(animated);
