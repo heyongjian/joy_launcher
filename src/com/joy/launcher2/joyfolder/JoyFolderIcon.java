@@ -8,10 +8,13 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +28,7 @@ import com.joy.launcher2.BubbleTextView;
 import com.joy.launcher2.Folder;
 import com.joy.launcher2.FolderIcon;
 import com.joy.launcher2.FolderInfo;
+import com.joy.launcher2.Hotseat;
 import com.joy.launcher2.ItemInfo;
 import com.joy.launcher2.Launcher;
 import com.joy.launcher2.LauncherApplication;
@@ -84,7 +88,7 @@ public class JoyFolderIcon extends FolderIcon {
         {
         	LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)icon.mPreviewBackground.getLayoutParams();
         	lp.width = lp.height = previewSize;
-        	lp.topMargin = icon.mFolderMarginTop = icon.mFolderName.getPaddingTop() + (int)res.getDimension(R.dimen.app_icon_drawable_padding);
+        	lp.topMargin = icon.mFolderMarginTop = icon.mFolderName.getPaddingTop();
             lp.bottomMargin = (int)res.getDimension(R.dimen.app_icon_drawable_padding) - icon.mFolderName.getPaddingTop();
         }
         //end
@@ -125,10 +129,35 @@ public class JoyFolderIcon extends FolderIcon {
     	 foldericon.setBounds(oldRect);
     	 canvas.restore();
     	 
+    	 //add by huangming for ios adaptation.
+    	 if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+         {
+ 			boolean isOnHotseat = Hotseat.isViewOnHotseat(this);
+ 		    
+ 		    if(isOnHotseat)
+ 		    {
+ 		    	drawIos(canvas, foldericon);
+ 		    }
+         }
+    	 //end
     	 computePreviewDrawingParams(foldericon);
     }
+    
+    
+    //add by huangming for ios adaptation.
+    @Override
+	protected Bitmap getOriginalImage(Drawable originalDrawable, int width,
+			int height, int lastHeight) {
+		// TODO Auto-generated method stub
+    	return Hotseat.getOriginalImage(
+    			originalDrawable, 
+    			width, 
+    			height, 
+    			lastHeight);
+	}
+    //end
 
-    private Drawable initJoyFolderIcon(String iconPath){
+	private Drawable initJoyFolderIcon(String iconPath){
     		Drawable d = null;
     		Bitmap bitmap = Util.getBitmapFromAssets(iconPath);
     		d = new BitmapDrawable(bitmap);

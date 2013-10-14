@@ -82,7 +82,8 @@
 
     <include
         android:id="@+id/qsb_bar"
-        layout="@layout/qsb_bar" />
+        layout="@layout/qsb_bar" 
+        android:visibility="gone"/>
 
     <com.joy.launcher2.DrawableStateProxyView
         android:id="@+id/voice_button_proxy"

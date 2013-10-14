@@ -107,7 +107,7 @@ public class LauncherApplication extends Application {
                 mFavoritesObserver);
         initLauncher();
         //add by huangming for theme
-        sTheme = THEME_DEFAULT;
+        sTheme = THEME_IOS;
         //END
     }
     
