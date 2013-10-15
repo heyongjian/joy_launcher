@@ -228,6 +228,8 @@
     <!--  add by huangming for backup and recover function..-->
     <string-array name="backup_keys">
         <item>channel</item>
+        <item>ordinary_user</item>
+        <item>theme</item>
         
         <item>ui_homescreen_grid</item>
         <item>ui_homescreen_screens</item>
@@ -258,6 +260,8 @@
     </string-array>
     <string-array name="backup_keys_attrs">
         <item>string</item>
+        <item>boolean</item>
+        <item>int</item>
         
         <item>string</item>
         <item>int</item>
@@ -287,6 +291,8 @@
     </string-array>
     <string-array name="backup_ordinary_keys">
         <item>channel</item>
+        <item>ordinary_user</item>
+        <item>theme</item>
         
         <item>ui_homescreen_grid</item>
         <item>ui_homescreen_scrolling_transition_effect</item>
@@ -302,6 +308,8 @@
     </string-array>
     <string-array name="backup_ordinary_keys_attrs">
         <item>string</item>
+        <item>boolean</item>
+        <item>int</item>
         
         <item>string</item>
         <item>string</item>
