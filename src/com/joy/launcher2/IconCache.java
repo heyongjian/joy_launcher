@@ -242,7 +242,7 @@ public class IconCache {
             	}
             }
             boolean isSystem = false;
-            if(packageName != null && activityName != null && checkIsSystemApp(mContext, packageName))
+            if(!LauncherApplication.isDefaultTheme() && packageName != null && activityName != null && checkIsSystemApp(mContext, packageName))
             {
             	for(int i = 0; i < mPackageFilter.size(); i++)
             	{

@@ -172,7 +172,7 @@ public final class PreferencesProvider {
     	{
     		String[] keys = null;
         	String[] attrs = null;
-        	boolean isOrdinaryUser = res.getBoolean(R.bool.config_ordinary_user);
+        	boolean isOrdinaryUser = getIsOrdinaryUser();
         	if(isOrdinaryUser)
         	{
         		keys = res.getStringArray(R.array.backup_ordinary_keys);
@@ -208,7 +208,7 @@ public final class PreferencesProvider {
     	{
     		String[] keys = null;
         	String[] attrs = null;
-        	boolean isOrdinaryUser = res.getBoolean(R.bool.config_ordinary_user);
+        	boolean isOrdinaryUser = getIsOrdinaryUser();
         	if(isOrdinaryUser)
         	{
         		keys = res.getStringArray(R.array.backup_ordinary_keys);
@@ -342,6 +342,16 @@ public final class PreferencesProvider {
     private static String getString(String key, String def) {
         return sKeyValues.containsKey(key) && sKeyValues.get(key) instanceof String ?
                 (String) sKeyValues.get(key) : def;
+    }
+    
+    public static boolean getIsOrdinaryUser()
+    {
+    	return getBoolean("ordinary_user", true);
+    }
+    
+    public static int getTheme()
+    {
+    	return getInt("theme", 0);
     }
 
     public static class Interface {
