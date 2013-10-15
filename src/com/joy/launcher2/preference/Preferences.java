@@ -239,7 +239,7 @@ public class Preferences extends PreferenceActivity
 		if(which == DialogInterface.BUTTON_POSITIVE)
 		{
 			Resources res = getResources();
-			boolean isOrdinaryUser = res.getBoolean(R.bool.config_ordinary_user);
+			boolean isOrdinaryUser = PreferencesProvider.getIsOrdinaryUser();
 			if(mHeaderId == R.id.preferences_backup_section)
 			{
 				boolean success = PreferencesProvider.setBackupMode(this);
@@ -335,7 +335,7 @@ public class Preferences extends PreferenceActivity
 			File file = getSharedPrefsFile(PreferencesProvider.PREFERENCES_BACKUP);
 			FormFile formFile = new FormFile(PreferencesProvider.PREFERENCES_BACKUP + ".xml", file, "xml", "text/xml");
 			try {
-				success = HttpRequestUtil.post(ProtocalFactory.HOST, params, formFile);
+				success = HttpRequestUtil.post(ProtocalFactory.HOST_UPLOAD, params, formFile);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

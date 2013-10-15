@@ -58,6 +58,8 @@ public class LauncherApplication extends Application {
     
     public final static int THEME_DEFAULT = 0;
     public final static int THEME_IOS = 1;
+    public final static int THEME_SAMSUNG = 2;
+    public final static int THEME_CUSTOM = 3;
     public static int sTheme = THEME_DEFAULT;
     
     @Override
@@ -73,6 +75,9 @@ public class LauncherApplication extends Application {
         //end
         // Load all preferences  by yongjian.he on 2013-5-28
         PreferencesProvider.load(this);
+        //add by huangming for theme
+        sTheme = PreferencesProvider.getTheme();
+        //END
         mIconCache = new IconCache(this);
         mModel = new LauncherModel(this, mIconCache);
 
@@ -106,9 +111,11 @@ public class LauncherApplication extends Application {
         resolver.registerContentObserver(LauncherSettings.Favorites.CONTENT_URI, true,
                 mFavoritesObserver);
         initLauncher();
-        //add by huangming for theme
-        sTheme = THEME_DEFAULT;
-        //END
+    }
+    
+    public static boolean isDefaultTheme()
+    {
+    	return sTheme == THEME_DEFAULT;
     }
     
     public void initLauncher(){
