@@ -107,6 +107,7 @@ public class ShakeAnimationManager {
 	            @Override
 	            public void onAnimationEnd(Animator animation) {
 	            	view.setLayerType(View.LAYER_TYPE_NONE, null);
+	            	child.setRotation(initRotation);
 	            }
 	        });
 	        va.start();
@@ -150,6 +151,8 @@ public class ShakeAnimationManager {
 	            @Override
 	            public void onAnimationEnd(Animator animation) {
 	            	view.setLayerType(View.LAYER_TYPE_NONE, null);
+	                child.setScaleX(initScale);
+	                child.setScaleY(initScale);
 	            }
 	        });
 	        va.start();
