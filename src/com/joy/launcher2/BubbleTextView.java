@@ -19,14 +19,26 @@ package com.joy.launcher2;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.Region.Op;
+import android.graphics.Shader.TileMode;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewParent;
 
 import com.joy.launcher2.download.DownloadInfo;
 import com.joy.launcher2.joyfolder.JoyIconView;
@@ -69,6 +81,9 @@ public class BubbleTextView extends JoyIconView implements ShortcutInfo.Shortcut
     private boolean mTextVisible = true;
     private CharSequence mVisibleText;
 
+    //add by wanghao
+    DeleteRect mDeleteRect;
+    private boolean mIsCanEdit = true;
     public BubbleTextView(Context context) {
         super(context);
         init();
@@ -127,6 +142,7 @@ public class BubbleTextView extends JoyIconView implements ShortcutInfo.Shortcut
         	setMaxLines(2);
         }
         //end
+        mDeleteRect = new DeleteRect(this);
     }
 
     public void applyFromShortcutInfo(ShortcutInfo info, IconCache iconCache) {
@@ -260,6 +276,9 @@ public class BubbleTextView extends JoyIconView implements ShortcutInfo.Shortcut
         // isPressed() on an ACTION_UP
         boolean result = super.onTouchEvent(event);
 
+        if(mDeleteRect != null){
+    		return mDeleteRect.onTouchEventDelete(result,event);
+    	}
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // So that the pressed outline is visible immediately when isPressed() is true,
@@ -444,4 +463,51 @@ public class BubbleTextView extends JoyIconView implements ShortcutInfo.Shortcut
 		}
 		return info.getDownLoadInfo();
     }
+    
+    public void isCanEdit(boolean isCanEdit){
+    	mIsCanEdit = isCanEdit;
+    }
+    
+    public boolean isCanEdit(){
+    	return mIsCanEdit;
+    }
+	@Override
+	protected void onDraw(Canvas canvas) {
+		// TODO Auto-generated method stub
+		super.onDraw(canvas);
+		if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+        {
+			boolean isOnHotseat = Hotseat.isViewOnHotseat(this);
+		    
+		    if(isOnHotseat)
+		    {
+		    	int width = getWidth();
+		    	int height = getHeight();
+		    	if(width <= 0 || height <= 0)return;
+		    	Drawable[] drawables = getCompoundDrawables();
+		    	Drawable drawableTop = drawables[1];
+		    	if(drawableTop == null)return;
+		    	int dWidth = drawableTop.getIntrinsicWidth();
+		    	int dHeight = drawableTop.getIntrinsicHeight();
+		    	int hspace = getRight() - getLeft() - getCompoundPaddingRight() - getCompoundPaddingLeft();
+		    	int translateX = getScrollX() + getCompoundPaddingRight() + (hspace - dWidth) / 2;
+		    	int translateY = getScrollY() + getPaddingTop() + dHeight;
+		    	int lastHeight = Math.min(dHeight, height - translateY);
+		    	if(lastHeight <= 0)return;
+		    	canvas.save();
+		    	canvas.translate(translateX, translateY);
+		    	Bitmap originalImage = Hotseat.getOriginalImage(drawableTop, lastHeight);
+		    	Bitmap reflectionImage = Hotseat.createReflectedImage(originalImage);
+		    	canvas.drawBitmap(reflectionImage, 0, 0, null);
+		    	canvas.restore();
+		    	
+		    }
+    	if(mDeleteRect != null){
+    		if(isCanEdit()){
+    			mDeleteRect.drawDelete(canvas, mScrollX, mScrollY);
+    		}
+        }
+	}
+	}
+	//end
 }

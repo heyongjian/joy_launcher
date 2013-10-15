@@ -235,6 +235,11 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     };
 
     public void onClick(View v) {
+    	
+    	if (Workspace.mDeleteState != Workspace.DELETE_NONE) {
+        	return;
+        }
+    	
         Object tag = v.getTag();
         if (tag instanceof ShortcutInfo) {
             // refactor this code from Folder
@@ -246,6 +251,11 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         // Return if global dragging is not enabled
         if (!mLauncher.isDraggingEnabled()) return true;
 
+        if (Workspace.mDeleteState == Workspace.DELETE_NONE) {
+        	mLauncher.getWorkspace().toShake(Workspace.DELETE_FOLDER,true);
+        	mLauncher.getWorkspace().setDeleteState(Workspace.DELETE_FOLDER);
+        }
+        
         Object tag = v.getTag();
         if (tag instanceof ShortcutInfo) {
             ShortcutInfo item = (ShortcutInfo) tag;
@@ -788,6 +798,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         }
     }
     private void animateClosedIos() {
+    	
     	if (!(getParent() instanceof DragLayer)) return;
 
         
@@ -1396,7 +1407,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         mNeedHeight = height;
         DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
     	lp.width = width;
-        lp.height = 0;
+    	lp.height = (Workspace.mDeleteState == Workspace.DELETE_FOLDER)?height:0;
         left = 0;
         top = mTempRect.bottom;
         lp.x = left;
@@ -1631,7 +1642,17 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
             replaceFolderWithFinalItem();
         }
     }
+    public void onRemoveItem(ShortcutInfo item) {
+        mItemsInvalidated = true;
+        mInfo.contents.remove(item);
+        View v = getViewForInfo(item);
+        mContent.removeView(v);
+        setupContentForNumItems(getItemCount());
 
+         if (getItemCount() <= 1) {
+             mLauncher.closeFolder();
+         }
+    }
     private View getViewForInfo(ShortcutInfo item) {
         for (int j = 0; j < mContent.getCountY(); j++) {
             for (int i = 0; i < mContent.getCountX(); i++) {

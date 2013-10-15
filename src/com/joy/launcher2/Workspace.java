@@ -330,6 +330,11 @@ public class Workspace extends PagedView
     private int mFolderIconMarginTop = Integer.MAX_VALUE;
     private Size mIconSize;
 
+    //add by wanghao for delete ios icon
+    public final static int DELETE_NONE = 0;
+    public final static int DELETE_DESKTOP = 1;
+    public final static int DELETE_FOLDER = 2;
+    public static int mDeleteState = DELETE_NONE;
     /**
      * Used to inflate the Workspace from XML.
      *
@@ -392,6 +397,13 @@ public class Workspace extends PagedView
             cellCountX = PreferencesProvider.Interface.Homescreen.getCellCountX(cellCountX);
             cellCountY = PreferencesProvider.Interface.Homescreen.getCellCountY(cellCountY);
         }
+        //add by huangming for ios adaptation.
+        if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+        {
+        	cellCountX = 4;
+        	cellCountY = 5;
+        }
+        //end
 
         LauncherModel.updateWorkspaceLayoutCells(cellCountX, cellCountY);
         setHapticFeedbackEnabled(false);
@@ -754,10 +766,15 @@ public class Workspace extends PagedView
              */
             if(!mLauncher.getIsVertical() || !mShowText)
             {
+            	boolean showText = false;
+            	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
+                {
+            		showText = true;
+                }
             	if (child instanceof FolderIcon) {
-                    ((FolderIcon) child).setTextVisible(false);
+                    ((FolderIcon) child).setTextVisible(showText);
                 } else if (child instanceof BubbleTextView) {
-                    ((BubbleTextView) child).setTextVisible(false);
+                    ((BubbleTextView) child).setTextVisible(showText);
                 }
             }
         } else {
@@ -863,8 +880,45 @@ public class Workspace extends PagedView
         if (child instanceof DropTarget) {
             mDragController.addDropTarget((DropTarget) child);
         }
+        if (Workspace.mDeleteState != Workspace.DELETE_NONE) {
+        	toShake(child, true);
+		}
     }
+    /**
+     * 删除屏幕中的view
+     * @param child
+     * @param container
+     * @param screen
+     */
+    void removeInScreen(View child, long container, int screen) {
+        if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+            if (screen < 0 || screen >= getChildCount()) {
+                return;
+            }
+        } else if (container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
+            if (screen < 0 || screen >= mLauncher.getHotseat().getChildCount()) {
+                return;
+            }
+        }
 
+        final CellLayout layout;
+        if (container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
+ 
+            screen = mLauncher.getHotseat().getScreenFromOrder(screen);
+            layout = (CellLayout) mLauncher.getHotseat().getPageAt(screen);
+            layout.removeView(child);
+        }else if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+        	layout = (CellLayout) getChildAt(screen);
+        	layout.removeView(child);
+        }else {
+        	Folder folder = getOpenFolder();
+        	Object obj = child.getTag();
+        	if (obj instanceof ShortcutInfo) {
+        		folder.onRemoveItem((ShortcutInfo)obj);
+			}
+        }
+    }
+    
     /**
      * Check if the point (x, y) hits a given page.
      */
@@ -2515,6 +2569,80 @@ public class Workspace extends PagedView
         }
         return anim;
     }
+    
+    public void setDeleteState(int state){
+    	if(LauncherApplication.sTheme != LauncherApplication.THEME_IOS){
+			return;
+		}
+    	mDeleteState = state;
+    }
+    /**
+     * 抖动当前布局中的所有图标
+     * @param state
+     * @param isToDelete
+     */
+	public void toShake(int state,boolean isToDelete) {
+		if(LauncherApplication.sTheme != LauncherApplication.THEME_IOS){
+			return;
+		}
+		ShakeAnimationManager manager = ShakeAnimationManager.getInstance();
+
+		if (state == DELETE_DESKTOP) {
+			ArrayList<ShortcutAndWidgetContainer> childrenLayouts = getAllShortcutAndWidgetContainers();
+			for (ShortcutAndWidgetContainer layout : childrenLayouts) {
+				int childCount = layout.getChildCount();
+		        for (int i = 0; i < childCount; i++) {
+		            View child = layout.getChildAt(i);
+		            toShake(child, isToDelete);
+		        }
+			}
+		}
+		if (state == DELETE_FOLDER) {
+			Folder curFolder = getOpenFolder();
+			if (curFolder != null) {
+				ArrayList<View> arrays = curFolder.getItemsInReadingOrder();
+				for (int i = 0; i < arrays.size(); i++) {
+					final View view = arrays.get(i);
+					toShake(view, isToDelete);
+				}
+			}
+		}
+	}
+	/**
+     * 抖动单个图标
+     * @param state
+     * @param isToDelete
+     */
+	private void toShake(View view,boolean isShake){
+		
+		if(LauncherApplication.sTheme != LauncherApplication.THEME_IOS){
+			return;
+		}
+		ShakeAnimationManager manager = ShakeAnimationManager.getInstance();
+		
+		if (view instanceof BubbleTextView) {
+         	BubbleTextView bubbleTextView = (BubbleTextView)view;
+         	if (!bubbleTextView.isCanEdit()) {
+     			bubbleTextView.mDeleteRect.isDelete = false;
+     			isShake = false;
+     		}else {
+     			bubbleTextView.mDeleteRect.isDelete = isShake;
+     		}
+         	if(isShake) manager.startShakeAnim(view);
+         }else if(view instanceof FolderIcon){
+         	FolderIcon folderIcon = (FolderIcon)view;
+     		folderIcon.mDeleteRect.isDelete = isShake;
+     		if(isShake) manager.startShakeAnim(view);
+         }else if(view instanceof LauncherAppWidgetHostView){
+         	LauncherAppWidgetHostView widget = (LauncherAppWidgetHostView)view;
+     		widget.mDeleteRect.isDelete = isShake;
+     		if(isShake) manager.startHeartbeatAnim(view);
+         }
+		if(!isShake){
+			manager.stopAnim(view);
+		}
+		view.invalidate();
+	}
 
     @Override
     public void onLauncherTransitionPrepare(Launcher l, boolean animated, boolean toWorkspace) {

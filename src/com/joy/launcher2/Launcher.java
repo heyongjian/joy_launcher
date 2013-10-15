@@ -373,6 +373,7 @@ public final class Launcher extends Activity
     
     //add by wanghao,for issue-1:weather the widget is added by menu.
     private boolean addWidgetByMenu = false;
+    //test
     
     private Runnable mBuildLayersRunnable = new Runnable() {
         public void run() {
@@ -1145,6 +1146,7 @@ public final class Launcher extends Activity
         // BEGIN: add by yongjian.he for ios-style indecator.
         if (LauncherApplication.sTheme == LauncherApplication.THEME_IOS){
         	mDesktopIndicator = (DesktopIndicator)mDragLayer.findViewById(R.id.desktop_indicator);
+        	((ImageView)mDockDivider).setImageDrawable(null);
         	mDockDivider.setVisibility(View.GONE);
         }
         // END on 2013-10-14.
@@ -1987,6 +1989,9 @@ public final class Launcher extends Activity
         if (isWorkspaceLocked() && !isAllAppsVisible()) {
             return false;
         }
+        if (Workspace.mDeleteState != Workspace.DELETE_NONE) {
+			return false;
+		}
 
         super.onCreateOptionsMenu(menu);
 
@@ -2465,6 +2470,15 @@ public final class Launcher extends Activity
 
     @Override
     public void onBackPressed() {
+		if (Workspace.mDeleteState == Workspace.DELETE_DESKTOP) {
+			mWorkspace.toShake(Workspace.DELETE_DESKTOP,false);
+			mWorkspace.setDeleteState(Workspace.DELETE_NONE);
+			return;
+		}else if(Workspace.mDeleteState == Workspace.DELETE_FOLDER){
+			mWorkspace.toShake(Workspace.DELETE_FOLDER,false);
+			mWorkspace.setDeleteState(Workspace.DELETE_NONE);
+			return;
+		}
     	//modify by huangming for app show or hide
     	if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
     	{
@@ -2532,7 +2546,11 @@ public final class Launcher extends Activity
         if (v.getWindowToken() == null) {
             return;
         }
-
+        
+        if (Workspace.mDeleteState != Workspace.DELETE_NONE) {
+         	return;
+        }
+        
         if (!mWorkspace.isFinishedSwitchingState()) {
             return;
         }
@@ -3137,11 +3155,17 @@ public final class Launcher extends Activity
         }
         folder.animateOpen();
         if(LauncherApplication.sTheme == LauncherApplication.THEME_DEFAULT)growAndFadeOutFolderIcon(folderIcon);
+        
     }
 
     public void closeFolder() {
         Folder folder = mWorkspace.getOpenFolder();
         if (folder != null) {
+        	 if (Workspace.mDeleteState == Workspace.DELETE_FOLDER) {
+        		mWorkspace.toShake(Workspace.DELETE_FOLDER,false);
+        		mWorkspace.toShake(Workspace.DELETE_DESKTOP,true);
+        		mWorkspace.setDeleteState(Workspace.DELETE_DESKTOP);
+     		}
             if (folder.isEditingName()) {
                 folder.dismissEditingName();
             }
@@ -3170,9 +3194,14 @@ public final class Launcher extends Activity
     		mWorkspace.setVisibility(View.INVISIBLE);
     	}
     	
-    	if(mDockDivider != null && mDockDivider.getVisibility() == View.VISIBLE)
+    	//modify by huangming for ios indicator.
+    	/*if(mDockDivider != null && mDockDivider.getVisibility() == View.VISIBLE)
     	{
     		mDockDivider.setVisibility(View.INVISIBLE);
+    	}*/
+    	if(mDesktopIndicator != null && mDesktopIndicator.getVisibility() == View.VISIBLE)
+    	{
+    		mDesktopIndicator.setVisibility(View.INVISIBLE);
     	}
     	
     	if(mHotseat != null && mHotseat.getVisibility() == View.VISIBLE)
@@ -3191,10 +3220,16 @@ public final class Launcher extends Activity
     		mWorkspace.setVisibility(View.VISIBLE);
     	}
     	
-    	if(mDockDivider != null && mDockDivider.getVisibility() != View.VISIBLE)
+    	//modify by huangming for ios indicator.
+    	/*if(mDockDivider != null && mDockDivider.getVisibility() != View.VISIBLE)
     	{
     		mDockDivider.setVisibility(View.VISIBLE);
+    	}*/
+    	if(mDesktopIndicator != null && mDesktopIndicator.getVisibility() != View.VISIBLE)
+    	{
+    		mDesktopIndicator.setVisibility(View.VISIBLE);
     	}
+    	
     	
     	if(mHotseat != null && mHotseat.getVisibility() != View.VISIBLE)
     	{
@@ -3211,14 +3246,16 @@ public final class Launcher extends Activity
         if (!(v instanceof CellLayout)) {
             v = (View) v.getParent().getParent();
         }
-
+        
+        
         resetAddInfo();
         CellLayout.CellInfo longClickCellInfo = (CellLayout.CellInfo) v.getTag();
         // This happens when long clicking an item with the dpad/trackball
         if (longClickCellInfo == null) {
             return true;
         }
-
+        
+        
         // The hotseat touch handling does not go through Workspace, and we always allow long press
         // on hotseat items.
         final View itemUnderLongClick = longClickCellInfo.cell;
@@ -3231,6 +3268,10 @@ public final class Launcher extends Activity
 
                 startWallpaper();
             } else {
+                if (Workspace.mDeleteState == Workspace.DELETE_NONE) {
+                	mWorkspace.setDeleteState(Workspace.DELETE_DESKTOP);
+                   	 mWorkspace.toShake(Workspace.DELETE_DESKTOP,true);
+           		}
                 if (!(itemUnderLongClick instanceof Folder)) {
                     // User long pressed on an item
                     mWorkspace.startDrag(longClickCellInfo);
@@ -3778,7 +3819,7 @@ public final class Launcher extends Activity
             }
 
             // We only need to animate in the dock divider if we're going from spring loaded mode
-            showDockDivider(animated && wasInSpringLoadedMode);
+            if(LauncherApplication.sTheme != LauncherApplication.THEME_IOS)showDockDivider(animated && wasInSpringLoadedMode);
         }
 
         mWorkspace.flashScrollingIndicator(animated);
