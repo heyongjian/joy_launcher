@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="button_bar_height">135dip</dimen>
+    <dimen name="desktop_indicator_margin_bottom">113dp</dimen>
+    <dimen name="hotseat_cell_width">91dp</dimen>
+    <dimen name="hotseat_cell_height">96dp</dimen>
+    <dimen name="button_bar_height_plus_padding">96dp</dimen>
+    <dimen name="workspace_cell_width_port">91dp</dimen>
+    <dimen name="workspace_cell_height_port">96dp</dimen>
+    <!-- <dimen name="cell_layout_left_padding_port">0dp</dimen>
+    <dimen name="cell_layout_right_padding_port">0dp</dimen>
+    <dimen name="button_bar_width_left_padding">10dp</dimen>
+    <dimen name="button_bar_width_right_padding">10dp</dimen> -->
+    <dimen name="app_icon_size">64dp</dimen>
+</resources>

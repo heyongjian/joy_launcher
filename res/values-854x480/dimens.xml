@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="button_bar_height">114dip</dimen>
+    <dimen name="desktop_indicator_margin_bottom">96dp</dimen>
+    <dimen name="hotseat_cell_height">86dp</dimen>
+    <dimen name="button_bar_height_plus_padding">86dp</dimen>
+    <dimen name="workspace_cell_height_port">86dp</dimen>
+</resources>
