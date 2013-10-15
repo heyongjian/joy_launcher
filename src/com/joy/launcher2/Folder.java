@@ -1268,7 +1268,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     	//modify by huangming for theme.
     	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
     	{
-    		mContent.setGridSize(4, (mInfo.contents.size() - 1) / 4 + 1);
+    		int contentsSize = mInfo.contents.size();
+    		if(mSuppressOnAdd)contentsSize += 1;
+    		mContent.setGridSize(4, (contentsSize - 1) / 4 + 1);
     	}
     	else
     	{
@@ -1605,8 +1607,8 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 mCurrentDragView.setVisibility(VISIBLE);
             }
             mItemsInvalidated = true;
-            setupContentDimensions(getItemCount());
             mSuppressOnAdd = true;
+            setupContentDimensions(getItemCount());
         }
         mInfo.add(item);
     }
