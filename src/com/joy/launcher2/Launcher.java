@@ -2547,15 +2547,16 @@ public final class Launcher extends Activity
             return;
         }
         
-        if (Workspace.mDeleteState != Workspace.DELETE_NONE) {
-         	return;
-        }
-        
         if (!mWorkspace.isFinishedSwitchingState()) {
             return;
         }
 
         Object tag = v.getTag();
+        
+        if (Workspace.mDeleteState != Workspace.DELETE_NONE&&!(tag instanceof FolderInfo)) {
+        	return;
+        }
+        
         if (tag instanceof ShortcutInfo) {
             if (((ShortcutInfo) tag).itemType == LauncherSettings.Favorites.ITEM_TYPE_ALLAPPS) {
                 showAllApps(true);
@@ -3139,6 +3140,9 @@ public final class Launcher extends Activity
      * @param folderInfo The FolderInfo describing the folder to open.
      */
     public void openFolder(FolderIcon folderIcon) {
+    	if (Workspace.mDeleteState == Workspace.DELETE_DESKTOP) {
+    		mWorkspace.toShake(Workspace.DELETE_DESKTOP, false);
+    	}
         Folder folder = folderIcon.getFolder();
         FolderInfo info = folder.mInfo;
 
@@ -3156,6 +3160,10 @@ public final class Launcher extends Activity
         folder.animateOpen();
         if(LauncherApplication.sTheme == LauncherApplication.THEME_DEFAULT)growAndFadeOutFolderIcon(folderIcon);
         
+        if (Workspace.mDeleteState == Workspace.DELETE_DESKTOP) {
+        	mWorkspace.toShake(Workspace.DELETE_FOLDER, true);
+        	mWorkspace.setDeleteState(Workspace.DELETE_FOLDER);
+        }
     }
 
     public void closeFolder() {
