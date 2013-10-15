@@ -1145,6 +1145,7 @@ public final class Launcher extends Activity
         // BEGIN: add by yongjian.he for ios-style indecator.
         if (LauncherApplication.sTheme == LauncherApplication.THEME_IOS){
         	mDesktopIndicator = (DesktopIndicator)mDragLayer.findViewById(R.id.desktop_indicator);
+        	((ImageView)mDockDivider).setImageDrawable(null);//hide dockdivider.
         	mDockDivider.setVisibility(View.GONE);
         }
         // END on 2013-10-14.
