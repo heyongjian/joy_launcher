@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><map>
 <string name="channel">1001</string>
 <boolean name="ordinary_user" value="false"/>
-<int name="theme" value="1"/>
+<int name="theme" value="0"/>
 </map>

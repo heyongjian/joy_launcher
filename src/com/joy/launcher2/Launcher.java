@@ -649,6 +649,7 @@ public final class Launcher extends Activity
         if (sGlobalSearchIcon[coi] == null || sVoiceSearchIcon[coi] == null ||
                 sAppMarketIcon[coi] == null) {
             updateAppMarketIcon();
+            updateEnterInstaledAppsIcon();
             searchVisible = updateGlobalSearchIcon();
             voiceVisible = updateVoiceSearchIcon(searchVisible);
         }
@@ -1143,12 +1144,13 @@ public final class Launcher extends Activity
         mQsbDivider = findViewById(R.id.qsb_divider);
         mDockDivider = findViewById(R.id.dock_divider);
         // BEGIN: add by yongjian.he for ios-style indecator.
-        if (LauncherApplication.sTheme == LauncherApplication.THEME_IOS){
+        if (!LauncherApplication.isDefaultTheme()){
         	mDesktopIndicator = (DesktopIndicator)mDragLayer.findViewById(R.id.desktop_indicator);
         	((ImageView)mDockDivider).setImageDrawable(null);//hide dockdivider.
         	mDockDivider.setVisibility(View.GONE);
         }
         // END on 2013-10-14.
+     
         // Setup the drag layer
         mDragLayer.setup(this, dragController);
 
@@ -1160,7 +1162,9 @@ public final class Launcher extends Activity
         	mHotseat.setup(this);
         }
         //end
-
+        
+        	
+        
         // Setup the workspace
         mWorkspace.setHapticFeedbackEnabled(false);
         mWorkspace.setOnLongClickListener(this);
@@ -1198,9 +1202,12 @@ public final class Launcher extends Activity
         if (mSearchDropTargetBar != null) {
             mSearchDropTargetBar.setup(this, dragController);
         }
-        //added by huangming for menu.
-        menuView = (MenuFrameLayout)mDragLayer.findViewById(R.id.menu_view);
-        menuView.setLauncher(this);
+       
+        if (!LauncherApplication.isDefaultTheme()){
+        	//added by huangming for menu.
+        	menuView = (MenuFrameLayout)mDragLayer.findViewById(R.id.menu_view);
+        	menuView.setLauncher(this);
+        }
     }
 
     /**
@@ -1575,6 +1582,7 @@ public final class Launcher extends Activity
             // When Launcher comes back to foreground, a different Activity might be responsible for
             // the app market intent, so refresh the icon
             updateAppMarketIcon();
+            updateEnterInstaledAppsIcon();
             clearTypedText();
         }
     }
@@ -1948,6 +1956,10 @@ public final class Launcher extends Activity
 	//added by huangming for menu.
 	public boolean onMenuOpened(int featureId, Menu menu) 
 	{
+		//add by yongjian.he ,for google-Origina theme we use system menu style.
+		if (LauncherApplication.isDefaultTheme()){
+			return true;
+		}
 		if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
 		{
 			return false;
@@ -3137,7 +3149,7 @@ public final class Launcher extends Activity
                     folder.getParent() + ").");
         }
         folder.animateOpen();
-        if(LauncherApplication.sTheme == LauncherApplication.THEME_DEFAULT)growAndFadeOutFolderIcon(folderIcon);
+        if(LauncherApplication.isDefaultTheme())growAndFadeOutFolderIcon(folderIcon);
     }
 
     public void closeFolder() {
@@ -3159,7 +3171,7 @@ public final class Launcher extends Activity
         ViewGroup parent = (ViewGroup) folder.getParent().getParent();
         if (parent != null) {
             FolderIcon fi = (FolderIcon) mWorkspace.getViewForTag(folder.mInfo);
-            if(LauncherApplication.sTheme == LauncherApplication.THEME_DEFAULT)shrinkAndFadeInFolderIcon(fi);
+            if(LauncherApplication.isDefaultTheme())shrinkAndFadeInFolderIcon(fi);
         }
         folder.animateClosed();
     }
@@ -3407,8 +3419,8 @@ public final class Launcher extends Activity
             mStateAnimation.cancel();
             mStateAnimation = null;
         }
-        Log.e(TAG, "------hideAppsCustomizeHelper springLoaded: " + springLoaded + "animated:" + animated 
-        		+ mState + "LayerType: " + mWorkspace.getLayerType() + " || " + mAppsCustomizeTabHost.getLayerType());
+//        Log.e(TAG, "------hideAppsCustomizeHelper springLoaded: " + springLoaded + "animated:" + animated 
+//        		+ mState + "LayerType: " + mWorkspace.getLayerType() + " || " + mAppsCustomizeTabHost.getLayerType());
         final Resources res = getResources();
         final int duration = res.getInteger(R.integer.config_appsCustomizeZoomInTime);
         final float scale = (float) res.getInteger(R.integer.config_appsCustomizeZoomScaleFactor);
@@ -4180,7 +4192,8 @@ public final class Launcher extends Activity
             sAppMarketIcon[coi] = updateTextButtonWithIconFromExternalActivity(
                     R.id.market_button, activityName, R.drawable.ic_launcher_market_holo,
                     TOOLBAR_ICON_METADATA_NAME);
-            //marketButton.setVisibility(View.VISIBLE);
+            if (LauncherApplication.isDefaultTheme())
+            	marketButton.setVisibility(View.VISIBLE);
             //BEGIN: by yongjian.he on 20130625
             marketButton.setEnabled(true);
             //END for IWB-127
@@ -4203,6 +4216,16 @@ public final class Launcher extends Activity
         updateTextButtonWithDrawable(R.id.market_button, marketIconDrawable);
     }
 
+    /**
+     * the theme is not google we need hide this icon.
+     */
+    private void updateEnterInstaledAppsIcon(){
+    	if(LauncherApplication.isDefaultTheme()){
+    		final View updateEnterInstaledAppsIcon = findViewById(R.id.enter_instaled_apps_image);
+    		if (updateEnterInstaledAppsIcon != null) updateEnterInstaledAppsIcon.setVisibility(View.GONE);
+    	}
+    }
+    
     @Override
     public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent event) {
         final boolean result = super.dispatchPopulateAccessibilityEvent(event);
@@ -4478,7 +4501,7 @@ public final class Launcher extends Activity
         // Update the market app icon as necessary (the other icons will be managed in response to
         // package changes in bindSearchablesChanged()
         updateAppMarketIcon();
-
+        updateEnterInstaledAppsIcon();
         // Animate up any icons as necessary
         if (mVisible || mWorkspaceLoading) {
             Runnable newAppsRunnable = new Runnable() {
