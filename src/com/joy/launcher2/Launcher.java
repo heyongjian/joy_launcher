@@ -37,6 +37,7 @@ import java.util.Set;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -3247,10 +3248,53 @@ public final class Launcher extends Activity
                 if (!(itemUnderLongClick instanceof Folder)) {
                     // User long pressed on an item
                     mWorkspace.startDrag(longClickCellInfo);
+            	    changeState(Workspace.State.SPRING_LOADED);
                 }
             }
         }
         return true;
+    }
+    
+    protected void changeState(final Workspace.State toState)
+    {
+    	if(mState == State.WORKSPACE && LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
+    	{
+    		if (mStateAnimation != null) {
+                mStateAnimation.cancel();
+                mStateAnimation = null;
+            }
+    		mWorkspace.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+    		mStateAnimation = LauncherAnimUtils.createAnimatorSet();
+    		Resources res = getResources();
+    		int stagger = res.getInteger(R.integer.config_appsCustomizeWorkspaceAnimationStagger);
+    		Animator animator = mWorkspace.getChangeStateAnimation(
+    				toState, true, stagger);
+    		mWorkspace.onLauncherTransitionPrepare(this, true, true);
+    		mStateAnimation.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                	mWorkspace.onLauncherTransitionEnd(Launcher.this, true, true);
+                    mWorkspace.setLayerType(View.LAYER_TYPE_NONE, null);
+                }
+            });
+    		mStateAnimation.play(animator);
+			final Animator stateAnimation = mStateAnimation;
+			mWorkspace.post(new Runnable() {
+				
+				@Override
+				public void run() {
+					
+						if (stateAnimation != mStateAnimation)
+                            return;
+                        mStateAnimation.start();
+				}
+			});	
+    	}
+    }
+    
+    protected boolean isStateWorkspace()
+    {
+    	return mState == State.WORKSPACE;
     }
 
     boolean isHotseatLayout(View layout) {
