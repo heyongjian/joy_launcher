@@ -64,10 +64,12 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.joy.launcher2.DragLayer.LayoutParams;
 import com.joy.launcher2.FolderIcon.FolderRingAnimator;
 import com.joy.launcher2.LauncherSettings.Favorites;
 import com.joy.launcher2.joyfolder.JoyFolderIcon;
@@ -435,6 +437,18 @@ public class Workspace extends PagedView
             setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
         }
         }
+        
+        //add by huangming for s4
+        if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
+        {
+        	 int paddingLeft = res.getDimensionPixelSize(R.dimen.workspace_padding_left_s4);
+        	 int paddingRight = res.getDimensionPixelSize(R.dimen.workspace_padding_right_s4);
+        	 int paddingTop = res.getDimensionPixelSize(R.dimen.workspace_padding_top_s4);
+        	 int paddingBottom = res.getDimensionPixelSize(R.dimen.workspace_padding_bottom_s4);
+        	 setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+        	 mShowText = true;
+        }
+        //end
     }
 
     public static int[] getCellCountsForLarge(Context context) {
@@ -509,6 +523,14 @@ public class Workspace extends PagedView
         mLauncher.unlockScreenOrientation(false);
         mLauncher.getHotseat().setChildrenOutlineAlpha(0f);
 
+        postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				if(mLauncher != null)mLauncher.changeState(Workspace.State.NORMAL);
+			}
+		}, 150);
         // Re-enable any Un/InstallShortcutReceiver and now process any queued items
         InstallShortcutReceiver.disableAndFlushInstallQueue(getContext());
         UninstallShortcutReceiver.disableAndFlushUninstallQueue(getContext());
@@ -2258,7 +2280,7 @@ public class Workspace extends PagedView
     Animator getChangeStateAnimation(final State state, boolean animated) {
         return getChangeStateAnimation(state, animated, 0);
     }
-
+    
     Animator getChangeStateAnimation(final State state, boolean animated, int delay) {
         if (mState == state) {
             return null;
@@ -2482,7 +2504,7 @@ public class Workspace extends PagedView
                         alphaAnim.alpha(mNewAlphas[i])
                             .setDuration(duration)
                             .setInterpolator(mZoomInInterpolator);
-                        anim.play(alphaAnim);
+                        if(!mLauncher.isStateWorkspace())anim.play(alphaAnim);
                     }
                     if (mOldBackgroundAlphas[i] != 0 ||
                         mNewBackgroundAlphas[i] != 0) {
@@ -2495,7 +2517,7 @@ public class Workspace extends PagedView
                                             b * mNewBackgroundAlphas[i]);
                                 }
                             });
-                        anim.play(bgAnim);
+                        if(!mLauncher.isStateWorkspace())anim.play(bgAnim);
                     }
                 }
             }
@@ -2503,13 +2525,13 @@ public class Workspace extends PagedView
             anim.setStartDelay(delay);
         }
 
-        if (stateIsSpringLoaded) {
+        if (stateIsSpringLoaded && !mLauncher.isStateWorkspace()) {
             // Right now we're covered by Apps Customize
             // Show the background gradient immediately, so the gradient will
             // be showing once AppsCustomize disappears
             animateBackgroundGradient(getResources().getInteger(
                     R.integer.config_appsCustomizeSpringLoadedBgAlpha) / 100f, false);
-        } else {
+        } else if(!mLauncher.isStateWorkspace()){
             // Fade the background gradient away
             animateBackgroundGradient(0f, true);
         }

@@ -19,6 +19,7 @@ package com.joy.launcher2;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -30,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.joy.launcher2.R;
 import com.joy.launcher2.preference.PreferencesProvider;
@@ -93,6 +95,19 @@ public class Hotseat extends PagedView {
             Configuration.ORIENTATION_LANDSCAPE;
         mCellCount = a.getInt(R.styleable.Hotseat_cellCount, DEFAULT_CELL_COUNT);
         mCellCount = PreferencesProvider.Interface.Dock.getNumberIcons(mCellCount);
+        //add by huangming for s4
+        if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
+        {
+            Resources res = getResources();	
+        	int paddingLeft = res.getDimensionPixelSize(R.dimen.hotseat_padding_left_s4);
+        	int paddingRight = res.getDimensionPixelSize(R.dimen.hotseat_padding_right_s4);
+        	int paddingTop = res.getDimensionPixelSize(R.dimen.hotseat_padding_top_s4);
+        	int paddingBottom = res.getDimensionPixelSize(R.dimen.hotseat_padding_bottom_s4);
+        	setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+        	mCellCount = 4;
+        	mAllAppsButtonRank = 3;
+        }
+        //end
 
         LauncherModel.updateHotseatLayoutCells(mCellCount);
 
@@ -138,8 +153,23 @@ public class Hotseat extends PagedView {
         super.onFinishInflate();      
         resetLayout();
     }
+    
+    void resetS4()
+    {
+    	if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
+        {
+    		Resources res = getResources();
+    		int height = res.getDimensionPixelSize(R.dimen.hotseat_height_s4);
+    		if(getLayoutParams() instanceof FrameLayout.LayoutParams)
+    		{
+    			FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams)getLayoutParams();
+            	flp.height = height;
+    		}
+        }
+    }
 
     void resetLayout() {
+    	resetS4();
     	Context context = getContext();
     	LayoutInflater inflater = LayoutInflater.from(context);
     	int count = getChildCount();
@@ -157,7 +187,16 @@ public class Hotseat extends PagedView {
     			//modify by huangming for icon size
     			BubbleTextView allAppsButton = (BubbleTextView)
     	                inflater.inflate(R.layout.application, cl, false);
-    	        Drawable d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
+    	        Drawable d = null;
+    	        if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
+    	        {
+    	        	d = context.getResources().getDrawable(R.drawable.joy_s4_all_apps_button_icon);
+    	        	allAppsButton.setText(R.string.s4_appliccation);
+    	        }
+    	        else
+    	        {
+    	        	d = context.getResources().getDrawable(R.drawable.all_apps_button_icon);
+    	        }
     	        Bitmap b = Utilities.createIconBitmap(d, context);
     	        allAppsButton.setCompoundDrawablesWithIntrinsicBounds(null,
     	                new FastBitmapDrawable(b), null, null);

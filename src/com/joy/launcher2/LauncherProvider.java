@@ -618,6 +618,14 @@ public class LauncherProvider extends ContentProvider {
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
             ContentValues values = new ContentValues();
 
+            if(LauncherApplication.sTheme == LauncherApplication.THEME_DEFAULT)
+            {
+            	workspaceResourceId = R.xml.default_workspace;
+            }
+            else
+            {
+            	workspaceResourceId = R.xml.default_workspace_ios_s4;
+            }
             PackageManager packageManager = mContext.getPackageManager();
             int i = 0;
             try {

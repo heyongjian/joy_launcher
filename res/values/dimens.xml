@@ -46,8 +46,8 @@
     <dimen name="workspace_divider_padding_bottom">0dp</dimen>
     <dimen name="hotseat_cell_width">64dp</dimen>
     <dimen name="hotseat_cell_height">64dp</dimen>
-    <dimen name="hotseat_width_gap">-1dp</dimen>
-    <dimen name="hotseat_height_gap">-1dp</dimen>
+    <dimen name="hotseat_width_gap">0dp</dimen>
+    <dimen name="hotseat_height_gap">0dp</dimen>
     <dimen name="workspace_overscroll_drawable_padding">0dp</dimen>
     <dimen name="workspace_icon_text_size">12sp</dimen>
 
@@ -208,7 +208,7 @@
     <dimen name="installed_apps_margin_top">6dip</dimen>
     <dimen name="installed_apps_margin_bottom">6dip</dimen>
     <dimen name="installed_apps_margin_left">0dip</dimen>
-    <dimen name="installed_apps_margin_right">20dip</dimen>
+    <dimen name="installed_apps_margin_right">14dp</dimen>
 
     <!-- add by wanghao -->
     <dimen name="mylistprefrence_icon_width">42dp</dimen>
@@ -278,5 +278,21 @@
     <dimen name="recommend_select_text_size">20sp</dimen>
     <dimen name="recommend_select_text_padding_left">3dip</dimen>
     <dimen name="recommend_select_image_padding_right">3dip</dimen>
-
+    
+    <!-- adaptation for s4 -->
+    <dimen name="cell_width_s4">80dp</dimen>
+    <dimen name="cell_height_s4">100dp</dimen>
+    <dimen name="workspace_padding_left_s4">0dp</dimen>
+    <dimen name="workspace_padding_right_s4">0dp</dimen>
+    <dimen name="workspace_padding_top_s4">0dp</dimen>
+    <dimen name="workspace_padding_bottom_s4">@dimen/bottom_bar_height_s4</dimen>
+    <dimen name="hotseat_padding_left_s4">0dp</dimen>
+    <dimen name="hotseat_padding_right_s4">0dp</dimen>
+    <dimen name="hotseat_padding_top_s4">0dp</dimen>
+    <dimen name="hotseat_padding_bottom_s4">0dp</dimen>
+    <dimen name="hotseat_height_s4">@dimen/cell_height_s4</dimen>
+    <dimen name="bottom_bar_height_s4">108dp</dimen>
+    <dimen name="indicator_height_s4">103dp</dimen>
+    <dimen name="tab_text_width_s4">128dp</dimen>
+    <dimen name="tab_image_width_s4">64dp</dimen>
 </resources>
