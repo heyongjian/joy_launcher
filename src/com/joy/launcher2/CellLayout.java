@@ -199,6 +199,17 @@ public class CellLayout extends ViewGroup {
         mMaxGap = a.getDimensionPixelSize(R.styleable.CellLayout_maxGap, 0);
         mCountX = LauncherModel.getWorkspaceCellCountX();
         mCountY = LauncherModel.getWorkspaceCellCountY();
+        final Resources res = getResources();
+        //add by huangming for s4
+        if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
+        {
+        	 mWidthGap = mOriginalWidthGap = 0;
+        	 mHeightGap = mOriginalHeightGap = 0;
+        	 mCellWidth = mOriginalCellWidth = res.getDimensionPixelSize(R.dimen.cell_width_s4);
+        	 mCellHeight = mOriginalCellHeight = res.getDimensionPixelSize(R.dimen.cell_height_s4); 
+        	 mCountX = mCountY = 4;
+        }
+        //end
         mOccupied = new boolean[mCountX][mCountY];
         mTmpOccupied = new boolean[mCountX][mCountY];
         mPreviousReorderDirection[0] = INVALID_DIRECTION;
@@ -208,7 +219,6 @@ public class CellLayout extends ViewGroup {
 
         setAlwaysDrawnWithCacheEnabled(false);
 
-        final Resources res = getResources();
         mNormalBackground = res.getDrawable(R.drawable.homescreen_blue_normal_holo);
         mActiveGlowBackground = res.getDrawable(R.drawable.homescreen_blue_strong_holo);
         mGlassBackground = res.getDrawable(R.drawable.frames);

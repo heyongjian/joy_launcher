@@ -58,14 +58,12 @@
                 android:id="@+id/enter_instaled_apps_image"
                 android:onClick="onClickInstalledAppsButton"
                 android:clickable="true"
-                android:layout_marginTop="@dimen/installed_apps_margin_top"
-                android:layout_marginBottom="@dimen/installed_apps_margin_bottom"
-                android:layout_marginLeft="@dimen/installed_apps_margin_left"
                 android:layout_marginRight="@dimen/installed_apps_margin_right"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="right|center_vertical"
-                android:background="@drawable/installed_apps_image"/>
+                android:scaleType="center"
+                android:src="@drawable/installed_apps_image"/>
         </FrameLayout>
         <FrameLayout
             android:id="@+id/installed_apps_header"

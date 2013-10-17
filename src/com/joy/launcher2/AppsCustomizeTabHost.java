@@ -32,6 +32,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
@@ -125,6 +126,16 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
 
         final ViewGroup tabsContainer = (ViewGroup) findViewById(R.id.tabs_container);
         final TabWidget tabs = getTabWidget();
+        if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
+        {
+        	tabs.setBackgroundResource(R.drawable.tab_unselected_holo_s4);
+        	ImageView installedImage = (ImageView)findViewById(R.id.enter_instaled_apps_image);
+        	FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams)installedImage.getLayoutParams();
+        	lp.leftMargin = lp.rightMargin = lp.topMargin = lp.bottomMargin = 0;
+        	lp.width = getResources().getDimensionPixelSize(R.dimen.tab_image_width_s4);
+        	lp.height = LayoutParams.MATCH_PARENT;
+        	installedImage.setBackgroundResource(R.drawable.tab_image_bg);
+        }
         final AppsCustomizePagedView appsCustomizePane = (AppsCustomizePagedView)
                 findViewById(R.id.apps_customize_pane_content);
         mTabs = tabs;
@@ -151,7 +162,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         TextView tabView;
         String label;
         label = getContext().getString(R.string.all_apps_button_label);
-        tabView = (TextView) mLayoutInflater.inflate(R.layout.tab_widget_indicator, tabs, false);
+        tabView = getTabTextView(tabs);
         tabView.setText(label);
         tabView.setContentDescription(label);
         if (getContext() instanceof Launcher) {
@@ -164,7 +175,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         }
         addTab(newTabSpec(APPS_TAB_TAG).setIndicator(tabView).setContent(contentFactory));
         label = getContext().getString(R.string.widgets_tab_label);
-        tabView = (TextView) mLayoutInflater.inflate(R.layout.tab_widget_indicator, tabs, false);
+        tabView = getTabTextView(tabs);
         tabView.setText(label);
         tabView.setContentDescription(label);
         addTab(newTabSpec(WIDGETS_TAB_TAG).setIndicator(tabView).setContent(contentFactory));
@@ -185,6 +196,20 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         mTabsContainer.setAlpha(0f);
     }
 
+    private TextView getTabTextView(TabWidget tabs)
+    {
+    	TextView tabView;
+    	if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
+    	{
+    		tabView = (TextView) mLayoutInflater.inflate(R.layout.tab_widget_indicator_s4, tabs, false);
+    	}
+    	else
+    	{
+    		tabView = (TextView) mLayoutInflater.inflate(R.layout.tab_widget_indicator, tabs, false);
+    	}
+    	return tabView;
+    }
+    
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         boolean remeasureTabWidth = (mTabs.getLayoutParams().width <= 0);
