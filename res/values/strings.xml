@@ -540,4 +540,6 @@ s -->
     
     <string name="network_error">network error</string>
     <string name="flip_tips">Drag the bottom again, you can flip.</string>
+    
+    <string name="s4_appliccation">Application</string>
 </resources>

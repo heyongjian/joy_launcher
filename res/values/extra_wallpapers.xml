@@ -17,5 +17,8 @@
 
 <resources>
     <string-array name="extra_wallpapers">
+        <item>wallpaper_extra_1</item>
+        <item>wallpaper_extra_2</item>
+        <item>wallpaper_extra_3</item>
     </string-array>
 </resources>

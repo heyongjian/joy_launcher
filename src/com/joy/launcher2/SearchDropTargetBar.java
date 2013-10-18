@@ -69,6 +69,7 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
         super(context, attrs, defStyle);
 
         mShowQSBSearchBar = PreferencesProvider.Interface.Homescreen.getShowSearchBar();
+        if (LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)mShowQSBSearchBar = false;
     }
 
     public void setup(Launcher launcher, DragController dragController) {
