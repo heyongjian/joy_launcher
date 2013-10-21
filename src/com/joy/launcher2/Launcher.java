@@ -37,13 +37,11 @@ import java.util.Set;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -108,12 +106,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
@@ -124,6 +122,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Advanceable;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -1151,7 +1150,15 @@ public final class Launcher extends Activity
         	mDockDivider.setVisibility(View.GONE);
         }
         // END on 2013-10-14.
-     
+        
+        // BEGIN：add by wanghao for samsung-stype anim
+        if (LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG) {
+			mAppsCustomizeAnimType = 2;
+		}else {
+			mAppsCustomizeAnimType = 1;
+		}
+        //END on 2013-10-21
+        
         // Setup the drag layer
         mDragLayer.setup(this, dragController);
 
@@ -3468,18 +3475,23 @@ public final class Launcher extends Activity
         final Resources res = getResources();
         final int duration = res.getInteger(R.integer.config_appsCustomizeZoomInTime);
         final float scale = (float) res.getInteger(R.integer.config_appsCustomizeZoomScaleFactor);
+        final boolean isSamsung = LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG;
+//        final View fromView = isSamsung?mDesktopLayout:mWorkspace;
         final View fromView = mWorkspace;
         final AppsCustomizeTabHost toView = mAppsCustomizeTabHost;
-        toView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        fromView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        if(isSamsung){
+        	fromView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }else {
+        	toView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            fromView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		}
         final int startDelay = res.getInteger(R.integer.config_appsCustomizeWorkspaceAnimationStagger);
         setPivotsForZoom(toView);
         // Shrink workspaces away if going to AppsCustomize from workspace
         Animator workspaceAnim ;
         final ViewPropertyAnimator workspaceAnimCustom = fromView.animate();
         //use an CustomizeAnimator for workspace.
-        getAppsCustomizeAnimator(mAppsCustomizeAnimType, true, workspaceAnimCustom);
-        
+        getWorkspaceAnimator(mAppsCustomizeAnimType, true, workspaceAnimCustom);
         if (springLoaded){
         	workspaceAnim = mWorkspace.getChangeStateAnimation(Workspace.State.SMALL, animated);
         }else{
@@ -3487,20 +3499,28 @@ public final class Launcher extends Activity
         	workspaceAnim.setDuration(duration);
         }
         if (animated) {
-            toView.setScaleX(scale);
-            toView.setScaleY(scale);
-            final LauncherViewPropertyAnimator scaleAnim = new LauncherViewPropertyAnimator(toView);
-            scaleAnim.
-                scaleX(1f).scaleY(1f).alpha(1).
-                setDuration(duration).
-                setInterpolator(new AccelerateDecelerateInterpolator());
+        	mStateAnimation = LauncherAnimUtils.createAnimatorSet();
 
+            LauncherViewPropertyAnimator animator = getAppsCustomizeAnimator(mAppsCustomizeAnimType,true);
+            if (isSamsung) {
+            	final int tabHostDuration_samsung = res.getInteger(R.integer.config_appsCustomizeTabHostFadeInDuration_samsung);
+                final int delay_samsung = res.getInteger(R.integer.config_appsCustomizeFadeInDelay_samsung);
+ 
+                toView.setAlpha(0.0f);
+                Animator appsCustomizeTabHostAnim = ObjectAnimator.ofFloat(toView, "alpha", 0.0f,1.0f);
+                appsCustomizeTabHostAnim.setDuration(tabHostDuration_samsung);
+                appsCustomizeTabHostAnim.setInterpolator(new AccelerateDecelerateInterpolator());
+                mStateAnimation.play(appsCustomizeTabHostAnim);
+                mStateAnimation.play(animator);
+                mStateAnimation.setStartDelay(delay_samsung);
+			}else {
+				mStateAnimation.play(animator).after(startDelay);
+			}
+ 
             // toView should appear right at the end of the workspace shrink
             // animation
-            mStateAnimation = LauncherAnimUtils.createAnimatorSet();
-            mStateAnimation.play(scaleAnim).after(startDelay);
-//            mStateAnimation.play(alphaAnim).after(startDelay);
-
+            
+            
             mStateAnimation.addListener(new AnimatorListenerAdapter() {
                 boolean animationCancelled = false;
 
@@ -3547,8 +3567,8 @@ public final class Launcher extends Activity
             });
 
             if (workspaceAnim != null) {
-//                mStateAnimation.play(workspaceAnim);
-            	workspaceAnimCustom.start();
+                mStateAnimation.play(workspaceAnim);
+//            	workspaceAnimCustom.start();
             }
 
             
@@ -3557,7 +3577,6 @@ public final class Launcher extends Activity
 //            }else{
 //            	mStateAnimation.play(workspaceAnim);
 //            }
-            
             
             boolean delayAnim = false;
             final ViewTreeObserver observer;
@@ -3583,7 +3602,10 @@ public final class Launcher extends Activity
                     // we waited for a layout/draw pass
                     if (mStateAnimation != stateAnimation)
                         return;
-                    setPivotsForZoom(toView);
+                    if (!isSamsung) {
+                    	setPivotsForZoom(toView);
+                    }
+                    
                     dispatchOnLauncherTransitionStart(fromView, animated, false);
                     dispatchOnLauncherTransitionStart(toView, animated, false);
                     toView.post(new Runnable() {
@@ -3660,19 +3682,24 @@ public final class Launcher extends Activity
                 res.getInteger(R.integer.config_appsCustomizeFadeOutTime);
         final float scaleFactor = (float)
                 res.getInteger(R.integer.config_appsCustomizeZoomScaleFactor);
+
+        boolean isSamsung = LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG;
         final View fromView = mAppsCustomizeTabHost;
         final View toView = mWorkspace;
-        toView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        fromView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        if (isSamsung) {
+        	toView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		}else {
+			toView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+	        fromView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		}
         Animator workspaceAnim = null;
         final ViewPropertyAnimator workspaceAnimCustom = toView.animate();
-        getAppsCustomizeAnimator(mAppsCustomizeAnimType, false, workspaceAnimCustom);
+        getWorkspaceAnimator(mAppsCustomizeAnimType, false, workspaceAnimCustom);
 //        workspaceAnimCustom.alpha(1f).scaleX(1f).scaleY(1f).
 //        setDuration(duration).
 //        setStartDelay(50).
 //        setInterpolator(new AccelerateDecelerateInterpolator()).start();
-        
-        LauncherViewPropertyAnimator scaleAnim = null;
+        LauncherViewPropertyAnimator animator = null;
         if (toState == State.WORKSPACE) {
         	
         	int stagger = res.getInteger(R.integer.config_appsCustomizeWorkspaceAnimationStagger);
@@ -3687,16 +3714,20 @@ public final class Launcher extends Activity
         updateWallpaperVisibility(true);
         showHotseat(true);
         if (animated) {
-        	if(mPreferencesVisible){  		
-        		scaleAnim =
-        				new LauncherViewPropertyAnimator(fromView);
-        		scaleAnim.
-        		scaleX(scaleFactor).scaleY(scaleFactor).alpha(0).
-        		setDuration(duration).
-        		setInterpolator(new AccelerateDecelerateInterpolator());
+        	mStateAnimation = LauncherAnimUtils.createAnimatorSet();
+        	if(mPreferencesVisible){
+        		animator = getAppsCustomizeAnimator(mAppsCustomizeAnimType,false);
         	}
-
-            mStateAnimation = LauncherAnimUtils.createAnimatorSet();
+            if (isSamsung) {
+                final int workspaceDelay_samsung = res.getInteger(R.integer.config_appsCustomizeWorkspaceFadeInDelay_samsung);
+                final int tabHostDuration_samsung = res.getInteger(R.integer.config_appsCustomizeTabHostFadeOutDuration_samsung);
+            	Animator appsCustomizeTabHostAnim = ObjectAnimator.ofFloat(mAppsCustomizeTabHost, "alpha", 1.0f,0.0f);
+                appsCustomizeTabHostAnim.setDuration(tabHostDuration_samsung);
+                appsCustomizeTabHostAnim.setInterpolator(new AccelerateDecelerateInterpolator());
+            	mStateAnimation.play(appsCustomizeTabHostAnim);
+            	workspaceAnimCustom.setStartDelay(workspaceDelay_samsung);
+			}
+            
             dispatchOnLauncherTransitionPrepare(fromView, animated, true);
             dispatchOnLauncherTransitionPrepare(toView, animated, true);
             mAppsCustomizeContent.pauseScrolling();
@@ -3721,9 +3752,9 @@ public final class Launcher extends Activity
             });
 
             if(mPreferencesVisible){            	
-            	mStateAnimation.playTogether(scaleAnim);
+            	mStateAnimation.playTogether(animator);
             }else{
-            	mStateAnimation.playTogether(scaleAnim);
+            	mStateAnimation.playTogether(animator);
             }
 
 //            if (workspaceAnim != null && mState == State.APPS_CUSTOMIZE){
@@ -3737,11 +3768,13 @@ public final class Launcher extends Activity
 //                workspaceAnimCustom.start();
 //            }
             
-            if(toState == State.WORKSPACE && mState == State.APPS_CUSTOMIZE){
-            	workspaceAnimCustom.start();
-            }else{
-            	mStateAnimation.play(workspaceAnim);
-            }
+//            if(toState == State.WORKSPACE && mState == State.APPS_CUSTOMIZE){
+//            	workspaceAnimCustom.start();
+//            }else{
+//            	mStateAnimation.play(workspaceAnim);
+//            }
+            
+            mStateAnimation.play(workspaceAnim);
             
             dispatchOnLauncherTransitionStart(fromView, animated, true);
             dispatchOnLauncherTransitionStart(toView, animated, true);
@@ -3773,7 +3806,8 @@ public final class Launcher extends Activity
      * @param animator
      * @return ViewPropertyAnimator
      */
-    private ViewPropertyAnimator getAppsCustomizeAnimator(int apps, boolean isShowApps, ViewPropertyAnimator animator){
+    private ViewPropertyAnimator getWorkspaceAnimator(int apps, boolean isShowApps, ViewPropertyAnimator animator){
+    	final Resources res = getResources();
     	switch (apps) {
 		case 1:
 			animator.alpha(isShowApps ? 0 : 1).
@@ -3782,13 +3816,69 @@ public final class Launcher extends Activity
 			setDuration(EXIT_SPRINGLOADED_MODE_SHORT_TIMEOUT).
 			setInterpolator(isShowApps ? new AccelerateDecelerateInterpolator() : new AccelerateInterpolator());
 			break;
-
+		case 2:
+			int fadeInDuration_samsung = res.getInteger(R.integer.config_appsCustomizeWorkspaceFadeInDuration_samsung);
+			final int fadeOutDuration_samsung = res.getInteger(R.integer.config_appsCustomizeWorkspaceFadeOutDuration_samsung);
+			mWorkspace.setPivotX((float)mWorkspace.getWidth()/2);
+			mWorkspace.setPivotY(0);
+			animator
+			.alpha(isShowApps ? 0.0f : 1)
+			.scaleX(isShowApps ? 0.90f : 1f)
+			.scaleY(isShowApps ? 0.90f : 1f)
+			.translationY(isShowApps ? -20f : 0f)
+			.setDuration(isShowApps ?fadeOutDuration_samsung:fadeInDuration_samsung)
+			.setInterpolator(isShowApps ? new AccelerateDecelerateInterpolator() : new AccelerateDecelerateInterpolator());
+			break;
 		default:
 			break;
 		}
     	return animator;
     }
+    /**
+     * get appsCustomize anim （1：default  2 samsung）
+     * @param apps
+     * @param isShowApps
+     * @return
+     */
+    private LauncherViewPropertyAnimator getAppsCustomizeAnimator(int apps,boolean isShowApps) {
+		LauncherViewPropertyAnimator animator = null;
+		final Resources res = getResources();
+		switch (apps) {
+		case 1:
+			final float scale = (float) res.getInteger(R.integer.config_appsCustomizeZoomScaleFactor);
+			final int zoomIn_duration = res.getInteger(R.integer.config_appsCustomizeZoomInTime);
+			final int zoomOut_duration = res.getInteger(R.integer.config_appsCustomizeZoomOutTime);
+			mAppsCustomizeTabHost.setScaleX(isShowApps?scale:1);
+			mAppsCustomizeTabHost.setScaleY(isShowApps?scale:1);
+			animator = new LauncherViewPropertyAnimator(mAppsCustomizeTabHost);
+			animator.alpha(isShowApps?1:0)
+			.scaleX(isShowApps?1f:scale)
+			.scaleY(isShowApps?1f:scale)
+			.setDuration(isShowApps?zoomIn_duration:zoomOut_duration)
+			.setInterpolator(new AccelerateDecelerateInterpolator());
+			break;
+		case 2:
+			final int fadeInDuration_samsung = res.getInteger(R.integer.config_appsCustomizeFadeInDuration_samsung);
+			final int fadeOutDuration_samsung = res.getInteger(R.integer.config_appsCustomizeFadeOutDuration_samsung);
+			final View toChildView = mAppsCustomizeTabHost.getAppsContent();
+			animator = new LauncherViewPropertyAnimator(toChildView);
+			toChildView.setPivotX((float)toChildView.getWidth() / 2);
+			toChildView.setPivotY((float)toChildView.getHeight());
+			final float initTranslationY = toChildView.getTranslationY();
+			final float finalTranslationY = initTranslationY + 60;
 
+			animator.translationY(isShowApps ? 0 : finalTranslationY)
+					.scaleX(isShowApps ? 1.0f : 0.90f)
+					.scaleY(isShowApps ? 1.0f : 0.90f)
+					.alpha(isShowApps ? 1.0f : 0f)
+					.setDuration(isShowApps ? fadeInDuration_samsung : fadeOutDuration_samsung)
+					.setInterpolator(isShowApps ? (new AccelerateDecelerateInterpolator()): (new AccelerateDecelerateInterpolator()));
+			break;
+		default:
+			break;
+		}
+		return animator;
+	}
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
