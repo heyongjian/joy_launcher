@@ -24,7 +24,9 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -134,7 +136,14 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         	lp.leftMargin = lp.rightMargin = lp.topMargin = lp.bottomMargin = 0;
         	lp.width = getResources().getDimensionPixelSize(R.dimen.tab_image_width_s4);
         	lp.height = LayoutParams.MATCH_PARENT;
-        	installedImage.setBackgroundResource(R.drawable.tab_image_bg);
+        	installedImage.setBackgroundResource(R.drawable.tab_normal_holo_s4);
+        	ImageView dividerImage = (ImageView)findViewById(R.id.tab_divider);
+        	Drawable dividerDrawable = getResources().getDrawable(R.drawable.tab_divider_s4);
+        	dividerImage.setVisibility(View.VISIBLE);
+        	FrameLayout.LayoutParams dLp = (FrameLayout.LayoutParams)dividerImage.getLayoutParams();
+        	dLp.rightMargin = lp.width  - dividerDrawable.getIntrinsicWidth() / 2;
+        	dLp.height = getResources().getDimensionPixelSize(R.dimen.apps_customize_tab_bar_height)  * 4 / 5;
+        	dividerImage.setBackgroundDrawable(dividerDrawable);
         }
         final AppsCustomizePagedView appsCustomizePane = (AppsCustomizePagedView)
                 findViewById(R.id.apps_customize_pane_content);
@@ -220,7 +229,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
             int contentWidth = mAppsCustomizePane.getPageContentWidth();
             if (contentWidth > 0 && mTabs.getLayoutParams().width != contentWidth) {
                 // Set the width and show the tab bar
-                mTabs.getLayoutParams().width = contentWidth;
+                //mTabs.getLayoutParams().width = contentWidth;
                 mRelayoutAndMakeVisible.run();
             }
 
@@ -426,8 +435,8 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
             mAppsCustomizePane.reset();
         }
     }
-
-    private void enableAndBuildHardwareLayer() {
+    
+	private void enableAndBuildHardwareLayer() {
         // isHardwareAccelerated() checks if we're attached to a window and if that
         // window is HW accelerated-- we were sometimes not attached to a window
         // and buildLayer was throwing an IllegalStateException
