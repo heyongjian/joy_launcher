@@ -3550,6 +3550,7 @@ public final class Launcher extends Activity
 //            	mStateAnimation.play(workspaceAnim);
 //            }
             
+            mStateAnimation.play(workspaceAnim);
             
             boolean delayAnim = false;
             final ViewTreeObserver observer;
@@ -3729,11 +3730,12 @@ public final class Launcher extends Activity
 //                workspaceAnimCustom.start();
 //            }
             
-            if(toState == State.WORKSPACE && mState == State.APPS_CUSTOMIZE){
-            	workspaceAnimCustom.start();
-            }else{
-            	mStateAnimation.play(workspaceAnim);
-            }
+//            if(toState == State.WORKSPACE && mState == State.APPS_CUSTOMIZE){
+//            	workspaceAnimCustom.start();
+//            }else{
+//            	mStateAnimation.play(workspaceAnim);
+//            }
+            mStateAnimation.play(workspaceAnim);
             
             dispatchOnLauncherTransitionStart(fromView, animated, true);
             dispatchOnLauncherTransitionStart(toView, animated, true);
