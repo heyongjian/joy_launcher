@@ -33,6 +33,16 @@
     <integer name="config_appsCustomizeWorkspaceShrinkTime">300</integer>
     <integer name="config_appsCustomizeWorkspaceAnimationStagger">40</integer>
     <integer name="config_workspaceAppsCustomizeAnimationStagger">100</integer>
+<!--     appsCustomizeTabHostAnim -->
+    <integer name="config_appsCustomizeFadeInDuration_samsung">220</integer>
+    <integer name="config_appsCustomizeFadeOutDuration_samsung">220</integer>
+    <integer name="config_appsCustomizeFadeInDelay_samsung">80</integer>
+    <integer name="config_appsCustomizeTabHostFadeInDuration_samsung">240</integer>
+    <integer name="config_appsCustomizeTabHostFadeOutDuration_samsung">240</integer>
+    <integer name="config_appsCustomizeWorkspaceFadeInDuration_samsung">200</integer>
+    <integer name="config_appsCustomizeWorkspaceFadeOutDuration_samsung">200</integer>
+    <integer name="config_appsCustomizeWorkspaceFadeInDelay_samsung">80</integer>
+
     <!-- add by xiong.chen  for bug WXY-99 -->
     <integer name="config_carrier">0</integer>
 

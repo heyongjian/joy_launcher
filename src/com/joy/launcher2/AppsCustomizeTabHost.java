@@ -433,11 +433,15 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         // and buildLayer was throwing an IllegalStateException
         if (isHardwareAccelerated()) {
             // Turn on hardware layers for performance
-            setLayerType(LAYER_TYPE_HARDWARE, null);
-
-            // force building the layer, so you don't get a blip early in an animation
-            // when the layer is created layer
-            buildLayer();
+        	if (LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG) {
+        		mAppsCustomizePane.setLayerType(LAYER_TYPE_HARDWARE, null);
+        		mAppsCustomizePane.buildLayer();
+			}else {
+				setLayerType(LAYER_TYPE_HARDWARE, null);
+				  // force building the layer, so you don't get a blip early in an animation
+	            // when the layer is created layer
+	            buildLayer();
+			}
         }
     }
 
@@ -495,7 +499,11 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         mAppsCustomizePane.onLauncherTransitionEnd(l, animated, toWorkspace);
         mInTransition = false;
         if (animated) {
-            setLayerType(LAYER_TYPE_NONE, null);
+        	if (LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG) {
+        		mAppsCustomizePane.setLayerType(LAYER_TYPE_NONE, null);
+			}else {
+				setLayerType(LAYER_TYPE_NONE, null);
+			}
         }
 
         if (!toWorkspace) {
@@ -556,5 +564,8 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
 
     boolean isTransitioning() {
         return mInTransition;
+    }
+    public View getAppsContent(){
+    	return mAppsCustomizePane;
     }
 }
