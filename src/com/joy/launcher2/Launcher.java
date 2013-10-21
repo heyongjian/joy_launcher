@@ -2442,9 +2442,13 @@ public final class Launcher extends Activity
 
     private void startWallpaper() {
         showWorkspace(true);
-        final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
-        Intent chooser = Intent.createChooser(pickWallpaper,
-                getText(R.string.chooser_wallpaper));
+//        final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
+//        Intent chooser = Intent.createChooser(pickWallpaper,
+//                getText(R.string.chooser_wallpaper));
+        Intent chooser = new Intent();
+        ComponentName componentName = new ComponentName("com.joy.launcher2",
+        		"com.joy.launcher2.wallpaper.WallpaperActivity");
+        chooser.setComponent(componentName);
         //added by huilin.wang
         chooser.putExtra("lockscreen", false);
         //end

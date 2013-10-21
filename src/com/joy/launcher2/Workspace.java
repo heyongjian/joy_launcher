@@ -1067,6 +1067,10 @@ public class Workspace extends PagedView
     }
 
     protected void onPageEndMoving() {
+    	if(mDesktopIndicator != null){
+    		int currentScreen = getCurrentPage();
+    		mDesktopIndicator.indicate(currentScreen);
+    	}
         if (mFadeScrollingIndicator) {
             hideScrollingIndicator(false);
         }
@@ -1828,7 +1832,13 @@ public class Workspace extends PagedView
         enableHwLayersOnVisiblePages();
         
         if (mDesktopIndicator != null){
-        	mDesktopIndicator.indicate((float)mScroller.getCurrX()/(float)(getChildCount()*getWidth()));
+        	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS){
+        		mDesktopIndicator.indicate((int)mScroller.getCurrX()/getWidth());
+        	}else if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG){
+        		int currentScreen = getCurrentPage();
+        		Log.e(TAG,"----screenScrolled; " + getCurrentPage() + "mScroller.getCurrx; " + mScroller.getCurrX());
+        		mDesktopIndicator.fullIndicate(currentScreen, getScrollProgress(screenScroll, (CellLayout)getPageAt(currentScreen), currentScreen));
+        	}
         }
         if (isSwitchingState()) return;
         if (isSmall()) {
@@ -4138,8 +4148,7 @@ public class Workspace extends PagedView
 
         // BEGIN: add by yongjian.he for ios-style indecator.
         // mHandleScrollIndicator = true to handle indicator ourself.
-        if (mLauncher.getDesktopIndicator() != null && 
-        		LauncherApplication.sTheme == LauncherApplication.THEME_IOS){
+        if (mLauncher.getDesktopIndicator() != null ){
             mHandleScrollIndicator = true;
             mDesktopIndicator = mLauncher.getDesktopIndicator();
         }
