@@ -32,4 +32,7 @@
     <dimen name="workspace_height_gap_port">0dp</dimen>
 
     <dimen name="hotseat_width_gap">2dp</dimen>
+    
+    <dimen name="tab_text_width_s4">152dp</dimen>
+    <dimen name="tab_image_width_s4">80dp</dimen>
 </resources>
