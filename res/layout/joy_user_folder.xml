@@ -81,7 +81,8 @@
         launcher:cellHeight="@dimen/folder_cell_height"
         launcher:cellWidth="@dimen/folder_cell_width"
         launcher:heightGap="@dimen/folder_height_gap"
-        launcher:widthGap="@dimen/folder_width_gap" />
+        launcher:widthGap="@dimen/folder_width_gap" 
+        launcher:isFolder="true"/>
 
     <LinearLayout
         android:id="@+id/joy_folder_button"

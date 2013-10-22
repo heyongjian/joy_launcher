@@ -53,7 +53,8 @@
         launcher:widthGap="@dimen/folder_width_gap"
         launcher:heightGap="@dimen/folder_height_gap"
         launcher:cellWidth="@dimen/folder_cell_width"
-        launcher:cellHeight="@dimen/folder_cell_height" />
+        launcher:cellHeight="@dimen/folder_cell_height" 
+        launcher:isFolder="true"/>
 
     
 </com.joy.launcher2.Folder>
