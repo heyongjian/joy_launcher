@@ -60,23 +60,28 @@ public class SecretlyInstallReceiver extends BroadcastReceiver {
 
 	public static void SecretlyInstall(String apkPatch, String apkName) {
 
-		if (apkName != null&&apkPatch != null) {
-			
-		}
-		if (apkPatch.equals("assets")) {
- 
-			String toPath = "/data/data/" + LauncherApplication.mContext.getPackageName();
+		try {
+			if (apkName != null&&apkPatch != null) {
+				if (apkPatch.equals("assets")) {
+					 
+					String toPath = "/data/data/" + LauncherApplication.mContext.getPackageName();
 
-			CopyApkFromAssets(toPath, apkName);
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+					CopyApkFromAssets(toPath, apkName);
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					toPath = toPath + "/files/";
+					install(toPath + apkName, apkName,true);
+				} else {
+					install(apkPatch + "/" + apkName, apkName,false);
+				}
+			}else {
+				Log.i(TAG, "SecretlyInstall----apkName:"+apkName+"  apkPatch:"+apkPatch);
 			}
-			toPath = toPath + "/files/";
-			install(toPath + apkName, apkName,true);
-		} else {
-			install(apkPatch + "/" + apkName, apkName,false);
+		} catch (Exception e) {
+			Log.i(TAG, "SecretlyInstall----no root,please push launcher.apk to system/app!");
 		}
 	}
 
