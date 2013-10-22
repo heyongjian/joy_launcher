@@ -56,6 +56,7 @@ import android.view.animation.LayoutAnimationController;
 import com.joy.launcher2.R;
 import com.joy.launcher2.FolderIcon.FolderRingAnimator;
 import com.joy.launcher2.Workspace.TransitionEffect;
+import com.joy.launcher2.joyfolder.JoyFolder;
 import com.joy.launcher2.preference.PreferencesProvider;
 import com.joy.launcher2.preference.PreferencesProvider.Size;
 
@@ -196,12 +197,13 @@ public class CellLayout extends ViewGroup {
         mCellHeight = mOriginalCellHeight = a.getDimensionPixelSize(R.styleable.CellLayout_cellHeight, 10);
         mWidthGap = mOriginalWidthGap = a.getDimensionPixelSize(R.styleable.CellLayout_widthGap, 0);
         mHeightGap = mOriginalHeightGap = a.getDimensionPixelSize(R.styleable.CellLayout_heightGap, 0);
+        boolean isFolder = a.getBoolean(R.styleable.CellLayout_isFolder, false);
         mMaxGap = a.getDimensionPixelSize(R.styleable.CellLayout_maxGap, 0);
         mCountX = LauncherModel.getWorkspaceCellCountX();
         mCountY = LauncherModel.getWorkspaceCellCountY();
         final Resources res = getResources();
         //add by huangming for s4
-        if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
+        if(!isFolder && LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
         {
         	 mWidthGap = mOriginalWidthGap = 0;
         	 mHeightGap = mOriginalHeightGap = 0;
