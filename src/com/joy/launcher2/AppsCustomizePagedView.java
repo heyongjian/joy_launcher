@@ -698,6 +698,11 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 int[] offset = new int[2];
                 View appsTab = tabHost.getCurrentTabView();
                 mLauncher.getDragLayer().getLocationInDragLayer(appsTab, offset);
+                if(appsTab != null)
+                {
+                	offset[0] += appsTab.getWidth() / 2;
+                    offset[1] += appsTab.getHeight() / 2;
+                }
                 mLauncher.showFirstRunAllAppsSortCling(offset);
             }
         }

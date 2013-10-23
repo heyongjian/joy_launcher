@@ -243,6 +243,16 @@ public class Hotseat extends PagedView {
     	}       
     }
     //end
+    
+    public int getHotseatCellCount()
+    {
+    	return mCellCount;
+    }
+    
+    public int getAllAppsButtonRank()
+    {
+    	return mAllAppsButtonRank;
+    }
 
     public boolean hasPage(View view) {
         for (int i = 0; i < getChildCount(); i++) {
