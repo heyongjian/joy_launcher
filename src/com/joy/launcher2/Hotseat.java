@@ -107,7 +107,7 @@ public class Hotseat extends PagedView {
 
         if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
         {
-        	setBackgroundResource(R.drawable.joy_ios_hotseat_bg);
+        	if(LauncherApplication.sIsRealIos)setBackgroundResource(R.drawable.joy_ios_hotseat_bg);
         	mCellCount = 4;
         	mAllAppsButtonRank = 3;
         }
