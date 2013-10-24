@@ -71,6 +71,7 @@
         <attr name="heightGap" format="dimension" />
         <!-- The max gap size for each dimension -->
         <attr name="maxGap" format="dimension" />
+        <attr name="isFolder" format="boolean" />
     </declare-styleable>
 
     <!-- StrokedTextView specific attributes. -->

@@ -65,8 +65,8 @@
     <dimen name="hotseat_padding_bottom_s4">0dp</dimen>
     <dimen name="hotseat_height_s4">@dimen/cell_height_s4</dimen>
     <dimen name="bottom_bar_height_s4">135dp</dimen>
-    <dimen name="indicator_height_s4">128dp</dimen>
-    <dimen name="app_icon_size">56dp</dimen>
+    <dimen name="indicator_height_s4">120dp</dimen>
+    <dimen name="app_icon_size">48dp</dimen>
     <dimen name="tab_text_width_s4">144dp</dimen>
     <dimen name="tab_image_width_s4">72dp</dimen>
     <dimen name="installed_apps_margin_right">18dp</dimen>

@@ -28,7 +28,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.FocusFinder;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -111,6 +113,25 @@ public class Cling extends FrameLayout {
             mErasePaint.setAlpha(0);
 
             mIsInitialized = true;
+            if(!LauncherApplication.isDefaultTheme())
+            {
+            	View clingButton = findViewById(R.id.cling_button);
+            	if(clingButton != null && mLauncher != null)
+            	{
+            		int hotseatCellCount = mLauncher.getHotseat().getHotseatCellCount();
+            		int allAppsButtonBank = mLauncher.getHotseat().getAllAppsButtonRank();
+            		int gravity = Gravity.BOTTOM | Gravity.RIGHT;
+            		if((hotseatCellCount - allAppsButtonBank - 1) < allAppsButtonBank)
+            		{
+            			gravity = Gravity.BOTTOM | Gravity.LEFT;
+            		}
+            		if(clingButton.getLayoutParams() instanceof FrameLayout.LayoutParams)
+            		{
+            			FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams)clingButton.getLayoutParams();
+            			flp.gravity = gravity;
+            		}
+            	}
+            }
         }
     }
 
@@ -135,7 +156,15 @@ public class Cling extends FrameLayout {
 
     private int[] getPunchThroughPositions() {
         if (mDrawIdentifier.equals(WORKSPACE_PORTRAIT)) {
-            return new int[]{getMeasuredWidth() / 2, getMeasuredHeight() - (mButtonBarHeight / 2)};
+        	if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG && mLauncher != null)
+        	{
+        		mButtonBarHeight = getResources().getDimensionPixelSize(R.dimen.hotseat_height_s4);
+        		int hotseatCellCount = mLauncher.getHotseat().getHotseatCellCount();
+        		int allAppsButtonBank = mLauncher.getHotseat().getAllAppsButtonRank();
+        		int cellWidth = getMeasuredWidth() / hotseatCellCount;
+        		return new int[]{cellWidth * allAppsButtonBank +  cellWidth / 2, getMeasuredHeight() - (mButtonBarHeight / 2)};
+        	}
+        	return new int[]{getMeasuredWidth() / 2, getMeasuredHeight() - (mButtonBarHeight / 2)};
         } else if (mDrawIdentifier.equals(WORKSPACE_LANDSCAPE)) {
             return new int[]{getMeasuredWidth() - (mButtonBarHeight / 2), getMeasuredHeight() / 2};
         } else if (mDrawIdentifier.equals(WORKSPACE_LARGE)) {

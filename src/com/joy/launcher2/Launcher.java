@@ -126,6 +126,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -2442,9 +2443,13 @@ public final class Launcher extends Activity
 
     private void startWallpaper() {
         showWorkspace(true);
-        final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
-        Intent chooser = Intent.createChooser(pickWallpaper,
-                getText(R.string.chooser_wallpaper));
+//        final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
+//        Intent chooser = Intent.createChooser(pickWallpaper,
+//                getText(R.string.chooser_wallpaper));
+        Intent chooser = new Intent();
+        ComponentName componentName = new ComponentName("com.joy.launcher2",
+        		"com.joy.launcher2.wallpaper.WallpaperActivity");
+        chooser.setComponent(componentName);
         //added by huilin.wang
         chooser.putExtra("lockscreen", false);
         //end
@@ -2667,6 +2672,23 @@ public final class Launcher extends Activity
                 }
         });
         popupMenu.show();
+    }
+    
+    public void showSortMenu()
+    {
+    	if(mAppsCustomizeTabHost != null && mAppsCustomizeContent != null)
+    	{
+    		View tabView = null;
+    		TabWidget tabWidget = mAppsCustomizeTabHost.getTabWidget();
+    		if(tabWidget != null)
+    		{
+    			tabView = tabWidget.getChildAt(0);
+    		}
+    		if(tabView != null)
+    		{
+    			onLongClickAppsTab(tabView);
+    		}
+    	}
     }
 
     public void onClickOverflowMenuButton(View v) {
@@ -4054,6 +4076,9 @@ public final class Launcher extends Activity
      * Shows the hotseat area.
      */
     void showHotseat(boolean animated) {
+    	if (mDesktopIndicator != null){
+    		mDesktopIndicator.setVisibility(View.VISIBLE);
+    	}
         if (mShowHotseat) {
             if (animated) {
                 if (mHotseat.getAlpha() != 1f) {
@@ -4073,6 +4098,9 @@ public final class Launcher extends Activity
      * Hides the hotseat area.
      */
     void hideHotseat(boolean animated) {
+    	if (mDesktopIndicator != null){
+    		mDesktopIndicator.setVisibility(View.INVISIBLE);
+    	}
         if (mShowHotseat) {
             if (animated) {
                 if (mHotseat.getAlpha() != 0f) {
