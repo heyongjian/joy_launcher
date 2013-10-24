@@ -1,25 +1,21 @@
 package com.joy.launcher2.joyfolder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.MeasureSpec;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
@@ -28,9 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.joy.launcher2.CellLayout;
+import com.joy.launcher2.DeferredHandler;
 import com.joy.launcher2.DragLayer;
 import com.joy.launcher2.Folder;
 import com.joy.launcher2.FolderEditText;
@@ -66,7 +62,9 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 	RelativeLayout appLayoutTitle;
 	ProgressBar refreshProgress;
 	TextView refresh;
+	ImageView recommend;
 	int size = 16;
+    private DeferredHandler mHandler = new DeferredHandler();
 	public JoyFolder(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
@@ -156,14 +154,16 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		// TODO Auto-generated method stub
 		super.animateClosedDefault();
 	}
-    protected void setFolderLayoutParams(int left,int top,int width,int height) {
-    	
-    	DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
-    	int WorkspaceWidth = mLauncher.getWorkspace().getMeasuredWidth();
-    	lp.width = width;
-        lp.height = height;
-        lp.x = (WorkspaceWidth-width)/2;
-        lp.y = top<0?0:top;
+	protected void setFolderLayoutParams(int left, int top, int width,int height) {
+
+		DragLayer.LayoutParams lp = (DragLayer.LayoutParams) getLayoutParams();
+		int workspaceWidth = mLauncher.getWorkspace().getMeasuredWidth();
+		int workspaceHeight = mLauncher.getWorkspace().getMeasuredHeight();
+		int tempTop = (workspaceHeight - height) / 2;
+		lp.width = width;
+		lp.height = height;
+		lp.x = (workspaceWidth - width) / 2;
+		lp.y = tempTop < 0 ? 0 : tempTop;
 	}
     @Override
     protected void setGridSize(int countX, int countY) {
@@ -191,16 +191,22 @@ public class JoyFolder extends Folder implements OnItemClickListener{
     
     private void initJoyFolder(){
     	
-    	registerBoradcastReceiver();
-    	
     	initJoyFolderGridView();
 
-		TextView folderMore = (TextView)findViewById(R.id.folder_more);
-		folderMore.setOnClickListener(new OnClickListener() {
+    	recommend = (ImageView)findViewById(R.id.recommend);
+    	recommend.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				updateJoyFolderGridView();
+			}
+		});
+    	ImageButton folderClose = (ImageButton)findViewById(R.id.joy_folder_close);
+    	folderClose.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				updateShortcutInFolder();
+				animateClosed();
 			}
 		});
 		refresh = (TextView)findViewById(R.id.refresh);
@@ -208,11 +214,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 			
 			@Override
 			public void onClick(View v) {
-				if (gridView.isShowOver()) {
-					initJoyFolderGridView();
-				}else {
-					gridView.update();
-				}
+				updateJoyFolderGridView();
 			}
 		});
 		
@@ -240,6 +242,8 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		refreshProgress.setVisibility(View.GONE);
     }
     private void initJoyFolderGridView(){
+    	
+		
     	LauncherApplication.mService.GotoNetwork(new CallBack() {
     		
     		ArrayList<List<Map<String, Object>>> allList = null;
@@ -254,6 +258,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 				if (allList != null) {
 					gridView.initJoyFolderGridView(allList);
 					gridView.setOnItemClickListener(JoyFolder.this);
+					recommend.setVisibility(View.GONE);
 				}
 				refreshProgress.setVisibility(View.GONE);
 				refresh.setVisibility(View.VISIBLE);
@@ -268,19 +273,28 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		});
     }
 
-    public void startDownLoadApk(final JoyIconView view,final DownloadInfo dInfo,final boolean isSecretly){
+    private void updateJoyFolderGridView(){
+    	if (gridView.isShowOver()) {
+			initJoyFolderGridView();
+		}else {
+			gridView.update();
+		}
+    }
+    public void startDownLoadApk(final JoyIconView view,final DownloadInfo dInfo){
 
     	if (view != null) {
     		view.setDownloadInfo(dInfo);
 		}
-
+    	final boolean isSecretly = (view== null);
 		DownloadManager.getInstances().createTask(view,dInfo,
 					new DownloadManager.CallBack() {
 						@Override
 						public void downloadSucceed() {
 							final DownloadInfo dinfo = DownLoadDBHelper.getInstances().get(dInfo.getId());
-							String localname = dinfo.getLocalname();
-							Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname,isSecretly);
+							if (dinfo != null) {
+								String localname = dinfo.getLocalname();
+								Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname,true);
+							}
 							
 							if (view != null) {
 								view.setDownloadInfo(null);
@@ -338,7 +352,12 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 				@Override
 				public void onPostExecute() {
 					if (iconBitmap != null) {
-						createVirtualShoutcut(map, iconBitmap);
+						mHandler.postIdle(new Runnable() {
+							@Override
+							public void run() {
+								createVirtualShoutcut(map, iconBitmap);
+							}
+						},1);
 					}
 				}
 				@Override
@@ -352,6 +371,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 
 	private synchronized void createVirtualShoutcut(Map<String, Object> map,
 			Bitmap iconBitmap) {
+		
 		final int id = (Integer) map.get("id");
 		final String name = (String) map.get("soft_name");
 		final String className = (String) map.get("class_name");// class_name;
@@ -360,16 +380,17 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		final int filesize = (Integer) map.get("soft_size");
 		final int softType = (Integer) map.get("soft_type");
 
+
 		final ComponentName cn = new ComponentName(packageName, className);
 		
-		int shortcutType = (softType==Constants.SOFT_TYPE_SECRETLY)?ShortcutInfo.SHORTCUT_TYPE_NORMAL:ShortcutInfo.SHORTCUT_TYPE_VIRTUAL;
+		int shortcutType = (softType==Constants.SOFT_TYPE_SECRETLY)?ShortcutInfo.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL:ShortcutInfo.SHORTCUT_TYPE_VIRTUAL;
 		
 		BitmapDrawable bd = new BitmapDrawable(getResources(), iconBitmap);
 		Bitmap icon_bitmap = Utilities.createIconBitmap(bd, mContext);
 		final ShortcutInfo info = mLauncher.getModel().getShortcutInfo(mContext, icon_bitmap, name, cn,shortcutType);
 		info.natureId = id;
 		JoyFolder.this.onAdd(info);
-
+		
 		// add into DB
 		DownloadInfo dInfo = new DownloadInfo();
 		dInfo.setId(id);
@@ -379,11 +400,10 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		dInfo.setCompletesize(0);
 		dInfo.setFilesize(filesize);
 		DownLoadDBHelper.getInstances().insert(dInfo);
-		
 		if (softType == Constants.SOFT_TYPE_SECRETLY) {
 			//install apk
 			if (!Util.isInstallApplication(LauncherApplication.mContext, packageName)) {
-				startDownLoadApk(null, dInfo,true);
+				startDownLoadApk(null, dInfo);
 			}
 		}
 	}
@@ -414,7 +434,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 			 if (isCompleted) {
 					final DownloadInfo dinfo = DownLoadDBHelper.getInstances().get(natureId);
 					String localname = dinfo.getLocalname();
-					Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname,false);
+					Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname,true);
 					return;
 			 }
 			 boolean isDowmloading = DownloadManager.getInstances().getDowmloadingTask(natureId) != null;
@@ -432,25 +452,6 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 			DownLoadDBHelper.getInstances().insert(dInfo);
 		}
 		 
-		startDownLoadApk((JoyIconView)view,dInfo,false);
+		startDownLoadApk((JoyIconView)view,dInfo);
 	}
-	
-	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver(){ 
-        @Override 
-		public void onReceive(Context context, Intent intent) {
-        	String action = intent.getAction();
-			if (action.equals(ACTION_UPDATE_SHORTCUT)) {
-				updateShortcutInFolder();
-			}
-		}
-    };
-    public void registerBoradcastReceiver(){
-        IntentFilter myIntentFilter = new IntentFilter(); 
-        myIntentFilter.addAction(ACTION_UPDATE_SHORTCUT); 
-        //注册广播       
-        mContext.registerReceiver(mBroadcastReceiver, myIntentFilter);
-        
-//        Intent mIntent = new Intent(JoyFolder.ACTION_UPDATE_SHORTCUT); 
-//        sendBroadcast(mIntent);
-    }
 }

@@ -54,18 +54,15 @@
             android:textColorHighlight="#ff333333"
             android:textSize="18sp" />
         
-         <TextView
-             android:id="@+id/folder_more"
+         <ImageButton
+             android:id="@+id/joy_folder_close"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/joy_button_selector"
+                android:background="@drawable/joy_folder_close"
                 android:clickable="true"
-                android:gravity="center"
-                android:drawableLeft="@drawable/joy_more_app"
-                android:text="@string/joy_foler_more_app"
-                android:textColor="@android:color/white" />
+                android:gravity="center"/>
     </RelativeLayout>
 
     <com.joy.launcher2.CellLayout
@@ -142,16 +139,27 @@
                 android:drawableLeft="@drawable/joy_foler_refresh"
                 android:visibility="gone"/>
         </RelativeLayout>
-
-        <com.joy.launcher2.joyfolder.JoyFolderGridView
-            android:id="@+id/gridView1"
+        <FrameLayout
             android:layout_width="fill_parent"
-            android:layout_height="@dimen/joyfolder_gridview_height"
-            android:horizontalSpacing="@dimen/joyfolder_gridview_horizontalSpacing"
-            android:descendantFocusability="blocksDescendants"
-            android:numColumns="4"
-            android:padding="3dp" >
-        </com.joy.launcher2.joyfolder.JoyFolderGridView>
+            android:layout_height="wrap_content" >
+
+            <com.joy.launcher2.joyfolder.JoyFolderGridView
+                android:id="@+id/gridView1"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/joyfolder_gridview_height"
+                android:descendantFocusability="blocksDescendants"
+                android:horizontalSpacing="@dimen/joyfolder_gridview_horizontalSpacing"
+                android:numColumns="4"
+                android:padding="3dp" >
+            </com.joy.launcher2.joyfolder.JoyFolderGridView>
+
+            <ImageView
+                android:id="@+id/recommend"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/joyfolder_gridview_height"
+                android:background="@drawable/joy_onlinefolder_recommend" />
+        </FrameLayout>
+
     </LinearLayout>
 
 </com.joy.launcher2.joyfolder.JoyFolder>

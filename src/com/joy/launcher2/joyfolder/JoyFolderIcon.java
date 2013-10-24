@@ -1,9 +1,9 @@
 package com.joy.launcher2.joyfolder;
 
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,33 +11,34 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.baidu.location.i;
-import com.joy.launcher2.network.handler.BuiltInHandler;
-import com.joy.launcher2.preference.PreferencesProvider;
-import com.joy.launcher2.preference.PreferencesProvider.Size;
-import com.joy.launcher2.util.Util;
 import com.joy.launcher2.BubbleTextView;
 import com.joy.launcher2.Folder;
 import com.joy.launcher2.FolderIcon;
 import com.joy.launcher2.FolderInfo;
-import com.joy.launcher2.ItemInfo;
 import com.joy.launcher2.Launcher;
-import com.joy.launcher2.LauncherApplication;
+import com.joy.launcher2.NetWorkStatusChangeReceiver;
+import com.joy.launcher2.NetWorkStatusChangeReceiver.Refreshable;
 import com.joy.launcher2.R;
 import com.joy.launcher2.Utilities;
+import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.preference.PreferencesProvider.Size;
+import com.joy.launcher2.util.Util;
 
 /**
  * online folder icon
  * @author wanghao
  *
  */
-public class JoyFolderIcon extends FolderIcon {
+public class JoyFolderIcon extends FolderIcon implements Refreshable {
+	private boolean mAttached = false;
 	Drawable foldericon;
+	NetWorkStatusChangeReceiver mNetWorkStatusChangeReceiver;
     public JoyFolderIcon(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -134,4 +135,47 @@ public class JoyFolderIcon extends FolderIcon {
     		d = new BitmapDrawable(bitmap);
     	return d;
     }
+	
+	@Override
+	protected void onAttachedToWindow() {
+		// TODO Auto-generated method stub
+		super.onAttachedToWindow();
+		if (!mAttached) {
+			mNetWorkStatusChangeReceiver = new NetWorkStatusChangeReceiver(this);
+			IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+			mContext.registerReceiver(mNetWorkStatusChangeReceiver, filter);
+			mAttached = true;
+		}
+	}
+	@Override
+	protected void onDetachedFromWindow() {
+		// TODO Auto-generated method stub
+		super.onDetachedFromWindow();
+		if (mAttached) {
+			if (mNetWorkStatusChangeReceiver != null) {
+				mContext.unregisterReceiver(mNetWorkStatusChangeReceiver);
+			}
+			mAttached = false;
+		}
+	}
+	
+	@Override
+	public void refresher() {
+		
+		SharedPreferences preferences = mContext.getSharedPreferences("first_time_open_network", 0);
+		String key = "date"+this.mInfo.natureId;
+		String preDate = preferences.getString(key, "0000-00-00 00:00:00");
+		String curDate = Util.getCurrentDate();
+		long differ = Util.dateCompare(curDate, preDate);
+		Log.i("NetWorkStatusChangeReceiver", "curDate -- : "+curDate+" preDate : "+preDate+" differ : "+differ);
+		if (differ>=1) {
+			Editor editor = preferences.edit();
+			editor.putString(key, curDate);
+			editor.commit();
+			Log.i("NetWorkStatusChangeReceiver", "curDate -- : "+mFolder);
+			if (mFolder!= null && mFolder instanceof JoyFolder) {
+				((JoyFolder)mFolder).updateShortcutInFolder();
+			}
+		}
+	}
 }
