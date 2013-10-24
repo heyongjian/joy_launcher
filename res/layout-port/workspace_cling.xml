@@ -53,6 +53,7 @@
         android:text="@string/workspace_cling_open_all_apps" />
     <Button
         style="@style/ClingButton"
+        android:id="@+id/cling_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"

@@ -154,14 +154,14 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         tabView = (TextView) mLayoutInflater.inflate(R.layout.tab_widget_indicator, tabs, false);
         tabView.setText(label);
         tabView.setContentDescription(label);
-        if (getContext() instanceof Launcher) {
+        /*if (getContext() instanceof Launcher) {
             tabView.setOnLongClickListener(new View.OnLongClickListener() {
                     public boolean onLongClick(View v) {
                         ((Launcher) getContext()).onLongClickAppsTab(v);
                         return true;
                     }
             });
-        }
+        }*/
         addTab(newTabSpec(APPS_TAB_TAG).setIndicator(tabView).setContent(contentFactory));
         label = getContext().getString(R.string.widgets_tab_label);
         tabView = (TextView) mLayoutInflater.inflate(R.layout.tab_widget_indicator, tabs, false);

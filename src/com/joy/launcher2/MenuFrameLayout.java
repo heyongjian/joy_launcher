@@ -52,14 +52,14 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	private final static int MENU_ADD_TO_DESKTOP = 0;
 	private final static int MENU_WALLPAPER = MENU_ADD_TO_DESKTOP+1;
 	private final static int MENU_MANAGE_APPLICATION = MENU_WALLPAPER + 1;
-	private final static int MENU_EDIT_SCREEN = MENU_MANAGE_APPLICATION + 1;
-	private final static int MENU_DESKTOP_SETTINGS = MENU_EDIT_SCREEN + 1;
-	private final static int MENU_MAINMENU_EDIT = MENU_DESKTOP_SETTINGS + 1;
-	private final static int MENU_ICON_SORT = MENU_MAINMENU_EDIT + 1;
+	//private final static int MENU_EDIT_SCREEN = MENU_MANAGE_APPLICATION + 1;
+	private final static int MENU_DESKTOP_SETTINGS = MENU_MANAGE_APPLICATION + 1;
+	//private final static int MENU_MAINMENU_EDIT = MENU_DESKTOP_SETTINGS + 1;
+	private final static int MENU_ICON_SORT = MENU_DESKTOP_SETTINGS + 1;
 	private final static int MENU_SHOW_APPS = MENU_ICON_SORT + 1;
 	private final static int MENU_HIDE_APPS = MENU_SHOW_APPS + 1;
-	private final static int MENU_MAINMENU_SETTINGS = MENU_HIDE_APPS + 1;
-	private final static int MENU_SYSTEM_SETTINGS = MENU_MAINMENU_SETTINGS + 1;
+	//private final static int MENU_MAINMENU_SETTINGS = MENU_HIDE_APPS + 1;
+	private final static int MENU_SYSTEM_SETTINGS = MENU_HIDE_APPS + 1;
 	
 	private boolean animationFinished = false;
 	
@@ -129,7 +129,7 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 		for(int i = 0; i < itemsAll.size(); i++)
 		{
 			MenuItemInfo info = itemsAll.get(i);
-			if(i >= MENU_MAINMENU_EDIT && i <= MENU_MAINMENU_SETTINGS)
+			if(i >= MENU_ICON_SORT && i <= MENU_HIDE_APPS)
 			{
 				if(i == MENU_SHOW_APPS)
 				{
@@ -196,13 +196,13 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	        itemsAll.add(itemInfo);
 	        itemPositions.add(MENU_ITEM_IN_WORKSPACE);	        	        
 	        
-	        itemInfo = new MenuItemInfo();
+	       /* itemInfo = new MenuItemInfo();
 	        itemInfo.textId = R.string.menu_edit_screen;
 	        itemInfo.iconId = R.drawable.menu_edit_screen;
 	        itemInfo.intent = null;
 	        itemInfo.selectId = MENU_EDIT_SCREEN;
 	        itemsAll.add(itemInfo);
-	        itemPositions.add(MENU_ITEM_IN_WORKSPACE);
+	        itemPositions.add(MENU_ITEM_IN_WORKSPACE);*/
 	        
 	        itemInfo = new MenuItemInfo();
 	        itemInfo.textId = R.string.menu_desktop_settings;
@@ -217,13 +217,13 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	        itemsAll.add(itemInfo);
 	        itemPositions.add(MENU_ITEM_IN_WORKSPACE);
 	        
-	        itemInfo = new MenuItemInfo();
+	        /*itemInfo = new MenuItemInfo();
 	        itemInfo.textId = R.string.menu_mainmenu_edit;
 	        itemInfo.iconId = R.drawable.menu_mainmenu_edit;
 	        itemInfo.intent = null;
 	        itemInfo.selectId = MENU_MAINMENU_EDIT;
 	        itemsAll.add(itemInfo);
-	        itemPositions.add(MENU_ITEM_IN_ALLAPP);
+	        itemPositions.add(MENU_ITEM_IN_ALLAPP);*/
 	        
 	        itemInfo = new MenuItemInfo();
 	        itemInfo.textId = R.string.menu_icon_sort;
@@ -249,13 +249,13 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	        itemsAll.add(itemInfo);
 	        itemPositions.add(MENU_ITEM_IN_ALLAPP);
 	        
-	        itemInfo = new MenuItemInfo();
+	        /*itemInfo = new MenuItemInfo();
 	        itemInfo.textId = R.string.menu_mainmenu_settings;
 	        itemInfo.iconId = R.drawable.menu_mainmenu_settings;
 	        itemInfo.intent = null;
 	        itemInfo.selectId = MENU_MAINMENU_SETTINGS;
 	        itemsAll.add(itemInfo);
-	        itemPositions.add(MENU_ITEM_IN_ALLAPP);
+	        itemPositions.add(MENU_ITEM_IN_ALLAPP);*/
 	        
 	        Intent settings = new Intent(android.provider.Settings.ACTION_SETTINGS);
 	        settings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
@@ -533,17 +533,21 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 				launcher.startActivity(data);
 			}	
 			break;
-		case MENU_EDIT_SCREEN:
-			break;
+		/*case MENU_EDIT_SCREEN:
+			break;*/
 		case MENU_DESKTOP_SETTINGS:
 			if(data != null && launcher != null)
 			{
 				launcher.startActivity(data);
 			}	
 			break;
-		case MENU_MAINMENU_EDIT:
-			break;
+		/*case MENU_MAINMENU_EDIT:
+			break;*/
 		case MENU_ICON_SORT:
+			if(launcher!= null)
+			{
+				launcher.showSortMenu();
+			}
 			break;
 		case MENU_SHOW_APPS:
 			if(launcher != null)
@@ -557,8 +561,8 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 				launcher.setAppsShowOrHide(false);
 			}
 			break;
-		case MENU_MAINMENU_SETTINGS:
-			break;
+		/*case MENU_MAINMENU_SETTINGS:
+			break;*/
 		case MENU_SYSTEM_SETTINGS:
 			if(data != null && launcher != null)
 			{

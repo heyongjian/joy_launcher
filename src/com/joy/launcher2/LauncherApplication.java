@@ -60,7 +60,9 @@ public class LauncherApplication extends Application {
     public final static int THEME_IOS = 1;
     public final static int THEME_SAMSUNG = 2;
     public final static int THEME_CUSTOM = 3;
+    public final static int THEME_MI = 4;
     public static int sTheme = THEME_DEFAULT;
+    public static boolean sIsRealIos = false;
     
     @Override
     public void onCreate() {
@@ -77,6 +79,8 @@ public class LauncherApplication extends Application {
         PreferencesProvider.load(this);
         //add by huangming for theme
         sTheme = PreferencesProvider.getTheme();
+        sIsRealIos = (sTheme == THEME_IOS);
+        sTheme = sTheme >= THEME_CUSTOM ? THEME_IOS : sTheme;
         //END
         mIconCache = new IconCache(this);
         mModel = new LauncherModel(this, mIconCache);

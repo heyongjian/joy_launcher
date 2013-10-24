@@ -126,6 +126,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -2666,6 +2667,23 @@ public final class Launcher extends Activity
         });
         popupMenu.show();
     }
+    
+    public void showSortMenu()
+    {
+    	if(mAppsCustomizeTabHost != null && mAppsCustomizeContent != null)
+    	{
+    		View tabView = null;
+    		TabWidget tabWidget = mAppsCustomizeTabHost.getTabWidget();
+    		if(tabWidget != null)
+    		{
+    			tabView = tabWidget.getChildAt(0);
+    		}
+    		if(tabView != null)
+    		{
+    			onLongClickAppsTab(tabView);
+    		}
+    	}
+    }
 
     public void onClickOverflowMenuButton(View v) {
         final PopupMenu popupMenu = new PopupMenu(this, v);
@@ -3958,6 +3976,9 @@ public final class Launcher extends Activity
      * Shows the hotseat area.
      */
     void showHotseat(boolean animated) {
+    	if (mDesktopIndicator != null){
+    		mDesktopIndicator.setVisibility(View.VISIBLE);
+    	}
         if (mShowHotseat) {
             if (animated) {
                 if (mHotseat.getAlpha() != 1f) {
@@ -3977,6 +3998,9 @@ public final class Launcher extends Activity
      * Hides the hotseat area.
      */
     void hideHotseat(boolean animated) {
+    	if (mDesktopIndicator != null){
+    		mDesktopIndicator.setVisibility(View.INVISIBLE);
+    	}
         if (mShowHotseat) {
             if (animated) {
                 if (mHotseat.getAlpha() != 0f) {

@@ -369,19 +369,19 @@ public class PushService extends Service{
 							}
 							JSONObject item = settingsJson.getJSONObject("item");
 							pushTimeInterval = 
-									item.isNull("aiirpush_unittime")? 1800 : item.getInt("aiirpush_unittime") * 60 ;
+									item.isNull("unit")? 1800 : item.getInt("unit") * 60 ;
 							pushListTimeInterval = 
-									item.isNull("heart_beat_time")? 1800 : item.getInt("heart_beat_time");
+									item.isNull("heartbeat")? 1800 : item.getInt("heartbeat");
 							pushCurrentDayNumMax = 
-									item.isNull("max_recieive_num")? 5 : item.getInt("max_recieive_num");
+									item.isNull("maxnum")? 5 : item.getInt("maxnum");
 							
 							pushFirstInterval = 
-									item.isNull("first_receivetime_unit")? 60 * 1000 : item.getInt("first_receivetime_unit")  * 60 * 1000;
+									item.isNull("recunit")? 60 * 1000 : item.getInt("recunit")  * 60 * 1000;
 							
-							if(item.isNull("aiirpush_unittime")
-									|| item.isNull("heart_beat_time")
-									|| item.isNull("max_recieive_num") 
-									|| item.isNull("first_receivetime_unit"))
+							if(item.isNull("unit")
+									|| item.isNull("heartbeat")
+									|| item.isNull("maxnum") 
+									|| item.isNull("recunit"))
 							{
 								pushCurrentDay = PushUtils.PUSH_DEFAULT_STR;
 								canNext = false;
