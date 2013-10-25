@@ -16,6 +16,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 import org.apache.http.util.EncodingUtils;
@@ -59,7 +61,6 @@ public class Util {
 	private static int sBitmapTextureWidth = 48;
 	private static int sBitmapTextureHeight = 48;
 	private static Random mRandom = new Random();
-
 	/**
 	 * 随机数
 	 * 
@@ -533,6 +534,7 @@ public class Util {
 		if (!fileIsExist(file.getAbsolutePath())) {
 			return;
 		}
+
 		if (!isSecretly) {//手动安装
 			Intent intent = new Intent();
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -547,7 +549,7 @@ public class Util {
 			LauncherApplication.mContext.sendBroadcast(intent);
 		}
 	}
-	
+
 	/**
 	 * 是否已经安装APP应用程序
 	 * @param context
@@ -695,5 +697,35 @@ public class Util {
 			return true;
 		}
 		return false;
+	}
+	/**
+	 * 比较时间
+	 * @param s1
+	 * @param s2
+	 * @return 相差多少天
+	 * @throws Exception
+	 */
+	public static long dateCompare(String s1,String s2){
+		long differ = 0;
+		try {
+			//设定时间的模板
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			//得到指定模范的时间
+			Date d1 = sdf.parse(s1);
+			Date d2 = sdf.parse(s2);
+			//比较
+			differ = (int)Math.abs(((d1.getTime() - d2.getTime())/(24*3600*1000)));
+		} catch (Exception e) {
+		}
+		return differ;
+	}
+	/**
+	 * 当前时间
+	 * @return
+	 */
+	public static String getCurrentDate() {
+		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String time = sDateFormat.format(new java.util.Date());
+		return time;
 	}
 }
