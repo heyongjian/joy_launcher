@@ -1,5 +1,6 @@
 package com.joy.launcher2.network.util;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -16,8 +17,10 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -26,6 +29,12 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EncodingUtils;
+
+import com.joy.launcher2.network.impl.ProtocalFactory;
+import com.joy.launcher2.util.SystemInfo;
+import com.joy.launcher2.util.Util;
 
 import android.util.Log;
 
@@ -189,7 +198,153 @@ public class HttpRequestUtil
         reader.close();  
         socket.close();  
         return true;  
-    }  
+    } 
+    
+    
+    public static boolean httpPostWithAnnex(String actionUrl, String channel,
+    		FormFile[] files) throws IOException {
+//    	try {
+    	
+    	Map<String, String> params = new HashMap<String, String>();  
+    	String randomTS = Util.getTS();
+		String randomString = Util.randomString(6);
+		params.put("op", Integer.toString(ProtocalFactory.OP_BACKUP));
+		params.put("channel", channel);
+		params.put("sign", ProtocalFactory.getSign(randomTS, randomString));
+		params.put("sjz", ProtocalFactory.getSjz(randomString));
+		
+		
+		String BOUNDARY = "---------7d4a6d158c9"; // 数据分隔线
+		String MULTIPART_FORM_DATA = "multipart/form-data";
+		URL url = new URL(actionUrl);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setDoInput(true);// 允许输入
+		conn.setDoOutput(true);// 允许输出
+		conn.setUseCaches(false);// 不使用Cache
+		conn.setRequestMethod("POST");
+		conn.setConnectTimeout(30000);
+		conn.setReadTimeout(30000);
+		conn.setRequestProperty("Connection", "Keep-Alive");
+		conn.setRequestProperty("Content-Type", MULTIPART_FORM_DATA
+				+ "; boundary=" + BOUNDARY);
+			
+		conn.setRequestProperty("Accept-Encoding", "gzip");
+		conn.setRequestProperty("ts",randomTS);
+		conn.setRequestProperty("deviceid",SystemInfo.deviceid) ;
+		//User user = new User();
+		/*AppContext ac = (AppContext)mContext.getApplicationContext();
+		User user = ac.user ;
+		
+		if(user!=null)
+			conn.setRequestProperty("sid",user.getSessionId());
+		else
+			conn.setRequestProperty("sid","");*/
+		
+		
+		StringBuilder sb = new StringBuilder();
+		// 上传的表单参数部分
+		for (HashMap.Entry<String, String> entry : params.entrySet()) {// 构建表单字段内容
+			sb.append("--");
+			sb.append(BOUNDARY);
+			sb.append("\r\n");
+			sb.append("Content-Disposition: form-data; name=\""
+					+ entry.getKey() + "\"\r\n\r\n");
+			sb.append(entry.getValue());
+			sb.append("\r\n");
+			
+			//System.out.println("++++++++++++++++++++++++++++ entry.getKey() :" + entry.getKey()  +  "  entry.getValue():" +entry.getValue());
+		}
+		DataOutputStream outStream = new DataOutputStream(
+				conn.getOutputStream());
+		outStream.write(EncodingUtils.getBytes(sb.toString(), "utf-8"));// 发送表单字段数据
+		// 上传的文件部分
+		for (FormFile file : files) {
+			System.out.println("file:::::::::::::::::::::"+file);
+			if (file != null) {
+				
+				String srcPath ="" ;
+				srcPath = file.getFilname() ;
+				
+				
+				StringBuilder split = new StringBuilder(); 
+				split.append("--");
+				split.append(BOUNDARY);
+				split.append("\r\n");
+				/*split.append("Content-Disposition: form-data;name=\""
+						+ file.getFormname() + "\";filename=\""
+						+ file.getFileName() + "\"\r\n");*/
+				split.append("Content-Disposition: form-data;name=\""
+						+ file.getParameterName() + "\";filename=\""
+						+ srcPath.substring(srcPath.lastIndexOf("/") + 1) + "\"\r\n");
+				split.append("Content-Type: " + file.getContentType()
+						+ "\r\n\r\n");
+				outStream.write(split.toString().getBytes());
+				if (file.getData() == null) {
+					if (file.getInStream() != null) {
+						byte[] buffer = new byte[1024];
+						int length = -1;
+						while ((length = file.getInStream().read(buffer)) != -1) {
+							outStream.write(buffer, 0, length);
+						}
+					}
+					file.getInStream().close();
+				} else {
+					outStream.write(file.getData(), 0,
+							file.getData().length);
+				}
+				outStream.write("\r\n".getBytes());
+			}
+		}
+		//String strResult="";
+		byte[] end_data = ("--" + BOUNDARY + "--\r\n").getBytes();// 数据结束标志
+		outStream.write(end_data);
+		outStream.flush();
+		int cah = conn.getResponseCode();
+		
+		System.out.println("conn.getResponseCode()conn.getResponseCode()conn.getResponseCode():"+cah);
+		if (cah != 200) {
+			throw new RuntimeException("请求url失败");
+		}
+	
+		if(conn.getContentEncoding().equalsIgnoreCase("gzip")) {
+			InputStream is = conn.getInputStream();
+			InputStream inputStream = new GZIPInputStream(is);
+			
+			BufferedInputStream bis = new BufferedInputStream(inputStream);
+			bis.mark(2);
+			// 取前两个字节
+			byte[] header = new byte[2];
+			int result = bis.read(header);
+			// reset输入流到开始位置
+			bis.reset();
+			// 判断是否是GZIP格式
+			 int ss = (header[0] & 0xff) | ((header[1] & 0xff) << 8);  
+		        if(result!=-1 && ss == GZIPInputStream.GZIP_MAGIC) {  
+				inputStream= new GZIPInputStream(bis);
+			} else {
+			        // 取前两个字节
+				inputStream= bis;
+			}
+			//strResult = Utils.convertStreamToString(inputStream, HTTP.UTF_8);
+		    //strResult = Util.getBytes(inputStream).toString();
+			inputStream.close();
+
+		} else {
+			/** 非压缩格式 **/
+			InputStream is = conn.getInputStream();
+			int ch;
+			StringBuilder b = new StringBuilder();
+			while ((ch = is.read()) != -1) {
+				b.append( ch);
+			}
+			//strResult = b.toString() ;
+		}
+		outStream.close();
+		conn.disconnect();	
+		//return strResult;
+    	return true;		
+    }
+    
       
     /**  
      * 提交数据到服务器  
