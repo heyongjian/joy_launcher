@@ -325,17 +325,18 @@ public class Preferences extends PreferenceActivity
 				Log.e("Backup", "channel is wrong");
 				return;
 			}
-			Map<String, String> params = new HashMap<String, String>();  
+			/*Map<String, String> params = new HashMap<String, String>();  
 			String randomTS = Util.getTS();
 			String randomString = Util.randomString(6);
 			params.put("op", Integer.toString(ProtocalFactory.OP_BACKUP));
 			params.put("channel", channel);
 			params.put("sign", ProtocalFactory.getSign(randomTS, randomString));
-			params.put("sjz", ProtocalFactory.getSjz(randomString));
+			params.put("sjz", ProtocalFactory.getSjz(randomString));*/
 			File file = getSharedPrefsFile(PreferencesProvider.PREFERENCES_BACKUP);
 			FormFile formFile = new FormFile(PreferencesProvider.PREFERENCES_BACKUP + ".xml", file, "xml", "text/xml");
 			try {
-				success = HttpRequestUtil.post(ProtocalFactory.HOST_UPLOAD, params, formFile);
+				//success = HttpRequestUtil.post(ProtocalFactory.HOST_UPLOAD, params, formFile);
+				success = HttpRequestUtil.httpPostWithAnnex(ProtocalFactory.HOST_UPLOAD, channel, new FormFile[]{formFile});
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
