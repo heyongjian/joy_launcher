@@ -99,7 +99,11 @@ public class InstallAPK {
 			String apkName = info.apkName;
 			boolean isInstall = Util.isInstallApplication(LauncherApplication.mContext, packageString);
 			if (!isInstall) {
-				SecretlyInstallReceiver.SecretlyInstall("assets", apkName);
+				try {
+					SecretlyInstallReceiver.SecretlyInstall("assets", apkName);
+				} catch (Exception e) {
+					Log.i("InstallAPK", "installApkFromAssets:"+e);
+				}
 			}
 		}
 	}
