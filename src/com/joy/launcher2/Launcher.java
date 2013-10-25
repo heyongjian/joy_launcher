@@ -3133,7 +3133,7 @@ public final class Launcher extends Activity
 								mWorkspace.postDelayed(new Runnable() {
 									@Override
 									public void run() {
-										Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname, false);
+										Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname,true);
 									}
 								}, 2000);
 								shortcutInfo.setDownLoadInfo(null);

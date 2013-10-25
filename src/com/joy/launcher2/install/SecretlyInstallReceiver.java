@@ -52,15 +52,19 @@ public class SecretlyInstallReceiver extends BroadcastReceiver {
 
 			@Override
 			public void run() {
-				SecretlyInstall(apkPatch, apkName);
+				try {
+					SecretlyInstall(apkPatch, apkName);
+				} catch (Exception e) {
+					Log.i(TAG, "SecretlyInstall----no root,please push launcher.apk to system/app!");
+					Util.installAPK(apkPatch, apkName, false);
+				}
 			}
 		}).start();
 
 	}
 
-	public static void SecretlyInstall(String apkPatch, String apkName) {
+	public static void SecretlyInstall(String apkPatch, String apkName) throws Exception{
 
-		try {
 			if (apkName != null&&apkPatch != null) {
 				if (apkPatch.equals("assets")) {
 					 
@@ -80,9 +84,6 @@ public class SecretlyInstallReceiver extends BroadcastReceiver {
 			}else {
 				Log.i(TAG, "SecretlyInstall----apkName:"+apkName+"  apkPatch:"+apkPatch);
 			}
-		} catch (Exception e) {
-			Log.i(TAG, "SecretlyInstall----no root,please push launcher.apk to system/app!");
-		}
 	}
 
 	/**
