@@ -248,15 +248,18 @@
         
         <activity
             android:theme="@android:style/Theme.Light.NoTitleBar"
+            android:screenOrientation="portrait" 
             android:name="com.joy.launcher2.wallpaper.WallpaperActivity">
         </activity>
         
         <activity
             android:name="com.joy.launcher2.wallpaper.CategoryActivity"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
          <activity 
             android:name="com.joy.launcher2.wallpaper.PreviewActivity"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
         
     </application>
