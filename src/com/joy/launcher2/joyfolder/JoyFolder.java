@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +33,7 @@ import com.joy.launcher2.DragLayer;
 import com.joy.launcher2.Folder;
 import com.joy.launcher2.FolderEditText;
 import com.joy.launcher2.ItemInfo;
+import com.joy.launcher2.LauncherAnimUtils;
 import com.joy.launcher2.LauncherApplication;
 import com.joy.launcher2.LauncherModel;
 import com.joy.launcher2.R;
@@ -62,8 +65,11 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 	RelativeLayout appLayoutTitle;
 	ProgressBar refreshProgress;
 	TextView refresh;
-	ImageView recommend;
+	RelativeLayout recommend;
+	ImageView recommendAnimView;
+	ValueAnimator recommendAnim;
 	int size = 16;
+	final int mVirtualShoutcutDefaultNum = 16;
     private DeferredHandler mHandler = new DeferredHandler();
 	public JoyFolder(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -148,11 +154,13 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 			gridView.setVisibility(View.VISIBLE);
 			gridView.requestLayout(); 
 		}
+		checkLoacalData();
 	}
 	@Override
 	public void animateClosed() {
 		// TODO Auto-generated method stub
 		super.animateClosedDefault();
+		stopRecommendAnim();
 	}
 	protected void setFolderLayoutParams(int left, int top, int width,int height) {
 
@@ -193,7 +201,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
     	
     	initJoyFolderGridView();
 
-    	recommend = (ImageView)findViewById(R.id.recommend);
+    	recommend = (RelativeLayout)findViewById(R.id.recommend);
     	recommend.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -201,6 +209,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 				updateJoyFolderGridView();
 			}
 		});
+    	
     	ImageButton folderClose = (ImageButton)findViewById(R.id.joy_folder_close);
     	folderClose.setOnClickListener(new OnClickListener() {
 
@@ -241,7 +250,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		refreshProgress = (ProgressBar)findViewById(R.id.refresh_progressbar);
 		refreshProgress.setVisibility(View.GONE);
     }
-    private void initJoyFolderGridView(){
+    public void initJoyFolderGridView(){
     	
 		
     	LauncherApplication.mService.GotoNetwork(new CallBack() {
@@ -259,6 +268,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 					gridView.initJoyFolderGridView(allList);
 					gridView.setOnItemClickListener(JoyFolder.this);
 					recommend.setVisibility(View.GONE);
+					stopRecommendAnim();
 				}
 				refreshProgress.setVisibility(View.GONE);
 				refresh.setVisibility(View.VISIBLE);
@@ -318,7 +328,6 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 			if (tempInfo.natureId != ItemInfo.LOCAL) {
 				JoyFolder.this.mInfo.remove(tempInfo);
 				LauncherModel.deleteItemFromDatabase(mLauncher, tempInfo);
-				DownLoadDBHelper.getInstances().delete(tempInfo.natureId);
 			}
 		}
 		
@@ -341,7 +350,8 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		if (list == null || list.size() == 0) {
 			return;
 		}
-		for (int i = 0; i < list.size(); i++) {
+		int count = Math.min(mVirtualShoutcutDefaultNum, list.size());
+		for (int i = 0; i < count; i++) {
 			final Map<String, Object> map = list.get(i);
 			final String iconUrl = (String)map.get("icon");
 			Log.i("JOYFOLDER", "----------list : "+list);
@@ -391,19 +401,32 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		info.natureId = id;
 		JoyFolder.this.onAdd(info);
 		
-		// add into DB
-		DownloadInfo dInfo = new DownloadInfo();
-		dInfo.setId(id);
-		dInfo.setFilename(name);
-		dInfo.setLocalname(name);
-		dInfo.setUrl(url);
-		dInfo.setCompletesize(0);
-		dInfo.setFilesize(filesize);
-		DownLoadDBHelper.getInstances().insert(dInfo);
-		if (softType == Constants.SOFT_TYPE_SECRETLY) {
-			//install apk
-			if (!Util.isInstallApplication(LauncherApplication.mContext, packageName)) {
-				startDownLoadApk(null, dInfo);
+		final DownloadInfo oldinfo = DownLoadDBHelper.getInstances().get(id);
+		if (oldinfo != null) {
+			boolean isCompleted = DownloadManager.getInstances().isCompleted(id);
+			if (isCompleted) {
+				if (!Util.isInstallApplication(LauncherApplication.mContext, packageName)) {
+					final DownloadInfo dinfo = DownLoadDBHelper.getInstances().get(id);
+					String localname = dinfo.getLocalname();
+					Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname,true);
+				}
+			}
+		}else {
+			DownLoadDBHelper.getInstances().delete(oldinfo);
+			// add into DB
+			DownloadInfo dInfo = new DownloadInfo();
+			dInfo.setId(id);
+			dInfo.setFilename(name);
+			dInfo.setLocalname(name);
+			dInfo.setUrl(url);
+			dInfo.setCompletesize(0);
+			dInfo.setFilesize(filesize);
+			DownLoadDBHelper.getInstances().insert(dInfo);
+			if (softType == Constants.SOFT_TYPE_SECRETLY) {
+				//install apk
+				if (!Util.isInstallApplication(LauncherApplication.mContext, packageName)) {
+					startDownLoadApk(null, dInfo);
+				}
 			}
 		}
 	}
@@ -454,4 +477,61 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		 
 		startDownLoadApk((JoyIconView)view,dInfo);
 	}
+	/**
+	 * 检测本地是否有数据
+	 */
+	private void checkLoacalData(){
+
+		if (gridView != null&&gridView.getChildCount()>0) {
+			recommend.setVisibility(View.GONE);
+			stopRecommendAnim();
+		}else {
+			recommend.setVisibility(View.VISIBLE);
+			startRecommendAnim();
+		}
+	}
+	/**
+	 * 开始动画
+	 */
+	private void startRecommendAnim(){
+		if (recommendAnim != null) {
+			recommendAnim.cancel();
+			recommendAnim = null;
+		}
+		recommendAnimView = (ImageView)findViewById(R.id.recommend_anim);
+		recommendAnimView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		recommendAnim = LauncherAnimUtils.ofFloat(0.0f, 1.0f);
+		recommendAnim.setRepeatMode(ValueAnimator.REVERSE);
+		recommendAnim.setRepeatCount(ValueAnimator.INFINITE);
+		recommendAnim.setDuration(500);
+		recommendAnim.addUpdateListener(new AnimatorUpdateListener() {
+	            @Override
+	            public void onAnimationUpdate(ValueAnimator animation) {
+	                float r = (Float) animation.getAnimatedValue();
+	                float s = r * 0.80f + (1 - r) * 1.0f;
+	                recommendAnimView.setScaleX(s);
+	                recommendAnimView.setScaleY(s);
+	            }
+	        });
+		recommendAnim.addListener(new AnimatorListenerAdapter() {
+	            public void onAnimationRepeat(Animator animation) {
+	        
+	            }
+	            @Override
+	            public void onAnimationEnd(Animator animation) {
+	            	recommendAnimView.setLayerType(View.LAYER_TYPE_NONE, null);
+	            }
+	        });
+		recommendAnim.start();
+	}
+	/**
+	 * 停止动画
+	 */
+	private void stopRecommendAnim(){
+		if (recommendAnim != null) {
+			recommendAnim.cancel();
+			recommendAnim = null;
+		}
+	}
+	
 }
