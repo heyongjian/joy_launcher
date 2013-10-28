@@ -205,6 +205,7 @@ public class JoyFolderIcon extends FolderIcon implements Refreshable {
 			editor.commit();
 			if (mFolder!= null && mFolder instanceof JoyFolder) {
 				((JoyFolder)mFolder).updateShortcutInFolder();
+				((JoyFolder)mFolder).initJoyFolderGridView();
 			}
 		}
 	}

@@ -503,7 +503,7 @@ s -->
     <string name="joy_application_folder">application folder</string>
     <string name="joy_foler_more_app">more</string>
     <string name="joy_foler_refresh">refreshr</string>
-    <string name="joy_foler_hot_app">[hot app]</string>
+    <string name="joy_foler_hot_app">[popular recommend]</string>
     <string name="menu_add_folder">add</string>
     <string name="online_folder">online folder</string>
     <string name="add_to_desktop">add to desktop</string>
@@ -542,4 +542,6 @@ s -->
     <string name="flip_tips">Drag the bottom again, you can flip.</string>
     
     <string name="main_menu_text">Main menu</string>
+    
+	<string name="already_have_joyfolder">already have the folder</string>
 </resources>

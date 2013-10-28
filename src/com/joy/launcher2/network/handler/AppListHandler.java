@@ -24,17 +24,18 @@ public class AppListHandler {
 	public static int index = 1;
 	public static int num = 1;
 	public ArrayList<List<Map<String, Object>>> getAppList(String string,int row,int type) {
-		
 		if (string == null) {
-			string = Util.readString(Constants.DOWNLOAD_JSON_DIR+"/"+type+"-"+Constants.FILENAME_APP_LIST);
-		}else {
-			Util.saveString(Constants.DOWNLOAD_JSON_DIR+"/"+type+"-"+Constants.FILENAME_APP_LIST, string);
+			string = getAppLisLocalInfo(type);
 		}
 		ArrayList<List<Map<String, Object>>> arrayList =new ArrayList<List<Map<String, Object>>>();
 		try {
 			JSONObject json = new JSONObject(string);
-			if (json == null || json.getInt("state") != 1) {
+			if (json == null) {
 				return null;
+			}else if (json.getInt("state") != 1) {
+				if (string == null || (string.equals(""))) {
+					return null;
+				}
 			}
 			JSONArray jsonarry = json.getJSONArray("item");
 		
@@ -76,6 +77,21 @@ public class AppListHandler {
 			e.printStackTrace();
 			return null;
 		}
+		if (arrayList.size()>0) {
+			saveAppLisLocalInfo(type, string);
+		}
 		return arrayList;
+	}
+	
+	public static String getAppLisLocalInfo(int type){
+
+		String string = Util.readString(Constants.DOWNLOAD_JSON_DIR+"/"+type+"-"+Constants.FILENAME_APP_LIST);
+		return string;
+	}
+	
+	private static void saveAppLisLocalInfo(int type,String string){
+		if (string != null&&!string.equals("")) {
+			Util.saveString(Constants.DOWNLOAD_JSON_DIR+"/"+type+"-"+Constants.FILENAME_APP_LIST, string);
+		}
 	}
 }
