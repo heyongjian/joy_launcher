@@ -3139,6 +3139,22 @@ public final class Launcher extends Activity
 							@Override
 							public void downloadFailed() {
 								shortcutInfo.setDownLoadInfo(null);
+								view.post(new Runnable() {
+
+									@Override
+									public void run() {
+										Toast.makeText(Launcher.this,
+												getText(R.string.download_error),
+												Toast.LENGTH_LONG).show();
+									}
+								});
+							}
+							@Override
+							public void downloadUpdate() {
+								DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
+								if (dInfo.getView() != null) {
+									dInfo.getView().postInvalidate();
+								}
 							}
 						}, false);
 			}

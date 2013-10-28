@@ -19,6 +19,21 @@ public class Protocal {
 	// 是否启动重连机制
 	private boolean reTry = true;
 	
+	private int startPos = -1;
+	private int endPos = -1;
+	public int getStartPos() {
+		return startPos;
+	}
+	public int getEndPos(){
+		return endPos;
+	}
+
+	public void setStartPos(int startPos) {
+		this.startPos = startPos;
+	}
+	public void setEndPos(int endPos) {
+		this.endPos = endPos;
+	}
 	/**
 	 * @return the getData
 	 */

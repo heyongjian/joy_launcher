@@ -62,7 +62,7 @@ public class DownloadManager {
 
 	public static boolean isPause = false;
 
-	public void createTask(JoyIconView view,DownloadInfo dInfo,CallBack callback,boolean secretly) {
+	public void createTask(View view,DownloadInfo dInfo,CallBack callback,boolean secretly) {
 		if (dInfo == null) {
 			return;
 		}
@@ -74,15 +74,14 @@ public class DownloadManager {
 			Log.i(TAG, "--------> 已经在下载了！！！");
 			return;
 		}
-//		DownloadInfo dInfo = null;
-		// 首先从数据库里读取，是否有未完成的下载
-		// dInfo = dbHelper.get(id);暂不支持断点下载
-		Log.i(TAG, "-----dInfo---> " + dInfo);
-		
-		// 检查本地是否有重名了的文件
-		File localfile = new File(Constants.DOWNLOAD_APK_DIR + "/"+ dInfo.getFilename());
-		localfile = Util.getCleverFileName(localfile);
-		dInfo.setLocalname(localfile.getName());
+		Log.i(TAG, "-----dInfo---> getCompletesize :" + dInfo.getCompletesize());
+		//completesize == 0是新建下载
+		if (dInfo.getCompletesize() == 0) {
+			// 检查本地是否有重名了的文件
+			File localfile = new File(Constants.DOWNLOAD_APK_DIR + "/"+ dInfo.getFilename());
+			localfile = Util.getCleverFileName(localfile);
+			dInfo.setLocalname(localfile.getName());
+		}
 
 		dInfo.setView(view);
 
@@ -93,7 +92,7 @@ public class DownloadManager {
 		try {
 			rf = new RandomAccessFile(file, "rwd");
 			// 从断点处 继续下载（初始为0）
-			rf.seek(dInfo.getCompletesize());
+			rf.seek(dInfo.getCompletesize()*1024);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,7 +117,7 @@ public class DownloadManager {
 			this.randomAccessFile = randomAccessFile;
 			this.callback = callback;
 			isSecretly = secretly;
-			sendBroadcast(downinfo,UPDATE_UI);
+			callback.downloadUpdate();
 		}
 		public DownloadInfo getDownloadInfo(){
 			return downinfo;
@@ -129,8 +128,9 @@ public class DownloadManager {
 		public void run() {
 			InputStream is = null;
 			try {
-//				long begin = downinfo.getCompletesize();
-				is = mService.getDownLoadInputStream(downinfo.getUrl());
+				int startPos = downinfo.getCompletesize()*1024;
+				int endPos = downinfo.getFilesize()*1024;
+				is = mService.getDownLoadInputStream(downinfo.getUrl(),startPos,endPos);
 				if (is == null) {
 					return;
 				}
@@ -142,7 +142,8 @@ public class DownloadManager {
 				boolean isover = false;
 				long startime = System.currentTimeMillis();
 				Log.i(TAG, "-----downinfo starttime--->1 " + startime);
-				int tempLen = 0;
+				int tempLen = startPos;
+				callback.downloadUpdate();
 				while ((len = is.read(b))!=-1) {
 					if (isPause) {
 						return;
@@ -153,14 +154,14 @@ public class DownloadManager {
 					pool += len;
 					if (pool >= 100 * 1024) { // 100kb写一次数据库
 						Log.i(TAG, "-----下载  未完成----");
-						// dbHelper.update(downinfo); 暂不支持断点下载
+						DownLoadDBHelper.getInstances().update(downinfo); //暂不支持断点下载
 						pool = 0;
-						sendBroadcast(downinfo,UPDATE_UI);// 刷新一次
+						callback.downloadUpdate();// 刷新一次
 					}
 					tempLen += len;
 					downinfo.setCompletesize(tempLen/1024);
 					if (pool != 0) {
-						// dbHelper.update(downinfo); 暂不支持断点下载
+						DownLoadDBHelper.getInstances().update(downinfo);/// 暂不支持断点下载
 					}
 				}
 				long endtime = System.currentTimeMillis();
@@ -176,14 +177,11 @@ public class DownloadManager {
 					DownLoadDBHelper.getInstances().update(downinfo);
 					if(callback != null){
 						callback.downloadSucceed();
-						sendBroadcast(downinfo,UPDATE_UI);// 刷新一次
 					}
 				}else{
 					callback.downloadFailed();
-					sendBroadcast(downinfo,UPDATE_UI);// 刷新一次
-					sendBroadcast(downinfo,DOWNLOAD_ERROR);// 网络错误
 				}
-
+				callback.downloadUpdate();
 				map.remove(String.valueOf(downinfo.getId()));
 				if (is != null) {
 					try {
@@ -197,15 +195,6 @@ public class DownloadManager {
 					} catch (IOException e) {
 					}
 				}
-			}
-		}
-		
-		public void sendBroadcast(Object obj,int what) {
-			if (!isSecretly) {
-				Message msg = new Message();
-				msg.what = what;
-				msg.obj = obj;
-				mHandler.sendMessage(msg);
 			}
 		}
 	}
@@ -227,29 +216,8 @@ public class DownloadManager {
 	public interface CallBack{
 		public void downloadSucceed();
 		public void downloadFailed();
+		public void downloadUpdate();
 	}
-	final int UPDATE_UI = 0;
-	final int DOWNLOAD_ERROR = 1;
-	private Handler mHandler = new Handler() {
-		public void handleMessage(Message msg) {
-			DownloadInfo td = (DownloadInfo) msg.obj;
-			int what = msg.what;
-			switch(what){
-			case UPDATE_UI:
-				View view = td.getView();
-				if (view != null) {
-					view.invalidate();
-				}
-				break;
-			case DOWNLOAD_ERROR:
-				CharSequence errorStrings =  mContext.getResources().getText(R.string.download_error);
-				Toast.makeText(mContext, errorStrings, Toast.LENGTH_LONG).show();
-				break;
-			case 2:
-				break;
-			}
-		}
-	};
 
 	public void onDestroy() {
 		pool.shutdown();
