@@ -2268,7 +2268,7 @@ public final class Launcher extends Activity
 		}
     }
     /**
-     * 添加到桌�?
+     * 添加到桌�?
      */
     public void showAddToDesktop(){
 		LayoutInflater inflater = getLayoutInflater();
@@ -2310,7 +2310,7 @@ public final class Launcher extends Activity
         addWidgetByMenu = true;
     }
     /**
-     * 弹出添加在线文件的窗�?
+     * 弹出添加在线文件的窗�?
      * @param natureId
      * @return
      */
@@ -3145,6 +3145,22 @@ public final class Launcher extends Activity
 							@Override
 							public void downloadFailed() {
 								shortcutInfo.setDownLoadInfo(null);
+								view.post(new Runnable() {
+
+									@Override
+									public void run() {
+										Toast.makeText(Launcher.this,
+												getText(R.string.download_error),
+												Toast.LENGTH_LONG).show();
+									}
+								});
+							}
+							@Override
+							public void downloadUpdate() {
+								DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
+								if (dInfo.getView() != null) {
+									dInfo.getView().postInvalidate();
+								}
 							}
 						}, false);
 			}
@@ -3861,7 +3877,7 @@ public final class Launcher extends Activity
     	return animator;
     }
     /**
-     * get appsCustomize anim （1：default  2 samsung）
+     * get appsCustomize anim �?：default  2 samsung�?
      * @param apps
      * @param isShowApps
      * @return

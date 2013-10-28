@@ -46,4 +46,6 @@ public class Constants {
 		public final static int CATEGORY_TYPE_NATIVE = 1;
 		public final static int CATEGORY_TYPE_ONLINE = 2;
 		//end
+		
+		public final static int DOWNLOAD_APK_HTTP_OK = 206;
 }
