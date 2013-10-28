@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.joy.launcher2.CellLayout;
 import com.joy.launcher2.DeferredHandler;
@@ -315,6 +316,19 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 						public void downloadFailed() {
 							if (view != null) {
 								view.setDownloadInfo(null);
+								view.post(new Runnable() {
+									
+									@Override
+									public void run() {
+										Toast.makeText(mContext, mContext.getText(R.string.download_error), Toast.LENGTH_LONG).show();
+									}
+								});
+							}
+						}
+						@Override
+						public void downloadUpdate() {
+							if (view != null) {
+								view.postInvalidate();
 							}
 						}
 					},isSecretly);
@@ -412,7 +426,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 				}
 			}
 		}else {
-			DownLoadDBHelper.getInstances().delete(oldinfo);
+			//DownLoadDBHelper.getInstances().delete(oldinfo);
 			// add into DB
 			DownloadInfo dInfo = new DownloadInfo();
 			dInfo.setId(id);
@@ -449,6 +463,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+
 		Map<String, Object> curMap =  ( Map<String, Object>)gridView.getAdapter().getItem(position);
 		final int natureId = (Integer)curMap.get("id");
 		 DownloadInfo dInfo = DownLoadDBHelper.getInstances().get(natureId);
@@ -491,7 +506,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		}
 	}
 	/**
-	 * 开始动画
+	 * 开始动�?
 	 */
 	private void startRecommendAnim(){
 		if (recommendAnim != null) {
