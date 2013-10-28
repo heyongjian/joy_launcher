@@ -2363,7 +2363,11 @@ public final class Launcher extends Activity
      * @return
      */
     FolderIcon addJoyFolder(int natureType,String title,String iconPath) {
-
+    	if (LauncherModel.hasJoyFolder(this, natureType)) {
+        	Toast.makeText(this, getString(R.string.already_have_joyfolder),
+                    Toast.LENGTH_SHORT).show();
+			return null;
+		}
     	final int screen = getCurrentWorkspaceScreen();
 
         int[] mTargetCell = new int[2];

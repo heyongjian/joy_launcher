@@ -318,7 +318,7 @@
     <string name="joy_application_folder">应用大全</string>
     <string name="joy_foler_more_app">更多</string>
     <string name="joy_foler_refresh">刷新</string>
-    <string name="joy_foler_hot_app">【热门应用】</string>
+    <string name="joy_foler_hot_app">【热门推荐】</string>
     <string name="online_folder">在线文件夹</string>
     <string name="menu_add_folder">添加</string>
     <string name="add_to_desktop">添加到桌面</string>
@@ -357,4 +357,6 @@
     <string name="flip_tips">再次拖至底部，即可翻页.</string>
  	
     <string name="s4_appliccation">应用程序</string>
+    
+    <string name="already_have_joyfolder">已经有这个在线文件夹了</string>
 </resources>

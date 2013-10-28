@@ -62,6 +62,7 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.joy.launcher2.LauncherSettings.Favorites;
 import com.joy.launcher2.preference.PreferencesProvider;
 import com.joy.launcher2.util.Util;
 
@@ -2714,6 +2715,40 @@ public class LauncherModel extends BroadcastReceiver {
         return folderInfo;
     }
 
+    /**
+     * 判断是否已经有该文件夹了
+     * @param context
+     * @param id
+     * @return
+     */
+    public static boolean hasJoyFolder(Context context,int id){
+    	final ContentResolver cr = context.getContentResolver();
+        Cursor c = cr.query(LauncherSettings.Favorites.CONTENT_URI, 
+        		new String[] {LauncherSettings.Favorites.ITEM_TYPE,
+        		LauncherSettings.Favorites.NATURE_ID}, null, null, null);
+        final int itemTypeIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.ITEM_TYPE);
+        final int natureIdIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.NATURE_ID);
+        boolean hasJoyFolder = false;
+    	try {
+        	boolean isover = false;
+            while (!isover&&c.moveToNext()) {
+            	int itemType = c.getInt(itemTypeIndex);
+                int natureId = c.getInt(natureIdIndex);
+                if (itemType == Favorites.ITEM_TYPE_FOLDER) {
+               	 	if (natureId == id) {
+               	 	  hasJoyFolder = true;
+               	 	  isover = true;
+					}
+				}
+            }
+        } catch (Exception e) {
+        	
+        } finally {
+            c.close();
+        }
+	
+    	return hasJoyFolder;
+    }
     public static final Comparator<ApplicationInfo> getAppNameComparator() {
         final Collator collator = Collator.getInstance();
         return new Comparator<ApplicationInfo>() {
