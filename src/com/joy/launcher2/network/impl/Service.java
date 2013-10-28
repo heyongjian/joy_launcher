@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+import android.R.integer;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +20,7 @@ import com.joy.launcher2.network.handler.VirtualShortcutListHandler;
 import com.joy.launcher2.network.util.ClientHttp;
 import com.joy.launcher2.network.util.ClientInterface;
 import com.joy.launcher2.network.util.Protocal;
+import com.joy.launcher2.util.SystemInfo;
 
 /**
  * 联网接口的具体实现
@@ -115,6 +117,15 @@ public class Service {
 	public InputStream getDownLoadInputStream(String url){
 		
 		Protocal protocal = pfactory.downloadApkProtocal(url);
+		InputStream iStream = cs.getInputStream(protocal);
+		
+		return iStream;
+	}
+	public InputStream getDownLoadInputStream(String url,int startPos,int endPos){
+		
+		Protocal protocal = pfactory.downloadApkProtocal(url);
+		protocal.setStartPos(startPos);
+		protocal.setEndPos(endPos);
 		InputStream iStream = cs.getInputStream(protocal);
 		
 		return iStream;
