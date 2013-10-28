@@ -157,11 +157,18 @@ public class ClientHttp implements ClientInterface {
 			httpRequest.addHeader("deviceId", SystemInfo.deviceid);// –唯一设备号
 			httpRequest.addHeader("Accept-Encoding", "gzip");
 			httpRequest.addHeader("Content-Type", "text/json;charset=UTF-8");
-
+			int startPos = protocal.getStartPos();
+			int endPos = protocal.getEndPos();
+			if (startPos != -1 && endPos != -1) {
+				httpRequest.addHeader("Range", "bytes=" + startPos + "-");
+				if(DEBUG) Log.i(TAG, "-----startPos:"+startPos);
+				if(DEBUG) Log.i(TAG, "-----endPos:"+endPos);
+			}
+			
 			HttpResponse httpResponse = httpClient.execute(httpRequest);
 			int httpCode = httpResponse.getStatusLine().getStatusCode();
 			if(DEBUG) Log.i(TAG, "-----httpCode-------"+httpCode);
-			if (httpCode == HttpURLConnection.HTTP_OK) {
+			if (httpCode == HttpURLConnection.HTTP_OK || httpCode == Constants.DOWNLOAD_APK_HTTP_OK) {
 				Header encodeHader = httpResponse.getLastHeader("Content-Encoding");
 				if (encodeHader != null && "gzip".equals(encodeHader.getValue())) {
 					result = handleReponse(httpResponse, true);
