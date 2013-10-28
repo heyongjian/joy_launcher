@@ -175,6 +175,7 @@ public class JoyFolderIcon extends FolderIcon implements Refreshable {
 			Log.i("NetWorkStatusChangeReceiver", "curDate -- : "+mFolder);
 			if (mFolder!= null && mFolder instanceof JoyFolder) {
 				((JoyFolder)mFolder).updateShortcutInFolder();
+				((JoyFolder)mFolder).initJoyFolderGridView();
 			}
 		}
 	}
