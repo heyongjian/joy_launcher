@@ -153,11 +153,23 @@
                 android:padding="3dp" >
             </com.joy.launcher2.joyfolder.JoyFolderGridView>
 
-            <ImageView
+            <RelativeLayout 
                 android:id="@+id/recommend"
                 android:layout_width="fill_parent"
                 android:layout_height="@dimen/joyfolder_gridview_height"
-                android:background="@drawable/joy_onlinefolder_recommend" />
+                android:background="@drawable/joy_onlinefolder_recommend"
+                android:clickable="true"
+                >
+                <ImageView
+                android:id="@+id/recommend_anim"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/joy_onlinefolder_recommend_android"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:clickable="false"
+                android:gravity="center"/>
+            </RelativeLayout>
         </FrameLayout>
 
     </LinearLayout>
