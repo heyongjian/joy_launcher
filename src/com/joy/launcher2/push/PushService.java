@@ -17,7 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.joy.launcher2.R;
-import com.joy.launcher2.network.impl.ProtocalFactory;
 import com.joy.launcher2.util.Constants;
 import com.joy.launcher2.util.Util;
 
@@ -31,9 +30,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
-import android.net.wifi.WifiConfiguration.Protocol;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager.WakeLock;
@@ -406,7 +403,7 @@ public class PushService extends Service{
 						canNext = false;
 					}
 				}
-				if(DEBUG)Log.e(TAG, "2:current time: " + pushCurrentDay);
+				if(DEBUG)Log.e(TAG, "2:current time: " + pushCurrentDay + "  " + mPushType);
 				
 				//当获取当天网络时间正确或者获取push设置正确时开始获取push list
 				if(mPushType == PushUtils.PUSH_LIST_TYPE && activate)
@@ -450,7 +447,7 @@ public class PushService extends Service{
 						(mPushType == PushUtils.PUSH_ONE_MESSAGE_TYPE || mPushType == PushUtils.PUSH_LIST_TYPE) 
 						&& pushCurrentDayNum < pushCurrentDayNumMax && activate)
 				{
-					if(DEBUG)Log.e(TAG, "push message start");
+					if(DEBUG)Log.e(TAG, "push message start" + "  " + pushList);
 					JSONObject pushListJson = null;
 					try {
 						pushListJson = new JSONObject(pushList);
@@ -645,7 +642,7 @@ public class PushService extends Service{
 					
 					calendar.setTimeInMillis(currentSystemTime);
 					calendar.add(Calendar.DAY_OF_YEAR, 1);
-					calendar.set(Calendar.HOUR_OF_DAY, 8);
+					calendar.set(Calendar.HOUR_OF_DAY, 3);
 					calendar.set(Calendar.MINUTE, 0);
 					calendar.set(Calendar.MILLISECOND, 0);
 					nextTime = pushNextTime = pushListNextTime = calendar.getTimeInMillis();
@@ -657,7 +654,7 @@ public class PushService extends Service{
 					nextPushType = PushUtils.PUSH_ONE_MESSAGE_TYPE;
 					
 				}
-				else if( !isPushListFull && !isCurrentDayNeedToPush)
+				else if((!isPushListFull && !isCurrentDayNeedToPush) || (listNum == 0))
 				{
 					nextPushType = PushUtils.PUSH_LIST_TYPE;
 					nextTime = pushListNextTime = currentSystemTime + (long)pushListTimeInterval * 1000;
@@ -743,7 +740,7 @@ public class PushService extends Service{
 					String listStr = fromJson.getString("item");
 					String[] items = listStr.split(",");
 					JSONArray nativeItems = new JSONArray();
-					for(int i = 0; i < items.length; i++)
+					for(int i = 0; i < items.length && !listStr.equals(""); i++)
 					{
 						JSONObject item = new JSONObject();
 						item.put("id", Integer.parseInt(items[i]));
@@ -768,7 +765,7 @@ public class PushService extends Service{
 					{
 						nativeItems = toJson.getJSONArray("item");
 					}
-					for(int i = 0; i < items.length ; i++)
+					for(int i = 0; i < items.length && !listStr.equals(""); i++)
 					{
 						
 						int id = Integer.parseInt(items[i]);
