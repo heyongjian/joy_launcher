@@ -4006,6 +4006,7 @@ public final class Launcher extends Activity
                     if (mSearchDropTargetBar != null) {
                         duration = mSearchDropTargetBar.getTransitionInDuration();
                     }
+                    mHotseat.setTranslationY(mHotseat.getHeight());
                     mHotseat.animate().alpha(1f).translationYBy(-mHotseat.getHeight()).setDuration(duration);
                 }
             } else {
@@ -4028,6 +4029,7 @@ public final class Launcher extends Activity
                     if (mSearchDropTargetBar != null) {
                         duration = mSearchDropTargetBar.getTransitionOutDuration();
                     }
+                    mHotseat.setTranslationY(0);
                     mHotseat.animate().alpha(0f).translationYBy(mHotseat.getHeight()).setDuration(duration);
                 }
             } else {
