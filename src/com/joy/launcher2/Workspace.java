@@ -2334,6 +2334,14 @@ public class Workspace extends PagedView
                 getResources().getInteger(R.integer.config_workspaceUnshrinkTime) :
                 getResources().getInteger(R.integer.config_appsCustomizeWorkspaceShrinkTime);
         for (int i = 0; i < getChildCount(); i++) {
+        	//BEGIN:by wanghao on 20131029 issue-18
+        	boolean isAnimated = animated;
+            if (state == State.NORMAL) {
+            	if (getCurrentPage() != i) {
+            		isAnimated = false;
+				}
+			}
+            //END
             final CellLayout cl = (CellLayout) getChildAt(i);
             float rotation = 0f;
             float rotationY = 0f;
@@ -2444,7 +2452,7 @@ public class Workspace extends PagedView
                 // To/from workspace - only show the current page unless the transition is not
                 //                     animated and the animation end callback below doesn't run;
                 //                     or, if we're in spring-loaded mode
-                if (i == mCurrentPage || !animated || oldStateIsSpringLoaded) {
+                if (i == mCurrentPage || !isAnimated || oldStateIsSpringLoaded) {
                     finalAlpha = 1f;
                 } else {
                     initialAlpha = 0f;
@@ -2454,7 +2462,7 @@ public class Workspace extends PagedView
 
             mOldAlphas[i] = initialAlpha;
             mNewAlphas[i] = finalAlpha;
-            if (animated) {
+            if (isAnimated) {
                 mOldTranslationXs[i] = cl.getTranslationX();
                 mOldTranslationYs[i] = cl.getTranslationY();
                 mOldScaleXs[i] = cl.getScaleX();
