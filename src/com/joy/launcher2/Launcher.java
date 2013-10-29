@@ -2268,7 +2268,7 @@ public final class Launcher extends Activity
 		}
     }
     /**
-     * 添加到桌�?
+     * 添加到桌�?
      */
     public void showAddToDesktop(){
 		LayoutInflater inflater = getLayoutInflater();
@@ -2310,7 +2310,7 @@ public final class Launcher extends Activity
         addWidgetByMenu = true;
     }
     /**
-     * 弹出添加在线文件的窗�?
+     * 弹出添加在线文件的窗�?
      * @param natureId
      * @return
      */
@@ -3877,7 +3877,7 @@ public final class Launcher extends Activity
     	return animator;
     }
     /**
-     * get appsCustomize anim �?：default  2 samsung�?
+     * get appsCustomize anim �?：default  2 samsung�?
      * @param apps
      * @param isShowApps
      * @return
@@ -4106,6 +4106,7 @@ public final class Launcher extends Activity
                     if (mSearchDropTargetBar != null) {
                         duration = mSearchDropTargetBar.getTransitionInDuration();
                     }
+                    mHotseat.setTranslationY(mHotseat.getHeight());//add by wanghao issue-24-25
                     mHotseat.animate().alpha(1f).translationYBy(-mHotseat.getHeight()).setDuration(duration);
                 }
             } else {
@@ -4128,6 +4129,7 @@ public final class Launcher extends Activity
                     if (mSearchDropTargetBar != null) {
                         duration = mSearchDropTargetBar.getTransitionOutDuration();
                     }
+                    mHotseat.setTranslationY(0);//add by wanghao issue-24-25
                     mHotseat.animate().alpha(0f).translationYBy(mHotseat.getHeight()).setDuration(duration);
                 }
             } else {
