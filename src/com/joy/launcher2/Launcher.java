@@ -331,7 +331,7 @@ public final class Launcher extends Activity
     private Uri mImageUri = null;//The Uri to store the big bitmap
     private MyPreferenceChangeListener mMyPreferenceChangeListener;
     private SharedPreferences mSharedPreferences;
-    private static final int VERSION_CODES_JELLY_BEAN = 16;
+    public static final int VERSION_CODES_JELLY_BEAN = 16;
     private static final String ACTION_SET_PHOTO_TO_APP_BACKGROUND = "action_start_photo_piker";
     private static final String ACTION_APP_BACKGROUND_COLOR_CHANGED = "action_app_background_color_changed";
     private static final int CURRENT_THEME_BACKGROUND = 0;
@@ -2282,7 +2282,7 @@ public final class Launcher extends Activity
     /**
      * 添加widget
      */
-    private void showAddWidget(){
+    public void showAddWidget(){
 
     	int appWidgetId = Launcher.this.mAppWidgetHost.allocateAppWidgetId();
 
