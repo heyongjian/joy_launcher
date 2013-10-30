@@ -76,6 +76,7 @@ import android.widget.Toast;
 import com.joy.launcher2.R;
 import com.joy.launcher2.DropTarget.DragObject;
 import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.util.Util;
 
 /**
  * A simple callback interface which also provides the results of the task.
@@ -1936,13 +1937,18 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
         if (mJoinWidgetsApps) {
             Context context = getContext();
-            for (int j = 0; j < mNumWidgetPages; ++j) {
-                PagedViewGridLayout layout = new PagedViewGridLayout(context, mWidgetCountX,
-                        mWidgetCountY);
-                setupPage(layout);
-                addView(layout, new PagedView.LayoutParams(LayoutParams.MATCH_PARENT,
-                            LayoutParams.MATCH_PARENT));
+            //BEGIN：add by wanghao on 20131029 issue-16
+            if (Build.VERSION.SDK_INT >= Launcher.VERSION_CODES_JELLY_BEAN ||
+        			Util.isSystemApplication(LauncherApplication.mContext, LauncherApplication.mContext.getPackageName())) {
+            	for (int j = 0; j < mNumWidgetPages; ++j) {
+                    PagedViewGridLayout layout = new PagedViewGridLayout(context, mWidgetCountX,
+                            mWidgetCountY);
+                    setupPage(layout);
+                    addView(layout, new PagedView.LayoutParams(LayoutParams.MATCH_PARENT,
+                                LayoutParams.MATCH_PARENT));
+                }
             }
+           //END
 
             for (int i = 0; i < mNumAppsPages; ++i) {
                 PagedViewCellLayout layout = new PagedViewCellLayout(context);
@@ -1955,7 +1961,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 syncAppsPages();
                 break;
             case Widgets:
-                syncWidgetPages();
+            	//BEGIN：add by wanghao on 20131029 issue-16
+            	if (Build.VERSION.SDK_INT >= Launcher.VERSION_CODES_JELLY_BEAN ||
+            			Util.isSystemApplication(LauncherApplication.mContext, LauncherApplication.mContext.getPackageName())) {
+            		syncWidgetPages();
+            	}
+            	//END
                 break;
             }
         }

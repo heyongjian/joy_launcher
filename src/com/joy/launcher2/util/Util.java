@@ -24,6 +24,7 @@ import org.apache.http.util.EncodingUtils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -727,5 +728,27 @@ public class Util {
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String time = sDateFormat.format(new java.util.Date());
 		return time;
+	}
+	
+	/**
+	 * 是否为系统应用程序
+	 * @param context
+	 * @param packageName
+	 * @return
+	 */
+	public static boolean isSystemApplication(Context context, String packageName){
+		boolean ret = false;
+		try {
+			PackageInfo pkg = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
+			if(pkg != null){
+				if((pkg.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0 || (pkg.applicationInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0){
+				}else{
+					ret = true;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
 	}
 }
