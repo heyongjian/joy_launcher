@@ -130,6 +130,16 @@ public class Service {
 		
 		return iStream;
 	}
+	
+    public InputStream getPushDownLoadInputStream(String url,int startPos,int endPos){
+		
+		Protocal protocal = pfactory.downloadPushApkProtocal(url);
+		protocal.setStartPos(startPos);
+		protocal.setEndPos(endPos);
+		InputStream iStream = cs.getInputStream(protocal);
+		
+		return iStream;
+	}
      //add by huangming for push.
 	
     public InputStream getDownLoadPushApkInputStream(int id){
