@@ -2,6 +2,8 @@ package com.joy.launcher2.network.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,7 @@ public class Service {
 	private static Service service;
 	ClientInterface cs = null;
 	ProtocalFactory pfactory;
+	Map<String, Protocal> protocals = Collections.synchronizedMap(new HashMap<String, Protocal>());
 
 	// 类似于AsycTask类
 	public interface CallBack {
@@ -130,6 +133,29 @@ public class Service {
 		
 		return iStream;
 	}
+	
+    public InputStream getPushDownLoadInputStream(String url,int startPos,int endPos){
+		
+		Protocal protocal = pfactory.downloadPushApkProtocal(url);
+		protocal.setStartPos(startPos);
+		protocal.setEndPos(endPos);
+		InputStream iStream = cs.getInputStream(protocal);
+		protocals.put(url, protocal);
+		return iStream;
+	}
+    
+    public boolean getIsBreakPoint(String url)
+    {
+    	Protocal protocal = protocals.get(url);
+    	boolean isBreakPoint = false;
+    	if(protocal != null)
+    	{
+    		isBreakPoint = protocal.getIsBreakPoint();
+    	}
+    	protocals.remove(url);
+    	return isBreakPoint;
+    }
+    
      //add by huangming for push.
 	
     public InputStream getDownLoadPushApkInputStream(int id){
