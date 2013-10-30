@@ -1,5 +1,7 @@
 package com.joy.launcher2.network.util;
 
+import java.util.HashMap;
+
 import org.json.JSONObject;
 
 /**
@@ -19,6 +21,8 @@ public class Protocal {
 	// 是否启动重连机制
 	private boolean reTry = true;
 	
+	boolean isBreakPoint = false;
+	
 	private int startPos = -1;
 	private int endPos = -1;
 	public int getStartPos() {
@@ -34,6 +38,17 @@ public class Protocal {
 	public void setEndPos(int endPos) {
 		this.endPos = endPos;
 	}
+	
+	public boolean getIsBreakPoint()
+	{
+		return isBreakPoint;
+	}
+	
+	public void setIsBreakPoint(boolean isBreakPoint)
+	{
+		this.isBreakPoint = isBreakPoint;
+	}
+	
 	/**
 	 * @return the getData
 	 */
