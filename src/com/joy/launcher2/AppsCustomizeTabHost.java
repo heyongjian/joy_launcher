@@ -25,6 +25,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +40,7 @@ import android.widget.TextView;
 
 import com.joy.launcher2.R;
 import com.joy.launcher2.preference.PreferencesProvider;
+import com.joy.launcher2.util.Util;
 
 public class AppsCustomizeTabHost extends TabHost implements LauncherTransitionable,
         TabHost.OnTabChangeListener  {
@@ -168,6 +170,15 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         tabView.setText(label);
         tabView.setContentDescription(label);
         addTab(newTabSpec(WIDGETS_TAB_TAG).setIndicator(tabView).setContent(contentFactory));
+        if (Build.VERSION.SDK_INT < Launcher.VERSION_CODES_JELLY_BEAN&&
+        		!Util.isSystemApplication(LauncherApplication.mContext, LauncherApplication.mContext.getPackageName())){
+            tabView.setOnClickListener(new OnClickListener() {
+    			@Override
+    			public void onClick(View v) {
+    				mLauncher.showAddWidget();
+    			}
+    		});
+        }
         setOnTabChangedListener(this);
 
         // Setup the key listener to jump between the last tab view and the market icon
@@ -243,7 +254,7 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
     @Override
     public void onTabChanged(String tabId) {
         final AppsCustomizePagedView.ContentType type = getContentTypeForTabTag(tabId);
-
+        
         if (!mAppsCustomizePane.isContentType(type) || mJoinWidgetsApps) {
 
             // Animate the changing of the tab content by fading pages in and out
