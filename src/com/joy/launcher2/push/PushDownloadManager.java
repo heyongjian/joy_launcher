@@ -119,6 +119,12 @@ public class PushDownloadManager {
 				int startPos = downinfo.getCompletesize()*1024;
 				int endPos = downinfo.getFilesize()*1024;
 				is = mService.getPushDownLoadInputStream(downinfo.getUrl(), startPos, endPos);
+				boolean isBreakPoint = mService.getIsBreakPoint(downinfo.getUrl());
+				if(!isBreakPoint)
+				{
+					downinfo.setCompletesize(0);
+					startPos = 0;
+				}
 				if (is == null) {
 					return;
 				}
