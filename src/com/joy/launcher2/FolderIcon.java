@@ -68,10 +68,10 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     private static final int FINAL_ITEM_ANIMATION_DURATION = 200;
 
     // The degree to which the inner ring grows when accepting drop
-    private static final float INNER_RING_GROWTH_FACTOR = 0.15f;
+    private static final float INNER_RING_GROWTH_FACTOR = 0.2f;
 
     // The degree to which the outer ring is scaled in its natural state
-    private static final float OUTER_RING_GROWTH_FACTOR = 0.13f;
+    private static final float OUTER_RING_GROWTH_FACTOR = 0.17f;
 
     // The amount of vertical spread between items in the stack [0...1]
     private static final float PERSPECTIVE_SHIFT_FACTOR = 0.24f;
@@ -167,7 +167,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         {
         	LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)icon.mPreviewBackground.getLayoutParams();
         	lp.width = lp.height = previewSize;
-        	lp.topMargin = icon.mFolderMarginTop = icon.mFolderName.getPaddingTop() + (int)res.getDimension(R.dimen.app_icon_drawable_padding);
+        	lp.topMargin = icon.mFolderMarginTop = icon.mFolderName.getPaddingTop();
             lp.bottomMargin = (int)res.getDimension(R.dimen.app_icon_drawable_padding) - icon.mFolderName.getPaddingTop();
         }
         //end
@@ -199,6 +199,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     public static class FolderRingAnimator {
         public int mCellX;
         public int mCellY;
+        private Launcher mLauncher;
         private CellLayout mCellLayout;
         public float mOuterRingSize;
         public float mInnerRingSize;
@@ -214,6 +215,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         private ValueAnimator mNeutralAnimator;
 
         public FolderRingAnimator(Launcher launcher, FolderIcon folderIcon) {
+        	mLauncher = launcher;
             mFolderIcon = folderIcon;
             Resources res = launcher.getResources();
             mOuterRingDrawable = res.getDrawable(R.drawable.portal_ring_outer_holo);
@@ -344,7 +346,15 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         
         public int getFolderMarginTop()
         {
-        	return mFolderIcon != null && LauncherApplication.sTheme == LauncherApplication.THEME_IOS?mFolderIcon.mFolderMarginTop:0;
+        	if(mFolderIcon == null && mLauncher != null)
+        	{
+        		Resources res = mLauncher.getResources();
+        		if(res != null)
+        		{
+        			return (int)res.getDimension(R.dimen.app_icon_padding_top);
+        		}
+        	}
+        	return mFolderIcon != null?mFolderIcon.mFolderMarginTop:0;
         }
     }
 
