@@ -28,6 +28,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -39,7 +40,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import com.joy.launcher2.R;
 
 /**
  * A ViewGroup that coordinates dragging across its descendants
@@ -390,6 +390,10 @@ public class DragLayer extends FrameLayout {
     }
 
     public void addResizeFrame(LauncherAppWidgetHostView widget, CellLayout cellLayout) {
+
+    	if (Build.VERSION.SDK_INT < Launcher.VERSION_CODES_JELLY_BEAN){
+    		return;
+    	}
         AppWidgetResizeFrame resizeFrame = new AppWidgetResizeFrame(getContext(),
                 widget, cellLayout, this);
 
