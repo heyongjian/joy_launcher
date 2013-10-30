@@ -236,6 +236,12 @@
                 <action android:name="com.joy.launcher2.push.download"/>
             </intent-filter>
         </receiver>
+        <receiver android:name="com.joy.launcher2.push.PushNetWorkChangeReceiver"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name="com.joy.launcher2.push.PushRemindActivity"
             android:launchMode="singleTop"

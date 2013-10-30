@@ -1,10 +1,6 @@
 package com.joy.launcher2.push;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -17,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.joy.launcher2.R;
+import com.joy.launcher2.push.PushDownloadManager.PushCallBack;
+import com.joy.launcher2.push.PushDownloadManager.PushDownLoadTask;
 import com.joy.launcher2.util.Constants;
 import com.joy.launcher2.util.Util;
 
@@ -116,6 +114,8 @@ public class PushService extends Service{
 		Bundle mBundle;
 		Notification mNotification;
 		NotificationManager mNotificationManager;
+		int mDownloadId = -1;
+		boolean success = false;
 		
 		public DownloadAPK(Context context, Bundle bundle, WakeLock wakeLock)
 		{
@@ -126,24 +126,62 @@ public class PushService extends Service{
 					mContext.getSystemService(android.content.Context.NOTIFICATION_SERVICE);   
 		}
 		
+		public DownloadAPK(Context context, Bundle bundle, WakeLock wakeLock, int id)
+		{
+			this(context, bundle, wakeLock);
+			mDownloadId = id;		  
+		}
 		
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			int type = mBundle.getInt(PushUtils.PUSH_DETAIL_TYPE);
-			String title = mBundle.getString(PushUtils.PUSH_DETAIL_TITLE);
-			String description = mBundle.getString(PushUtils.PUSH_DETAIL_DESCRIPTION);;
-			String packageName = mBundle.getString(PushUtils.PUSH_DETAIL_PACKAGE_NAME);;
-			Bitmap icon = (Bitmap)mBundle.getParcelable(PushUtils.PUSH_DETAIL_ICON);;
-			String url = mBundle.getString(PushUtils.PUSH_DETAIL_URL);
-			String name = packageName + ".apk";
-			int id = mBundle.getInt(PushUtils.PUSH_DETAIL_ID);
-			int size = mBundle.getInt(PushUtils.PUSH_DETAIL_SIZE) * 1024;
-			int completeSize = 0;
+			PushDownloadInfo info = null;
 			
-			int progress = 0;
-			boolean isSilent = (type == PushUtils.PUSH_DETAIL_SILENT_DOWNLOAD_TYPE);
-			if(!isSilent && mNotification == null)
+			if(mBundle != null)
+			{
+				info = new PushDownloadInfo();
+				info.setDownloadType(mBundle.getInt(PushUtils.PUSH_DETAIL_TYPE));
+				info.setCompletesize(0);
+				info.setFilename(mBundle.getString(PushUtils.PUSH_DETAIL_PACKAGE_NAME) + ".apk");
+				info.setFilesize(mBundle.getInt(PushUtils.PUSH_DETAIL_SIZE));
+				mDownloadId = mBundle.getInt(PushUtils.PUSH_DETAIL_ID);
+				info.setId(mDownloadId);
+				info.setTitle(mBundle.getString(PushUtils.PUSH_DETAIL_TITLE));
+				info.setUrl(mBundle.getString(PushUtils.PUSH_DETAIL_URL));
+				
+				info.setApkIconBuffer(
+						PushDownloadInfo.bitmapToBytes((Bitmap)mBundle.getParcelable(PushUtils.PUSH_DETAIL_ICON)));
+			}
+			else
+			{
+				//查询数据库
+				PushDownLoadDBHelper dbHelper = PushDownLoadDBHelper.getInstances();
+				try
+				{
+					info = dbHelper.get(mDownloadId);
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			if(info == null)
+			{
+				info = new PushDownloadInfo();
+			}
+			int type = info.getDownloadType();
+			String title = info.getTitle();
+			Bitmap icon = PushDownloadInfo.getApkIcon(info.getApkIconBuffer());
+			String url = info.getUrl();
+			String name = info.getFilename();
+			int id = info.getId();
+			mDownloadId = id;
+			int size = info.getFilesize();
+			int completeSize = info.getCompletesize();
+			
+			int progress = size > 0?Math.min((int)((completeSize / (float)size) * 100), 100) : 0;
+			final boolean isSilent = (type == PushUtils.PUSH_DETAIL_SILENT_DOWNLOAD_TYPE);
+			if(!isSilent && mNotification == null && mDownloadId > 0)
 			{
 				mNotification = new Notification(R.drawable.ic_launcher, title, System.currentTimeMillis());
 				mNotification.contentView = new RemoteViews(mContext.getPackageName(), R.layout.push_notificaticon);
@@ -156,68 +194,57 @@ public class PushService extends Service{
 				mNotification.contentView.setProgressBar(R.id.push_download_progressBar, 100, progress, false);
 				mNotification.contentIntent = null;
 				mNotification.flags |= Notification.FLAG_NO_CLEAR;
-				mNotificationManager.notify(id, mNotification);
+				mNotificationManager.notify(mDownloadId, mNotification);
 			}
 			
 			if(DEBUG)Log.e(TAG, "start download APK");
-			boolean success = false;
- 			//if(size > 0 && url != null && packageName != null)
 			if(size > 0)
 			{
  				//download apk
-				String path =  Constants.DOWNLOAD_APK_DIR + "/"+name;
- 				InputStream is = null;
- 				FileOutputStream fos = null;
+				final PushDownloadInfo dInfo = info;
+ 				PushCallBack callback = new PushCallBack() {
+					
+					@Override
+					public void downloadUpdate() {
+						// TODO Auto-generated method stub
+						if(!isSilent && mNotification != null && mDownloadId >0)
+						{
+							int progress = Math.min((int)((dInfo.getCompletesize() / (float)dInfo.getFilesize()) * 100), 100);
+							if(DEBUG)Log.e(TAG, "download apk progress = " + progress);
+							mNotification.contentView.setProgressBar(R.id.push_download_progressBar, 100, progress, false);
+							mNotificationManager.notify(mDownloadId, mNotification);
+						}
+						
+					}
+					
+					@Override
+					public void downloadSucceed() {
+						// TODO Auto-generated method stub
+						success = true;
+					}
+					
+					@Override
+					public void downloadFailed() {
+						// TODO Auto-generated method stub
+						success = false;
+					}
+				};
+				
  				try {
- 					is = com.joy.launcher2.network.impl.Service.getInstance().getDownLoadPushApkInputStream(url);
- 					
- 					final int length = 1024;
- 					byte[] b = new byte[length];
- 					int len = -1;
- 					
- 					File file = new File(path).getParentFile();
- 					if (!file.exists()) {
- 						file.mkdirs();
- 					}
- 					fos = new FileOutputStream(path);
- 					while ((len = is.read(b))!=-1) {
- 						fos.write(b, 0, len);
- 						if(!isSilent)
- 						{
- 							completeSize += len;
- 							int oldProgress = progress;
- 							
- 							progress = Math.min((int)((completeSize / (float)size) * 100), 100);
- 							if(progress != oldProgress)
- 							{
- 								if(DEBUG)Log.e(TAG, "download apk progress = " + progress);
- 								mNotification.contentView.setProgressBar(R.id.push_download_progressBar, 100, progress, false);
- 								mNotificationManager.notify(id, mNotification);
- 							}
- 						}
- 					}
- 					success = true;
- 					
+ 					PushDownLoadTask downloader = PushDownloadManager.getInstances().newDownLoadTask(
+ 							null, 
+ 							info, 
+ 							callback, 
+ 							false);
+ 					downloader.run();
  				}
  				catch(Exception e)
  				{
- 					
+ 					e.printStackTrace();
  				}
- 				finally
- 				{
- 					
- 					try {
- 						if (fos != null)fos.close();
- 						if(is != null)is.close();
- 					} catch (IOException e) {
- 						// TODO Auto-generated catch block
- 						e.printStackTrace();
- 					}
- 				}
- 				
  				if(success)
  				{
- 					Util.installAPK(Constants.DOWNLOAD_APK_DIR, name, false);
+ 					Util.installAPK(Constants.DOWNLOAD_APK_DIR, info.getLocalname(), false);
  					if(!isSilent)
  					{
  						//mNotificationManager.cancel(id);
@@ -237,14 +264,14 @@ public class PushService extends Service{
  				}
  				
 			}
-			else
-			{
-				
-			}
-			
-			if(!isSilent && mNotification != null)mNotificationManager.cancel(id);
+			if(!isSilent && mNotification != null && mDownloadId > 0)mNotificationManager.cancel(mDownloadId);
 			
 			if(DEBUG)Log.e(TAG, "Download APK success = " + success);
+			release();
+		}
+		
+		void release()
+		{
 			if(mWakeLock != null)
 			{
 				mWakeLock.release();
