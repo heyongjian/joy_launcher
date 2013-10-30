@@ -65,7 +65,7 @@ public class DeleteRect{
 			if (drawableTop != null) {
 				int w = drawableTop.getBounds().width();
 				int h = drawableTop.getBounds().height();
-				left = Math.abs(view.getMeasuredWidth()-w)/2-drawableWidth/2;
+				left = Math.abs(view.getMeasuredWidth()-w)/2-drawableWidth/4;
 				left = left<0?0:left;
 				top = 0;
 			}
@@ -144,11 +144,13 @@ public class DeleteRect{
     				return true;
     			}
 			}
+			mIsTouchAlwaysInRect = false;
 			view.invalidate();
 			mLongPressHelper.cancelLongPress();
 			break;
 			default:
 				mLongPressHelper.cancelLongPress();
+				mIsTouchAlwaysInRect = false;
 				view.invalidate();
 				break;
 		}
