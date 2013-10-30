@@ -166,6 +166,16 @@ public class ClientHttp implements ClientInterface {
 			}
 			
 			HttpResponse httpResponse = httpClient.execute(httpRequest);
+            Header[] contentHeads= httpResponse.getHeaders("Content-Range");
+			
+			for(Header h : contentHeads){
+				String value = h.getValue();
+				if(value != null && value.contains("bytes"))
+				{
+					protocal.setIsBreakPoint(true);
+					if(DEBUG)Log.i(TAG, "BreakPoint : " + h.getValue());
+				}
+			}
 			int httpCode = httpResponse.getStatusLine().getStatusCode();
 			if(DEBUG) Log.i(TAG, "-----httpCode-------"+httpCode);
 			if (httpCode == HttpURLConnection.HTTP_OK || httpCode == Constants.DOWNLOAD_APK_HTTP_OK) {
