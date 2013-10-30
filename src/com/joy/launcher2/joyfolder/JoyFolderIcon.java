@@ -85,7 +85,7 @@ public class JoyFolderIcon extends FolderIcon implements Refreshable {
         {
         	LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)icon.mPreviewBackground.getLayoutParams();
         	lp.width = lp.height = previewSize;
-        	lp.topMargin = icon.mFolderMarginTop = icon.mFolderName.getPaddingTop() + (int)res.getDimension(R.dimen.app_icon_drawable_padding);
+        	lp.topMargin = icon.mFolderMarginTop = icon.mFolderName.getPaddingTop();
             lp.bottomMargin = (int)res.getDimension(R.dimen.app_icon_drawable_padding) - icon.mFolderName.getPaddingTop();
         }
         //end
