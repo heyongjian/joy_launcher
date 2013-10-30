@@ -29,13 +29,14 @@ public class AppListHandler {
 		}
 		ArrayList<List<Map<String, Object>>> arrayList =new ArrayList<List<Map<String, Object>>>();
 		try {
+			if (string == null) {
+				return null;
+			}
 			JSONObject json = new JSONObject(string);
 			if (json == null) {
 				return null;
 			}else if (json.getInt("state") != 1) {
-				if (string == null || (string.equals(""))) {
-					return null;
-				}
+				return null;
 			}
 			JSONArray jsonarry = json.getJSONArray("item");
 		
