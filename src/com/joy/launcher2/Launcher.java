@@ -1969,7 +1969,7 @@ public final class Launcher extends Activity
 		if (LauncherApplication.isDefaultTheme()){
 			return true;
 		}
-		if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
+		if((mState == State.APPS_CUSTOMIZE)&&(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps))
 		{
 			return false;
 		}
@@ -2496,7 +2496,7 @@ public final class Launcher extends Activity
     @Override
     public void onBackPressed() {
     	//modify by huangming for app show or hide
-    	if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
+    	if((mState == State.APPS_CUSTOMIZE)&&(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps))
     	{
     		final AppsCustomizePagedView content = 
     				(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
