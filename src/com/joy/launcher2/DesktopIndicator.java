@@ -154,7 +154,7 @@ public class DesktopIndicator extends ViewGroup implements AnimationListener
 			break;
 		case INDICATOR_TYPE_SAMSUNG:
 			layoutParams = new FrameLayout.LayoutParams(this.getLayoutParams());
-			int bottomMargin  = getResources().getDimensionPixelSize(R.dimen.bottom_bar_height_s4);
+			int bottomMargin  = getResources().getDimensionPixelSize(R.dimen.indicator_height_s4);
 			layoutParams.gravity = Gravity.BOTTOM;
 			layoutParams.bottomMargin = bottomMargin;
 			this.setLayoutParams(layoutParams);
