@@ -433,7 +433,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
     public void scrollTo(int x, int y) {
         mUnboundedScrollX = x;
         mUnboundedScrollY = y;
-
+        boolean isCycle = isCycle();
         //modify by xiong.chen for wxy-432 at 2013-07-08
         if (!mVertical) {
         	if (isCycle) {
@@ -1278,6 +1278,8 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
 
         int totalDistance = (!mVertical ? getScaledMeasuredWidth(v) :
                 getScaledMeasuredHeight(v)) + mPageSpacing;
+        
+        boolean isCycle = isCycle();
         //modify by xiong.chen for wxy-432 at 2013-07-08
         int delta;
         if ((mOverScrollX < 0 || mOverScrollY <0) && page == (pageCount - 1) && isCycle) {
@@ -1299,6 +1301,16 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         return scrollProgress;
     }
 
+    /**
+     * detect whether supports circular scrolling
+     * @return
+     */
+    public boolean isCycle(){
+    	if (getChildCount() <= 1) {
+			return false;
+		}
+    	return isCycle;
+    }
     // This curve determines how the effect of scrolling over the limits of the page dimishes
     // as the user pulls further and further from the bounds
     private float overScrollInfluenceCurve(float f) {
@@ -1392,6 +1404,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
         // Skip touch handling if there are no pages to swipe
         if (getChildCount() <= 0) return super.onTouchEvent(ev);
 
+        boolean isCycle = isCycle();
         acquireVelocityTrackerAndAddMovement(ev);
 
         final int action = ev.getAction();

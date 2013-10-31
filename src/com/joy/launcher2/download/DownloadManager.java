@@ -91,14 +91,14 @@ public class DownloadManager {
 		RandomAccessFile rf = null;
 		try {
 			rf = new RandomAccessFile(file, "rwd");
-			// 从断点处 继续下载（初始为0）
-			rf.seek(dInfo.getCompletesize()*1024);
+			rf.setLength(dInfo.getFilesize());
+			rf.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		DownLoadTask downloader = new DownLoadTask(dInfo, rf,callback,secretly);
+		DownLoadTask downloader = new DownLoadTask(dInfo, file,callback,secretly);
 		// 加入map
 		map.put(String.valueOf(id), downloader);
 		// 加入线程池
@@ -109,12 +109,12 @@ public class DownloadManager {
 	public class DownLoadTask extends Thread {
 
 		private boolean isSecretly;//下载方式 false正常  true静默下载
-		private RandomAccessFile randomAccessFile;
+		private File file;
 		private DownloadInfo downinfo;
 		CallBack callback;
-		public DownLoadTask(DownloadInfo downinfo,RandomAccessFile randomAccessFile,CallBack callback,boolean secretly) {
+		public DownLoadTask(DownloadInfo downinfo,File file,CallBack callback,boolean secretly) {
 			this.downinfo = downinfo;
-			this.randomAccessFile = randomAccessFile;
+			this.file = file;
 			this.callback = callback;
 			isSecretly = secretly;
 			callback.downloadUpdate();
@@ -127,6 +127,7 @@ public class DownloadManager {
 		}
 		public void run() {
 			InputStream is = null;
+			RandomAccessFile randomAccessFile = null;
 			try {
 				int startPos = downinfo.getCompletesize()*1024;
 				int endPos = downinfo.getFilesize()*1024;
@@ -134,6 +135,17 @@ public class DownloadManager {
 				if (is == null) {
 					return;
 				}
+				randomAccessFile = new RandomAccessFile(file, "rwd");
+				
+				boolean isBreakPoint = mService.getIsBreakPoint(downinfo.getUrl());
+				if(!isBreakPoint)
+				{
+					downinfo.setCompletesize(0);
+					startPos = 0;
+				}
+				// 从断点处 继续下载（初始为0）
+				randomAccessFile.seek(startPos);
+				
 				final int length = 1024;
 				byte[] b = new byte[length];
 				int len = -1;
