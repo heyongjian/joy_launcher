@@ -772,6 +772,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     		//do something
     		if(v instanceof PagedViewIcon)
     		{
+
     			PagedViewIcon icon = (PagedViewIcon)v;
     			boolean isSelected = icon.getSelected();
     			if(isSelected)
@@ -781,6 +782,17 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     			}
     			else
     			{
+    				//BEGIN add by wanghao on 20131031,can not hide all apps
+    				if (!mIsAppsHide) {
+    					if (mApps != null&&mReadyShowOrHideApps != null) {
+        					if ((mApps.size()-1)==mReadyShowOrHideApps.size()) {
+        						Toast.makeText(mContext, mContext.getText(R.string.can_not_hide_all_apps),
+        								Toast.LENGTH_SHORT).show();
+        						return;
+        					}
+        				}
+					}
+    				//END
     				mReadyShowOrHideApps.add(icon);
     				mSelectedNum++;
     			}
@@ -2685,6 +2697,9 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 		{
 			PagedViewCellLayout layout = (PagedViewCellLayout)getChildAt(getChildCount() - 1);
 			int count = layout.getPageChildCount();
+			if (count<=0) {
+				return;
+			}
 			ValueAnimator[] animators = new ValueAnimator[count];
 			for(int j = 0; j < count; j++)
 			{

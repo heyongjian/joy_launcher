@@ -544,4 +544,5 @@ s -->
     <string name="s4_appliccation">Application</string>
     
     <string name="already_have_joyfolder">already have the folder</string>
+    <string name="can_not_hide_all_apps">can not hide all apps</string>
 </resources>
