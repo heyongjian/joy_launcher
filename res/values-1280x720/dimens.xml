@@ -4,7 +4,8 @@
     <dimen name="desktop_indicator_margin_bottom">113dp</dimen>
     <dimen name="hotseat_cell_width">85dp</dimen>
     <dimen name="hotseat_cell_height">96dp</dimen>
-    <dimen name="button_bar_height_plus_padding">96dp</dimen>
+    <dimen name="button_bar_height_plus_padding">106dp</dimen>
+    <dimen name="button_bar_height_top_padding">10dp</dimen>
     <dimen name="workspace_cell_width_port">85dp</dimen>
     <dimen name="workspace_cell_height_port">96dp</dimen>
     <!-- <dimen name="cell_layout_left_padding_port">8dp</dimen>

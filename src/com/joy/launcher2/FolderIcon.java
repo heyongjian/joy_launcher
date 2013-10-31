@@ -205,6 +205,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
     public static class FolderRingAnimator {
         public int mCellX;
         public int mCellY;
+        private Launcher mLauncher;
         private CellLayout mCellLayout;
         public float mOuterRingSize;
         public float mInnerRingSize;
@@ -220,6 +221,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         private ValueAnimator mNeutralAnimator;
 
         public FolderRingAnimator(Launcher launcher, FolderIcon folderIcon) {
+        	mLauncher = launcher;
             mFolderIcon = folderIcon;
             Resources res = launcher.getResources();
             mOuterRingDrawable = res.getDrawable(R.drawable.portal_ring_outer_holo);
@@ -350,7 +352,15 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         
         public int getFolderMarginTop()
         {
-        	return mFolderIcon != null && LauncherApplication.sTheme == LauncherApplication.THEME_IOS?mFolderIcon.mFolderMarginTop:0;
+        	if(mFolderIcon == null && mLauncher != null)
+        	{
+        		Resources res = mLauncher.getResources();
+        		if(res != null)
+        		{
+        			return (int)res.getDimension(R.dimen.app_icon_padding_top);
+        		}
+        	}
+        	return mFolderIcon != null?mFolderIcon.mFolderMarginTop:0;
         }
     }
 

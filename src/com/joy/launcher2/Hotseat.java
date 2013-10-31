@@ -127,13 +127,13 @@ public class Hotseat extends PagedView {
             cl.setGridSize((!hasVerticalHotseat() ? mCellCount : 1), (hasVerticalHotseat() ? mCellCount : 1));
             
             //modify by xiong.chen for bug WXY-130 at 2013-06-27
-            if (mIsLandscape) {
+            /*if (mIsLandscape) {
             	int topOrBottom = (mHeight - cl.getCellHeight() * mCellCount) / 2;
             	cl.setPadding(0, topOrBottom, 0,topOrBottom);
 			} else {
 	            int leftOrRightMargin = (mWidth - cl.getCellWidth() * mCellCount) / 2;
 	            cl.setPadding(leftOrRightMargin, 0, leftOrRightMargin, 0);
-			}            
+			}*/            
             addView(cl);
             //modify end
         }
