@@ -2291,7 +2291,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     @Override
     protected void screenScrolled(int screenScroll) {
         super.screenScrolled(screenScroll);
-
+        boolean isCycle = isCycle();
         boolean isInOverscroll = !mVertical ? (mOverScrollX < 0 || mOverScrollX > mMaxScrollX) :
                 (mOverScrollY < 0 || mOverScrollY > mMaxScrollY);
         if (isInOverscroll && !mOverscrollTransformsDirty) {
@@ -2300,7 +2300,6 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         if (!isInOverscroll || mScrollTransformsDirty) {
             // Limit the "normal" effects to mScrollX/Y
             int scroll = !mVertical ? mScrollX : mScrollY;
-
             // Reset transforms when we aren't in overscroll
             //modify by xiong.chen for wxy-432 at 2013-07-08
             if (mOverscrollTransformsDirty && !isCycle) {
@@ -2405,6 +2404,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     @Override
     protected void dispatchDraw(Canvas canvas) {
     	super.dispatchDraw(canvas);
+    	boolean isCycle = isCycle();
     	if (!isCycle) {
     		return;
     	}
