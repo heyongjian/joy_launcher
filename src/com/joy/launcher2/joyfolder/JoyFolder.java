@@ -217,7 +217,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 
 			@Override
 			public void onClick(View v) {
-				animateClosed();
+				mLauncher.closeFolder();
 			}
 		});
 		refresh = (TextView)findViewById(R.id.refresh);
