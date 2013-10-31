@@ -162,8 +162,15 @@ public class Cling extends FrameLayout {
         	{
         		int hotseatCellCount = mLauncher.getHotseat().getHotseatCellCount();
         		int allAppsButtonBank = mLauncher.getHotseat().getAllAppsButtonRank();
-        		int cellWidth = getMeasuredWidth() / hotseatCellCount;
-        		return new int[]{cellWidth * allAppsButtonBank +  cellWidth / 2, getMeasuredHeight() - (mButtonBarHeight / 2)};
+        		View allAppsButton = mLauncher.getHotseat().getChildAt(allAppsButtonBank, 0);
+        		int[] offset = new int[2]; 
+        		mLauncher.getDragLayer().getLocationInDragLayer(allAppsButton, offset);
+        		if(allAppsButton != null)
+        		{
+        			offset[0] += allAppsButton.getWidth() / 2;
+                    offset[1] += allAppsButton.getHeight() / 2;
+                    return offset;
+        		}
         	}
         	return new int[]{getMeasuredWidth() / 2, getMeasuredHeight() - (mButtonBarHeight / 2)};
         } else if (mDrawIdentifier.equals(WORKSPACE_LANDSCAPE)) {
