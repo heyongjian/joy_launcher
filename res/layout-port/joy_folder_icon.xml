@@ -30,5 +30,5 @@
         android:src="@drawable/portal_ring_inner_holo"/>
     <com.joy.launcher2.BubbleTextView
         android:id="@+id/folder_icon_name"
-        style="@style/WorkspaceIcon.Portrait.Folder"/>
+        style="@style/WorkspaceIcon.Portrait"/>
 </com.joy.launcher2.joyfolder.JoyFolderIcon>
