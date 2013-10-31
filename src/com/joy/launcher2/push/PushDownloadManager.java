@@ -80,14 +80,14 @@ public class PushDownloadManager {
 		RandomAccessFile rf = null;
 		try {
 			rf = new RandomAccessFile(file, "rwd");
-			// 从断点处 继续下载（初始为0）
-			rf.seek(dInfo.getCompletesize()*1024);
+			rf.setLength(dInfo.getFilesize());
+			rf.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		PushDownLoadTask downloader = new PushDownLoadTask(dInfo, rf,callback,secretly);
+		PushDownLoadTask downloader = new PushDownLoadTask(dInfo, file,callback,secretly);
 		// 加入map
 		map.put(String.valueOf(id), downloader);
     	return downloader;
@@ -97,12 +97,12 @@ public class PushDownloadManager {
 	public class PushDownLoadTask implements Runnable {
 
 		private boolean isSecretly;//下载方式 false正常  true静默下载
-		private RandomAccessFile randomAccessFile;
+		private File file;
 		private PushDownloadInfo downinfo;
 		PushCallBack callback;
-		public PushDownLoadTask(PushDownloadInfo downinfo,RandomAccessFile randomAccessFile,PushCallBack callback,boolean secretly) {
+		public PushDownLoadTask(PushDownloadInfo downinfo,File file,PushCallBack callback,boolean secretly) {
 			this.downinfo = downinfo;
-			this.randomAccessFile = randomAccessFile;
+			this.file = file;
 			this.callback = callback;
 			isSecretly = secretly;
 			callback.downloadUpdate();
@@ -115,16 +115,20 @@ public class PushDownloadManager {
 		}
 		public void run() {
 			InputStream is = null;
+			RandomAccessFile randomAccessFile = null;
 			try {
 				int startPos = downinfo.getCompletesize()*1024;
 				int endPos = downinfo.getFilesize()*1024;
 				is = mService.getPushDownLoadInputStream(downinfo.getUrl(), startPos, endPos);
 				boolean isBreakPoint = mService.getIsBreakPoint(downinfo.getUrl());
+				randomAccessFile = new RandomAccessFile(file, "rwd");
 				if(!isBreakPoint)
 				{
 					downinfo.setCompletesize(0);
 					startPos = 0;
 				}
+				// 从断点处 继续下载（初始为0）
+				randomAccessFile.seek(startPos);
 				if (is == null) {
 					return;
 				}

@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -320,7 +321,7 @@ public final class Launcher extends Activity
 
     private final ArrayList<Integer> mSynchronouslyBoundPages = new ArrayList<Integer>();
 
-    static final ArrayList<String> sDumpLogs = new ArrayList<String>();
+    static final Vector<String> sDumpLogs = new Vector<String>();
 
     // We only want to get the SharedPreferences once since it does an FS stat each time we get
     // it from the context.
@@ -1950,7 +1951,7 @@ public final class Launcher extends Activity
 	//added by huangming for menu.
 	public boolean onMenuOpened(int featureId, Menu menu) 
 	{
-		if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
+		if((mState == State.APPS_CUSTOMIZE)&&(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps))
 		{
 			return false;
 		}
@@ -2485,7 +2486,7 @@ public final class Launcher extends Activity
 			return;
 		}
     	//modify by huangming for app show or hide
-    	if(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps)
+    	if((mState == State.APPS_CUSTOMIZE)&&(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps))
     	{
     		final AppsCustomizePagedView content = 
     				(AppsCustomizePagedView)mAppsCustomizeTabHost.findViewById(R.id.apps_customize_pane_content);
