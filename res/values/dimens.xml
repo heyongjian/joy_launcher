@@ -135,7 +135,7 @@
     <dimen name="cell_layout_left_padding_land">0dp</dimen>
     <dimen name="cell_layout_right_padding_port">0dp</dimen>
     <dimen name="cell_layout_right_padding_land">0dp</dimen>
-    <dimen name="cell_layout_top_padding_port">6dp</dimen>
+    <dimen name="cell_layout_top_padding_port">0dp</dimen>
     <dimen name="cell_layout_top_padding_land">0dp</dimen>
     <dimen name="cell_layout_bottom_padding_port">0dp</dimen>
     <dimen name="cell_layout_bottom_padding_land">0dp</dimen>
