@@ -332,6 +332,16 @@ public class Hotseat extends PagedView {
     {
     	return mAllAppsButtonRank;
     }
+    
+    public View getChildAt(int x, int y)
+    {
+    	if(getChildAt(mCurrentPage) instanceof CellLayout)
+    	{
+    		CellLayout currentContent = (CellLayout)getChildAt(mCurrentPage);
+    		return currentContent.getChildAt(x, y);
+    	}
+    	return null;
+    }
 
     public boolean hasPage(View view) {
         for (int i = 0; i < getChildCount(); i++) {
