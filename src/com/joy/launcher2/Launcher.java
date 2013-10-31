@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -320,7 +321,7 @@ public final class Launcher extends Activity
 
     private final ArrayList<Integer> mSynchronouslyBoundPages = new ArrayList<Integer>();
 
-    static final ArrayList<String> sDumpLogs = new ArrayList<String>();
+    static final Vector<String> sDumpLogs = new Vector<String>();
 
     // We only want to get the SharedPreferences once since it does an FS stat each time we get
     // it from the context.
