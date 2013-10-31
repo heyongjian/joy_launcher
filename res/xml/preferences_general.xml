@@ -26,10 +26,10 @@
     <CheckBoxPreference android:key="ui_general_fullscreen"
         android:title="@string/preferences_interface_general_fullscreen_title"
         android:summary="@string/preferences_interface_general_fullscreen_summary" />
-    <CheckBoxPreference android:key="ui_general_background"
+    <!-- <CheckBoxPreference android:key="ui_general_background"
         android:title="@string/preferences_interface_general_appbg_title"
         android:summary="@string/preferences_interface_general_appbg_summary"
-        android:defaultValue="@bool/general_show_appbackground" />
+        android:defaultValue="@bool/general_show_appbackground" /> -->
 
     <!-- add by xiong.chen for cycle scroll -->
     <CheckBoxPreference android:key="ui_general_cycle_scroll"
