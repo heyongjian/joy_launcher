@@ -358,4 +358,5 @@
  	<string name="main_menu_text">主菜单</string>
  	
  	<string name="already_have_joyfolder">已经存在这个文件夹了</string>
+ 	<string name="can_not_hide_all_apps">不能隐藏全部应用</string>
 </resources>
