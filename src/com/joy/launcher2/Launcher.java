@@ -321,7 +321,7 @@ public final class Launcher extends Activity
 
     private final ArrayList<Integer> mSynchronouslyBoundPages = new ArrayList<Integer>();
 
-    static final Vector<String> sDumpLogs = new Vector<String>();
+    static final ArrayList<String> sDumpLogs = new ArrayList<String>();
 
     // We only want to get the SharedPreferences once since it does an FS stat each time we get
     // it from the context.
@@ -5072,18 +5072,26 @@ public final class Launcher extends Activity
         super.dump(prefix, fd, writer, args);
         writer.println(" ");
         writer.println("Debug logs: ");
-        for (String dumpLog : sDumpLogs) {
-            writer.println("  " + dumpLog);
-        }
+        try {
+        	for (String dumpLog : sDumpLogs) {
+                writer.println("  " + dumpLog);
+            }
+        } catch (Exception e) {
+			Log.e(TAG, "e:"+e);
+		}
     }
 
     public static void dumpDebugLogsToConsole() {
         Log.d(TAG, "");
         Log.d(TAG, "*********************");
         Log.d(TAG, "Launcher debug logs: ");
-        for (String dumpLog : sDumpLogs) {
-            Log.d(TAG, "  " + dumpLog);
-        }
+        try {
+            for (String dumpLog : sDumpLogs) {
+                Log.d(TAG, "  " + dumpLog);
+            }
+		} catch (Exception e) {
+			Log.e(TAG, "e:"+e);
+		}
         Log.d(TAG, "*********************");
         Log.d(TAG, "");
     }
