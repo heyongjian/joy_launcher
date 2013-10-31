@@ -3179,10 +3179,11 @@ public final class Launcher extends Activity
      * @param folderInfo The FolderInfo describing the folder to open.
      */
     public void openFolder(FolderIcon folderIcon) {
+    	Folder folder = folderIcon.getFolder();
+    	if(folder != null && folder.isRunning())return;
     	if (Workspace.mDeleteState == Workspace.DELETE_DESKTOP) {
     		mWorkspace.toShake(Workspace.DELETE_DESKTOP, false);
     	}
-        Folder folder = folderIcon.getFolder();
         FolderInfo info = folder.mInfo;
 
         info.opened = true;
@@ -3207,6 +3208,7 @@ public final class Launcher extends Activity
 
     public void closeFolder() {
         Folder folder = mWorkspace.getOpenFolder();
+        if(folder != null && folder.isRunning())return;
         if (folder != null) {
         	 if (Workspace.mDeleteState == Workspace.DELETE_FOLDER) {
         		mWorkspace.toShake(Workspace.DELETE_FOLDER,false);
@@ -3224,6 +3226,7 @@ public final class Launcher extends Activity
     }
 
     void closeFolder(Folder folder) {
+    	if(folder != null && folder.isRunning())return;
         folder.getInfo().opened = false;
 
         ViewGroup parent = (ViewGroup) folder.getParent().getParent();
@@ -3306,6 +3309,12 @@ public final class Launcher extends Activity
         // The hotseat touch handling does not go through Workspace, and we always allow long press
         // on hotseat items.
         final View itemUnderLongClick = longClickCellInfo.cell;
+        if(itemUnderLongClick instanceof FolderIcon)
+        {
+        	
+        	Folder folder = ((FolderIcon)itemUnderLongClick).getFolder();
+        	if(folder != null && folder.isRunning())return true;
+        }
         boolean allowLongPress = isHotseatLayout(v) || mWorkspace.allowLongPress();
         if (allowLongPress && !mDragController.isDragging()) {
             if (itemUnderLongClick == null) {
