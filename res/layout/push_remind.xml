@@ -3,33 +3,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-   <FrameLayout
+   <FrameLayout 
         android:layout_width="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:background="@drawable/joy_push_bg"
+        android:layout_gravity="center">
         
     <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        
-        android:paddingLeft="15dip"
-        android:paddingRight="15dip"
-        android:paddingTop="22dip"
-        android:paddingBottom="10dip"
-        android:background="@drawable/joy_push_bg"
         android:orientation="vertical">
         
         <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:orientation="horizontal">
         
             <ImageView 
                 android:id="@+id/push_remind_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
-                android:scaleType="center"/>
+                android:scaleType="fitXY"/>
             
             <TextView 
             android:id="@+id/push_title"
@@ -40,15 +43,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"/>    
+            
         </LinearLayout>
-        
         
             
         <TextView 
             android:id="@+id/push_description"
             android:textColor="@android:color/black"
             android:textSize="15sp"
-            android:layout_margin="5dip"
+            android:paddingLeft="15dip"
+            android:paddingTop="5dip"
+            android:paddingRight="15dip"
+            android:paddingBottom="5dip"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:minHeight="100dp"
+            android:background="@drawable/joy_push_description_bg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>   
             
@@ -57,17 +67,19 @@
             android:id="@+id/push_download_btn"
             android:textSize="20sp"
             android:padding="3dip"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:background="@drawable/joy_push_download"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>
     
-    <ImageView 
-        android:id="@+id/push_image_cancel"
-        android:layout_gravity="right"
-        android:layout_width="24dip"
-        android:layout_height="24dip"
-        android:background="@drawable/joy_push_cancel"/>
-   </FrameLayout>
-   
+        <ImageView 
+            android:id="@+id/push_image_cancel"
+            android:layout_gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/joy_push_cancel"/>
+    
+    </FrameLayout>
 </FrameLayout>
