@@ -53,7 +53,7 @@
 
     <dimen name="app_icon_drawable_padding">0dp</dimen>
     <dimen name="app_icon_drawable_padding_land">2dp</dimen>
-    <dimen name="app_icon_padding_top">0dp</dimen>
+    <dimen name="app_icon_padding_top">4dp</dimen>
 
 <!-- QSB -->
     <dimen name="toolbar_button_vertical_padding">0dip</dimen>
@@ -215,7 +215,7 @@
     <dimen name="mylistprefrence_icon_width">42dp</dimen>
     <dimen name="mylistprefrence_icon_height">42dp</dimen>
     <!-- online foldler view  ,add by wanghao -->
-    <dimen name="joyfolder_gridview_height">100dp</dimen>
+    <dimen name="joyfolder_gridview_height">90dp</dimen>
     <dimen name="joyfolder_gridview_horizontalSpacing">10dp</dimen>
     <dimen name="joyfolder_layout_title">30dp</dimen>
     <dimen name="joyfolder_title_icon_size">40dp</dimen>
