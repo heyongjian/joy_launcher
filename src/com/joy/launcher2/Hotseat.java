@@ -95,10 +95,11 @@ public class Hotseat extends PagedView {
             Configuration.ORIENTATION_LANDSCAPE;
         mCellCount = a.getInt(R.styleable.Hotseat_cellCount, DEFAULT_CELL_COUNT);
         mCellCount = PreferencesProvider.Interface.Dock.getNumberIcons(mCellCount);
+        Resources res = getResources();	
+        Drawable mGlassBackground = res.getDrawable(R.drawable.frames_hotseat);
         //add by huangming for s4
         if(LauncherApplication.sTheme == LauncherApplication.THEME_SAMSUNG)
         {
-            Resources res = getResources();	
         	int paddingLeft = res.getDimensionPixelSize(R.dimen.hotseat_padding_left_s4);
         	int paddingRight = res.getDimensionPixelSize(R.dimen.hotseat_padding_right_s4);
         	int paddingTop = res.getDimensionPixelSize(R.dimen.hotseat_padding_top_s4);
@@ -123,7 +124,7 @@ public class Hotseat extends PagedView {
             CellLayout cl = (CellLayout) inflater.inflate(R.layout.hotseat_page, null);
             cl.setChildrenScale(childrenScale);
             cl.setGridSize((!hasVerticalHotseat() ? mCellCount : 1), (hasVerticalHotseat() ? mCellCount : 1));
-            
+            cl.setGlassBackground(mGlassBackground);
             //modify by xiong.chen for bug WXY-130 at 2013-06-27
             /*if (mIsLandscape) {
             	int topOrBottom = (mHeight - cl.getCellHeight() * mCellCount) / 2;
