@@ -470,8 +470,18 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         setAlpha(0f);
         mState = STATE_SMALL;
     }
+    
+    public boolean isRunning()
+    {
+    	boolean isRunning = false;
+    	if(mAnimatorSet != null)
+    	{
+    		isRunning = mAnimatorSet.isRunning() || mAnimatorSet.isStarted();
+    	}
+    	return isRunning;
+    }
+    
     private void animateOpenIos() {
-    	
     	if(mArrowDrawable == null)
     	{
     		mArrowDrawable = getResources().getDrawable(R.drawable.joy_folder_arrow);
@@ -480,6 +490,8 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     	mArrowHeight = mArrowDrawable.getIntrinsicHeight();
     	mOverHeight = mFolderIcon.getHeight() - mFolderIcon.mFolderName.getTop() - (mArrowHeight - 2);
     	if (!(getParent() instanceof DragLayer)) return;
+    	mParentView = (DragLayer)getParent();
+    	removeImages();
         centerAboutIcon();
         
 
@@ -694,7 +706,6 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     	{
     		return;
     	}
-    	mParentView = parent;
     	//Drawable arrowDrawable = getResources().getDrawable(R.drawable.joy_folder_arrow);
     	DragLayer.LayoutParams folderLp = (DragLayer.LayoutParams)getLayoutParams();
     	//int arrowWidth = arrowDrawable.getIntrinsicWidth();
@@ -760,9 +771,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     void removeImages()
     {
     	mParentView.removeView(mArrow);
-    	mUpImage.setImageBitmap(null);
-    	mDownImage.setImageBitmap(null);
-    	mFolderImage.setImageBitmap(null);
+    	if(mUpImage != null)mUpImage.setImageBitmap(null);
+    	if(mDownImage != null)mDownImage.setImageBitmap(null);
+    	if(mFolderImage != null)mFolderImage.setImageBitmap(null);
     	mParentView.removeView(mUpImage);
     	mParentView.removeView(mDownImage);
     	mParentView.removeView(mFolderImage);
@@ -892,6 +903,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 			public void onAnimationCancel(Animator arg0) {
 				// TODO Auto-generated method stub
 				setLayerType(LAYER_TYPE_NONE, null);
+				removeImages();
 				mLauncher.showAllViews();
                 mParentView.setLayerType(LAYER_TYPE_NONE, null);
 			}
