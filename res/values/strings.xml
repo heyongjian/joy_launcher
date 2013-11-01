@@ -544,5 +544,5 @@ s -->
     <string name="main_menu_text">Main menu</string>
     
 	<string name="already_have_joyfolder">already have the folder</string>
-	<string name="can_not_hide_all_apps">can not hide all apps</string>
+	<string name="all_apps_are_hidden">all apps are hidden,click the menu key to display</string>
 </resources>
