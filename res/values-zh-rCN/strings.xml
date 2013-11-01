@@ -359,5 +359,5 @@
     <string name="s4_appliccation">应用程序</string>
     
     <string name="already_have_joyfolder">已经有这个在线文件夹了</string>
-    <string name="can_not_hide_all_apps">不能隐藏全部应用</string>
+    <string name="all_apps_are_hidden">应用被全部隐藏,点击menu键显示应用程序</string>
 </resources>
