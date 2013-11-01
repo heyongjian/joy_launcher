@@ -25,8 +25,7 @@
     <RelativeLayout
         android:id="@+id/joy_folder_top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:background="@drawable/joy_onlinefolder_top">
+        android:layout_height="wrap_content" >
 
         <ImageView
             android:id="@+id/joy_foler_icon"
@@ -43,15 +42,18 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/joy_foler_icon"
             android:background="#00000000"
             android:gravity="left"
             android:imeOptions="flagNoExtractUi"
-            android:layout_toRightOf="@id/joy_foler_icon"
             android:paddingBottom="@dimen/folder_name_padding"
             android:paddingTop="@dimen/folder_name_padding"
+            android:shadowColor="#000000"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="1" 
             android:singleLine="true"
-            android:textColor="#ff33b5e5"
-            android:textColorHighlight="#ff333333"
+            android:textColor="@android:color/white"
             android:textSize="18sp" />
         
          <ImageButton
@@ -78,7 +80,8 @@
         launcher:cellHeight="@dimen/folder_cell_height"
         launcher:cellWidth="@dimen/folder_cell_width"
         launcher:heightGap="@dimen/folder_height_gap"
-        launcher:widthGap="@dimen/folder_width_gap" />
+        launcher:widthGap="@dimen/folder_width_gap" 
+        android:background="@drawable/joy_folder_container"/>
 
     <LinearLayout
         android:id="@+id/joy_folder_button"
@@ -86,23 +89,24 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:background="@android:color/background_dark"
         android:orientation="vertical" >
 
         <RelativeLayout
             android:id="@+id/app_layout_title"
             android:layout_width="match_parent"
             android:layout_height="@dimen/joyfolder_layout_title"
-            android:background="@drawable/joy_onlinefolder_bottom"
             android:padding="2dp"
             >
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:gravity="center"
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="1"
                 android:text="@string/joy_foler_hot_app"
                 android:textColor="@android:color/white" />
 
@@ -127,6 +131,10 @@
                 android:drawableLeft="@drawable/joy_foler_refresh"
                 android:text="@string/joy_foler_refresh"
                 android:textColor="@android:color/white" 
+                android:shadowColor="#000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="1"
                 />
             
             <ProgressBar
@@ -148,6 +156,7 @@
                 android:layout_height="@dimen/joyfolder_gridview_height"
                 android:descendantFocusability="blocksDescendants"
                 android:horizontalSpacing="@dimen/joyfolder_gridview_horizontalSpacing"
+                android:background="@drawable/joy_folder_container"
                 android:numColumns="4"
                 android:padding="3dp" >
             </com.joy.launcher2.joyfolder.JoyFolderGridView>

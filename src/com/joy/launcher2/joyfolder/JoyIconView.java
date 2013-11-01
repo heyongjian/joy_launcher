@@ -101,6 +101,7 @@ public class JoyIconView extends TextView {
 		private Drawable progressbar_bg;
 		private Rect progressbarBounds;
 
+		final int offest = 2;
 		public DownLoadProgressBar() {
 			progressbar = getResources().getDrawable(
 					R.drawable.download_progressbar);
@@ -116,8 +117,13 @@ public class JoyIconView extends TextView {
 			
 			Drawable[] drawables = getCompoundDrawables();
 			Drawable drawableTop = drawables[1];
-			progressbarBounds = drawableTop.getBounds();
-			int left = (getWidth() - progressbarBounds.width()) / 2;
+			Rect bounds = drawableTop.getBounds();
+			int progressbarLeft = bounds.left;
+			int progressbarTop = bounds.top;
+			int progressbarRight = bounds.right;
+			int progressbarBottom = bounds.bottom;
+			progressbarBounds = new Rect(progressbarLeft-offest, progressbarTop-offest, progressbarRight+offest, progressbarBottom+offest);
+			int left = (getWidth() - bounds.width()) / 2;
 			int top = getPaddingTop();
 
 			drawProgressBar(canvas, downloadInfo, left, top);
@@ -138,10 +144,10 @@ public class JoyIconView extends TextView {
 				progressbar_bg.setBounds(progressbarBounds);
 				progressbar_bg.draw(canvas);
 
-				int maxw = progressbarBounds.width();
+				int maxw = progressbarBounds.width() - 2*offest;
 				int maxh = progressbarBounds.height() / 8;
 
-				int progressbar_left = progressbarBounds.left;
+				int progressbar_left = progressbarBounds.left + offest;
 				int progressbar_top = (progressbarBounds.bottom - progressbar_cursor
 						.getIntrinsicHeight()) / 2;
 				int progressbar_right = maxw;
