@@ -353,6 +353,13 @@ public class CellLayout extends ViewGroup {
         mChildrenScale = childrenScale;
     }
 
+    /**
+     * for custom hot-seat background.
+     * @param drawable
+     */
+    public void setGlassBackground(Drawable drawable){
+    	mGlassBackground = drawable;
+    }
     public float getChildrenScale() {
         return mChildrenScale;
     }
