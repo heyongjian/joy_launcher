@@ -721,6 +721,10 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 isReady = !mApps.isEmpty();
             }
 
+            if (!isReady && isHideAllApps()) {
+            	isReady = true;
+			}
+            
             if (isReady) {
                 setDataIsReady();
                 setMeasuredDimension(width, height);
@@ -782,17 +786,6 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     			}
     			else
     			{
-    				//BEGIN add by wanghao on 20131031,can not hide all apps
-    				if (!mIsAppsHide) {
-    					if (mApps != null&&mReadyShowOrHideApps != null) {
-        					if ((mApps.size()-1)==mReadyShowOrHideApps.size()) {
-        						Toast.makeText(mContext, mContext.getText(R.string.can_not_hide_all_apps),
-        								Toast.LENGTH_SHORT).show();
-        						return;
-        					}
-        				}
-					}
-    				//END
     				mReadyShowOrHideApps.add(icon);
     				mSelectedNum++;
     			}
@@ -2813,6 +2806,17 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     }
     //end
 
+  //BEGIN add by wanghao on 20131031,can not hide all apps
+    public boolean isHideAllApps(){
+    	
+    	if (mAllApps != null && mApps != null) {
+        	if (!mAllApps.isEmpty() && mApps.isEmpty()) {
+        		return true;
+        	}
+    	}
+    	return false;
+    }
+	//END
     public void setApps(ArrayList<ApplicationInfo> list) {
     	//modify by huangming for main menu show or hide.
     	mApps.clear();
@@ -2943,6 +2947,13 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private void removeAppsWithPackageNameWithoutInvalidate(ArrayList<String> packageNames) {
         // loop through all the package names and remove apps that have the same package name
         for (String pn : packageNames) {
+        	//BEGIN：add by wanghao on 20131101 issue-16
+        	int index = findAppByPackage(mAllApps, pn);
+            while (index > -1) {
+            	mAllApps.remove(index);
+                index = findAppByPackage(mAllApps, pn);
+            }
+          //END
             int removeIndex = findAppByPackage(mApps, pn);
             while (removeIndex > -1) {
                 mApps.remove(removeIndex);

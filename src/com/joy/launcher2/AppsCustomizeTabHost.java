@@ -37,6 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.joy.launcher2.R;
 import com.joy.launcher2.preference.PreferencesProvider;
@@ -523,6 +524,14 @@ public class AppsCustomizeTabHost extends TabHost implements LauncherTransitiona
         }
     }
 
+    @Override
+    public void setVisibility(int visibility) {
+    	super.setVisibility(visibility);
+    	if (visibility == View.VISIBLE && mAppsCustomizePane.isHideAllApps()) {
+    		Toast.makeText(mContext, mContext.getText(R.string.all_apps_are_hidden),
+					Toast.LENGTH_SHORT).show();
+		}
+    }
     public void onWindowVisible() {
         if (getVisibility() == VISIBLE) {
             mContent.setVisibility(VISIBLE);
