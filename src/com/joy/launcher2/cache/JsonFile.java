@@ -39,7 +39,8 @@ public class JsonFile
 	
 	private File getDirectoryFile(String dirName)
 	{
-		File dirCache = context.getCacheDir();
+		//File dirCache = context.getCacheDir();
+		File dirCache = UnLimitedImageFileCache.getExternalCacheDir();
 		if(dirCache != null && dirCache.exists())
 		{
 			File dirFile = new File(dirCache, dirName);
