@@ -52,7 +52,7 @@ public class UnLimitedImageFileCache
 		return appCacheDir;
 	}
 	
-	private static File getExternalCacheDir() {
+	public static File getExternalCacheDir() {
 		File appCacheDir = new File(Environment.getExternalStorageDirectory(), DIRCACHE);
 		if (!appCacheDir.exists()) {
 			if (!appCacheDir.mkdirs()) {				
