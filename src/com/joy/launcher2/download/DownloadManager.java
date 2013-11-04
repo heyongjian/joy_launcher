@@ -184,6 +184,7 @@ public class DownloadManager {
 				// end.countDown();
 				Log.i(TAG, "---over----");
 
+				callback.downloadUpdate();
 				if (downinfo.getCompletesize() >= downinfo.getFilesize()) {
 					Log.i(TAG, "----finsh----");
 					DownLoadDBHelper.getInstances().update(downinfo);
@@ -193,7 +194,7 @@ public class DownloadManager {
 				}else{
 					callback.downloadFailed();
 				}
-				callback.downloadUpdate();
+				
 				map.remove(String.valueOf(downinfo.getId()));
 				if (is != null) {
 					try {
