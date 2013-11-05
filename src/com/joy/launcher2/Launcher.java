@@ -3112,7 +3112,11 @@ public final class Launcher extends Activity
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-
+				if (!Util.hasSdcard()) {
+					CharSequence errorStrings =  getResources().getText(R.string.insert_sd_card);
+					Toast.makeText(Launcher.this, errorStrings, Toast.LENGTH_SHORT).show();
+					return;
+				}
 				DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
 				if (dInfo == null) {
 					dInfo = DownLoadDBHelper.getInstances().get(shortcutInfo.natureId);
