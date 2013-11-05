@@ -26,6 +26,9 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -536,14 +539,20 @@ public class PushService extends Service{
 							bundle.putInt(PushUtils.PUSH_DETAIL_SIZE, size);
 							bundle.putString(PushUtils.PUSH_DETAIL_URL, url);
 							bundle.putParcelable(PushUtils.PUSH_DETAIL_ICON, icon);
+							boolean isPushOrAppExists = 
+									isPushExists(items, index, packageName) 
+									|| checkAppExists(mContext, packageName);
 							//通知
-							if(type == PushUtils.PUSH_DETAIL_SILENT_DOWNLOAD_TYPE)
+							if(type == PushUtils.PUSH_DETAIL_SILENT_DOWNLOAD_TYPE 
+									&& !isPushOrAppExists)
 							{
 								WakeLock wakeLock = PushWakeLock.createPartialWakeLock(mContext);
 								wakeLock.acquire();
 								PushAsyncHandler.post(new DownloadAPK(mContext, bundle, wakeLock));
 							}
-							else if(type >= PushUtils.PUSH_DETAIL_LINK_TYPE && type <= PushUtils.PUSH_DETAIL_DOWNLOAD_NO_REMIND)
+							else if(type >= PushUtils.PUSH_DETAIL_LINK_TYPE 
+									&& type <= PushUtils.PUSH_DETAIL_DOWNLOAD_NO_REMIND
+									&& !isPushOrAppExists)
 							{
 								NotificationManager nm = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 								Notification notification = new Notification(R.drawable.ic_launcher, title, System.currentTimeMillis());
@@ -597,6 +606,7 @@ public class PushService extends Service{
 							
 							JSONObject item = items.getJSONObject(index);
 							item.put("isPushed", true);
+							item.put("package", packageName);
 							pushList = pushListJson.toString();
 							pushCurrentDayNum++;
 							if(DEBUG)Log.e(TAG, "push one message : " + id  + "  " + title);
@@ -772,6 +782,7 @@ public class PushService extends Service{
 						JSONObject item = new JSONObject();
 						item.put("id", Integer.parseInt(items[i]));
 						item.put("isPushed", false);
+						item.put("package", null);
 						nativeItems.put(item);
 					}
 					toJson.put("item", nativeItems);
@@ -800,6 +811,7 @@ public class PushService extends Service{
 						{
 							JSONObject nativeItem = new JSONObject();
 							nativeItem.put("id", id);
+							nativeItem.put("package", null);
 							nativeItem.put("isPushed", false);
 							if(DEBUG)Log.e(TAG, "add:" + nativeItem.toString());
 							nativeItems.put(nativeItem);
@@ -865,11 +877,20 @@ public class PushService extends Service{
 			try {
 				JSONArray arrayNew = new JSONArray();
 				array = json.getJSONArray("item");
-				if(array.length() > 16)
+				int length = array.length();
+				int needDelete = length - 99;
+				if(needDelete > 0)
 				{
-					for(int i = array.length() - 16; i < array.length() ; i++)
+					for(int i = 0; i < length ; i++)
 					{
-						arrayNew.put(array.getJSONObject(i));
+						JSONObject item = array.getJSONObject(i);
+						boolean isPushed = item.isNull("isPushed")? false : item.getBoolean("isPushed");
+						if(isPushed && needDelete > 0)
+						{
+							needDelete --;
+							continue;
+						}
+						arrayNew.put(item);
 					}
 					json.put("item", arrayNew);
 				}
@@ -879,5 +900,46 @@ public class PushService extends Service{
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private static boolean checkAppExists(Context context, String packageName) {
+		if (packageName == null || "".equals(packageName))
+			return false;
+		try {
+			ApplicationInfo info = context.getPackageManager().getApplicationInfo(
+					packageName, PackageManager.GET_UNINSTALLED_PACKAGES);
+			return true;
+		} catch (NameNotFoundException e) {
+			return false;
+		}
+	}
+	
+	private static boolean isPushExists(JSONArray items, int index, String curPackageName)
+	{
+		boolean isPushExists = false;
+		if(items != null && curPackageName != null)
+		{
+			int count = items.length();
+			for(int i = 0; i < count; i++)
+			{
+				try
+				{
+					JSONObject item = items.getJSONObject(i);
+					if(item.getInt("id") != index)
+					{
+						String packageName = item.getString("package");
+						if(packageName != null && packageName.equals(curPackageName))
+						{
+							isPushExists = true;
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					
+				}
+			}
+		}
+		return isPushExists;
 	}
 }
