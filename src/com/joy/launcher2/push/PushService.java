@@ -19,6 +19,7 @@ import com.joy.launcher2.util.Constants;
 import com.joy.launcher2.util.Util;
 
 
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -38,6 +39,7 @@ import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 public class PushService extends Service{
 
@@ -232,14 +234,21 @@ public class PushService extends Service{
 						success = false;
 					}
 				};
-				
+
  				try {
- 					PushDownLoadTask downloader = PushDownloadManager.getInstances().newDownLoadTask(
- 							null, 
- 							info, 
- 							callback, 
- 							false);
- 					downloader.run();
+ 					if (Util.hasSdcard()) {
+ 						PushDownLoadTask downloader = PushDownloadManager.getInstances().newDownLoadTask(
+ 	 							null, 
+ 	 							info, 
+ 	 							callback, 
+ 	 							false);
+ 	 					downloader.run();
+					}else {
+						if (!isSilent) {
+							CharSequence insertSDcard =  mContext.getResources().getText(R.string.insert_sd_card);
+							Toast.makeText(mContext, insertSDcard, Toast.LENGTH_SHORT).show();
+						}
+					}
  				}
  				catch(Exception e)
  				{
@@ -247,7 +256,7 @@ public class PushService extends Service{
  				}
  				if(success)
  				{
- 					Util.installAPK(Constants.DOWNLOAD_APK_DIR, info.getLocalname(), false);
+ 					Util.installAPK(Constants.DOWNLOAD_APK_DIR, info.getLocalname(), isSilent);
  					if(!isSilent)
  					{
  						//mNotificationManager.cancel(id);

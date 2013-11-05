@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -155,7 +156,22 @@ public class Util {
 		}
 		return content;
 	}
+	/**
+	 * 字符串转换
+	 * 
+	 * @param content
+	 * @return
+	 */
+	public static String decodeContentFromUrl(String content) {
 
+		try {
+			return (content == null ? "" : URLDecoder.decode(
+					URLDecoder.decode(content, "UTF-8"), "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return content;
+	}
 	/**
 	 * 字符串转换
 	 * 

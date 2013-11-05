@@ -34,6 +34,7 @@ import com.joy.launcher2.DragLayer;
 import com.joy.launcher2.Folder;
 import com.joy.launcher2.FolderEditText;
 import com.joy.launcher2.ItemInfo;
+import com.joy.launcher2.Launcher;
 import com.joy.launcher2.LauncherAnimUtils;
 import com.joy.launcher2.LauncherApplication;
 import com.joy.launcher2.LauncherModel;
@@ -484,7 +485,11 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
-
+		if (!Util.hasSdcard()) {
+			CharSequence errorStrings =  mContext.getResources().getText(R.string.insert_sd_card);
+			Toast.makeText(mContext, errorStrings, Toast.LENGTH_SHORT).show();
+			return;
+		}
 		Map<String, Object> curMap =  ( Map<String, Object>)gridView.getAdapter().getItem(position);
 		final int natureId = (Integer)curMap.get("id");
 		 DownloadInfo dInfo = DownLoadDBHelper.getInstances().get(natureId);
