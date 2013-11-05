@@ -516,6 +516,7 @@ s -->
  	<string name="virtualshortcut_test">virtual shortcut test</string>
  	<string name="network_not_connected">unable to connect to the network, check the network settingsk</string>
  	<string name="download_error">unable to connect to the network, check the network settingsk</string>
+ 	<string name="insert_sd_card">please insert the SD card</string>
  	<string name="loading">loading...</string>
  	
  	<!-- add by huangming for push -->
