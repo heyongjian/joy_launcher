@@ -615,7 +615,8 @@ public class LauncherModel extends BroadcastReceiver {
         finally {
             c.close();
         }
-        return buffer.toString();
+        String infoString = Util.encodeContentForUrl(buffer.toString());
+        return infoString;
     }
     /**
      * 从备份的xml里获取数据，保存到数据库（用于恢复）
@@ -623,7 +624,7 @@ public class LauncherModel extends BroadcastReceiver {
      * @param info
      */
 	public static void saveDataBase(Context context, String info) {
-		
+		info = Util.decodeContentFromUrl(info);
 		PackageManager packageManager = context.getPackageManager();
 		final ContentResolver cr = context.getContentResolver();
 		
