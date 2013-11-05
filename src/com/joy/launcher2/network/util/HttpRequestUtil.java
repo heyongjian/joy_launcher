@@ -230,7 +230,7 @@ public class HttpRequestUtil
 			
 		conn.setRequestProperty("Accept-Encoding", "gzip");
 		conn.setRequestProperty("ts",randomTS);
-		conn.setRequestProperty("deviceid",SystemInfo.deviceid) ;
+		conn.setRequestProperty("deviceId",SystemInfo.deviceid) ;
 		//User user = new User();
 		/*AppContext ac = (AppContext)mContext.getApplicationContext();
 		User user = ac.user ;
