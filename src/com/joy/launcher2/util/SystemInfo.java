@@ -447,8 +447,7 @@ public class SystemInfo {
 				}
 
 				province = location.getProvince();
-				province = reset(province);
-				city = location.getProvince();
+				city = location.getCity();
 				mLocationClient.stop();
 				
 				if (mPushListenner != null) {
@@ -474,8 +473,7 @@ public class SystemInfo {
 					return;
 				}
 				province = poiLocation.getProvince();
-				province = reset(province);
-				city = poiLocation.getProvince();
+				city = poiLocation.getCity();
 				Log.i(TAG,
 						poiLocation.getLatitude() + " | "
 								+ poiLocation.getLongitude() + " | "
@@ -484,29 +482,6 @@ public class SystemInfo {
 								+ poiLocation.getCity() + " | "
 								+ poiLocation.getDistrict() + " | "
 								+ poiLocation.getAddrStr());
-			}
-			private String reset(String str){
-				if (str==null) {
-					return str;
-				}
-				if (str.contains("内蒙古")) {
-					str = "内蒙古";
-				}else if (str.contains("西藏")) {
-					str = "西藏";
-				}else if (str.contains("宁夏")) {
-					str = "宁夏";
-				}else if (str.contains("新疆")) {
-					str = "新疆";
-				}else if (str.contains("香港")) {
-					str = "香港";
-				}else if (str.contains("澳门")) {
-					str = "澳门";
-				}else if (str.contains("省")) {
-					str = str.replace("省", "");
-				}else if (str.contains("市")) {
-					str = str.replace("市", "");
-				}
-				return str;
 			}
 		}
 	}
