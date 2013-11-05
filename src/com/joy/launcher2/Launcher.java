@@ -3101,7 +3101,6 @@ public final class Launcher extends Activity
 	         }
 		}
     }
-    int myTempId = 0;
 	private void OpenVirtualShortcut(final View view) {
 		
 		if (!Util.isNetworkConnected()) {
@@ -3159,8 +3158,8 @@ public final class Launcher extends Activity
 							@Override
 							public void downloadUpdate() {
 								DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
-								if (dInfo.getView() != null) {
-									dInfo.getView().postInvalidate();
+								if (dInfo != null && dInfo.getView() != null) {
+									dInfo.getView().postInvalidateDelayed(200L);
 								}
 							}
 						}, false);

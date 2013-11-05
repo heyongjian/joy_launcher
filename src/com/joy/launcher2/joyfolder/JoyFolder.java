@@ -71,6 +71,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 	ValueAnimator recommendAnim;
 	int size = 16;
 	final int mVirtualShoutcutDefaultNum = 16;
+	private final long MIN_UPDATE_TIME = 2000L;
     private DeferredHandler mHandler = new DeferredHandler();
 	public JoyFolder(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -253,7 +254,12 @@ public class JoyFolder extends Folder implements OnItemClickListener{
     }
     public void initJoyFolderGridView(){
     	
-		
+    	if (!Util.isNetworkConnected()) {
+			CharSequence errorStrings =  this.getResources().getText(R.string.network_not_connected);
+			Toast.makeText(mContext, errorStrings, Toast.LENGTH_LONG).show();
+			return;
+		}
+    	final long lastTime = System.currentTimeMillis();
     	LauncherApplication.mService.GotoNetwork(new CallBack() {
     		
     		ArrayList<List<Map<String, Object>>> allList = null;
@@ -279,6 +285,14 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 			public void doInBackground() {
 				if (JoyFolder.this.mInfo != null) {
 					allList = LauncherApplication.mService.getApkList(JoyFolder.this.mInfo.natureId,AppListHandler.index,Constants.APK_LIST_NUM);
+				}
+				long updateTime = System.currentTimeMillis() - lastTime;
+				if (updateTime < MIN_UPDATE_TIME) {
+					try {
+						Thread.sleep(MIN_UPDATE_TIME - updateTime);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -335,6 +349,28 @@ public class JoyFolder extends Folder implements OnItemClickListener{
     }
     public void updateShortcutInFolder(){
     	
+    	LauncherApplication.mService.GotoNetwork(new CallBack() {
+    		List<Map<String, Object>> list = null;
+			public void onPreExecute() {}
+			@Override
+			public void onPostExecute() {
+				Log.i("JOYFOLDER", "----------list : "+list);
+				if (list != null && !list.isEmpty()) {
+					deleteShortcutInFolder();
+					getVirtualShoutcutIcon(list);
+				}
+			}
+			@Override
+			public void doInBackground() {
+				list = LauncherApplication.mService.getShortcutListInFolder(JoyFolder.this.mInfo.natureId);
+			}
+		});
+    }
+
+    /**
+     * 删除在线文件夹内的预装软件
+     */
+    private void deleteShortcutInFolder(){
     	ArrayList<ShortcutInfo> infos = getAllShortcutInfo();
 		for (int i = 0; i < infos.size(); i++) {
 			ShortcutInfo tempInfo = infos.get(i);
@@ -344,22 +380,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 				LauncherModel.deleteItemFromDatabase(mLauncher, tempInfo);
 			}
 		}
-		
-    	LauncherApplication.mService.GotoNetwork(new CallBack() {
-    		List<Map<String, Object>> list = null;
-			public void onPreExecute() {}
-			@Override
-			public void onPostExecute() {
-				Log.i("JOYFOLDER", "----------list : "+list);
-				getVirtualShoutcutIcon(list);
-			}
-			@Override
-			public void doInBackground() {
-				list = LauncherApplication.mService.getShortcutListInFolder(JoyFolder.this.mInfo.natureId);
-			}
-		});
     }
-
 	private void getVirtualShoutcutIcon(final List<Map<String, Object>> list) {
 		if (list == null || list.size() == 0) {
 			return;
@@ -523,7 +544,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 	            @Override
 	            public void onAnimationUpdate(ValueAnimator animation) {
 	                float r = (Float) animation.getAnimatedValue();
-	                float s = r * 0.80f + (1 - r) * 1.0f;
+	                float s = r * 0.95f + (1 - r) * 1.0f;
 	                recommendAnimView.setScaleX(s);
 	                recommendAnimView.setScaleY(s);
 	            }
