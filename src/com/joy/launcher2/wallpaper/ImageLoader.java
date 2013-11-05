@@ -253,7 +253,7 @@ public class ImageLoader {
 				info.wallpaperName = wi.wallpaperName;
 				info.isNative = true;
 				info.isThumbnail = true;
-				info.url = wi.url;
+				info.url = wi.urls[0];
 				
 				wisThum.add(info);
 				
