@@ -852,6 +852,7 @@ public final class Launcher extends Activity
                     data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) : -1;
             if (resultCode == RESULT_CANCELED) {
                 completeTwoStageWidgetDrop(RESULT_CANCELED, appWidgetId);
+                mWaitingForResult = false;
             } else if (resultCode == RESULT_OK) {
                 addAppWidgetImpl(appWidgetId, mPendingAddInfo, null, mPendingAddWidgetInfo);
                 mWaitingForResult = false;
@@ -3117,7 +3118,11 @@ public final class Launcher extends Activity
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-
+				if (!Util.hasSdcard()) {
+					CharSequence errorStrings =  getResources().getText(R.string.insert_sd_card);
+					Toast.makeText(Launcher.this, errorStrings, Toast.LENGTH_SHORT).show();
+					return;
+				}
 				DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
 				if (dInfo == null) {
 					dInfo = DownLoadDBHelper.getInstances().get(shortcutInfo.natureId);
