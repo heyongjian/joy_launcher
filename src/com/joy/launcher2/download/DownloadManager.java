@@ -63,6 +63,10 @@ public class DownloadManager {
 	public static boolean isPause = false;
 
 	public void createTask(View view,DownloadInfo dInfo,CallBack callback,boolean secretly) {
+		
+		if (!Util.hasSdcard()) {
+			return;
+		}
 		if (dInfo == null) {
 			return;
 		}

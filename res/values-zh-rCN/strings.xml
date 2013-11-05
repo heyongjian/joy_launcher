@@ -331,6 +331,7 @@
     <string name="virtualshortcut_test">虚框软件测试</string>
     <string name="network_not_connected">无法连接到网络，请检查网络设置！</string>
     <string name="download_error">无法连接到网络，请检查网络设置！</string>
+    <string name="insert_sd_card">请插入SD卡</string>
     <string name="loading">加载中,请稍后...</string>
     
     <!-- add by huangming for push -->
