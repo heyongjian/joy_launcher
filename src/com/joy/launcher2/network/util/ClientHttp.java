@@ -207,7 +207,22 @@ public class ClientHttp implements ClientInterface {
 		HttpEntity entity = response.getEntity();
 		if (entity != null) {
 			if (gzip) {
-				is = new GZIPInputStream(entity.getContent(), 8196);
+				is = new GZIPInputStream(entity.getContent());
+				BufferedInputStream bis = new BufferedInputStream(is);
+				bis.mark(2);
+				// 取前两个字节
+				byte[] header = new byte[2];
+				int result = bis.read(header);
+				// reset输入流到开始位置
+				bis.reset();
+				// 判断是否是GZIP格式
+				int ss = (header[0] & 0xff) | ((header[1] & 0xff) << 8);  
+			        if(result!=-1 && ss == GZIPInputStream.GZIP_MAGIC) {  
+			        is= new GZIPInputStream(bis);
+				} else {
+				        // 取前两个字节
+					is= bis;
+				}
 			} else {
 				is = new BufferedInputStream(entity.getContent());
 			}
