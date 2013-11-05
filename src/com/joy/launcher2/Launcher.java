@@ -852,6 +852,7 @@ public final class Launcher extends Activity
                     data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) : -1;
             if (resultCode == RESULT_CANCELED) {
                 completeTwoStageWidgetDrop(RESULT_CANCELED, appWidgetId);
+                mWaitingForResult = false;
             } else if (resultCode == RESULT_OK) {
                 addAppWidgetImpl(appWidgetId, mPendingAddInfo, null, mPendingAddWidgetInfo);
                 mWaitingForResult = false;
