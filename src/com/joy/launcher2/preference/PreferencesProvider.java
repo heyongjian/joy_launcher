@@ -229,6 +229,10 @@ public final class PreferencesProvider {
         		if(DEBUG)Log.e(TAG, "back up step 2:copy data/data file  to sdcard.");
         		success = Util.copyFile(backupFile, sdBackupFile);
         	}
+        	if(!isOrdinaryUser)
+        	{
+        		success = isNeedBackup;
+        	}
     	}
     	return success;
     }
