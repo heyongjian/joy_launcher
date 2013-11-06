@@ -400,8 +400,8 @@ public class Workspace extends PagedView
         //add by huangming for ios adaptation.
         if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS)
         {
-        	cellCountX = 4;
-        	cellCountY = 5;
+        	cellCountX = res.getInteger(R.integer.default_cell_count_x);
+        	cellCountY = res.getInteger(R.integer.default_cell_count_y);
         }
         //end
 
