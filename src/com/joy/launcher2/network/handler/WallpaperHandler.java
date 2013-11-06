@@ -39,13 +39,15 @@ public class WallpaperHandler {
 			
 			try {
 				json.put("state", 1);
-				json.put("item", new JSONArray());
+				JSONArray items = new JSONArray();
+				json.put("item", items);
 				JSONObject page = new JSONObject();
 				page.put("ps", 0);
 				page.put("pi", 0);
 				page.put("pn", 0);
 				page.put("rn", 0);
 				json.put("page", page);
+				jsonFile.loadNativeWallpaper(items);
 				jsonFile.saveJsonToFile(json, "native_json_item", isNative);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
