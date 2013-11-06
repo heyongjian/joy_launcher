@@ -1971,6 +1971,7 @@ public final class Launcher extends Activity
 		if (LauncherApplication.isDefaultTheme()){
 			return true;
 		}
+		Log.d(TAG, "----onMenuOpened: " + menuView.toString() + " " + menuView.getVisibility());//just for debug issue-8
 		if((mState == State.APPS_CUSTOMIZE)&&(AppsCustomizePagedView.mIsShowOrHideEidt || AppsCustomizePagedView.mIsShowInstalledApps))
 		{
 			return false;
