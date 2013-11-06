@@ -27,8 +27,8 @@ public class ProtocalFactory{
 	public static final int OP_PUSH_DETAIL = 3002;
 	public static final String HOST_PUSH = "http://c.app.cloud.joy.cn/app/api.do";
     public static final String HOST_MUTUAL = "http://c.client.cloud.joy.cn/client/api.do";	
-    public static final String HOST_UPLOAD = "http://c.client.cloud.joy.cn/client/upload.do";
-	public static final String HOST = "http://192.168.164.134:8080/client/upload.do";
+    public static final String HOST_UPLOAD = "http://c.transport.cloud.joy.cn/transport/upload.do";
+	public static final String HOST = "http://192.168.164.12:8080/client/upload.do";
 	public static String SIGN_KEY = "deskt0pj@y";//约定字符串
 	
 	public ProtocalFactory() {
