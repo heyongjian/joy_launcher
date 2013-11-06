@@ -7,11 +7,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.joy.launcher2.R;
+import com.joy.launcher2.wallpaper.WallpaperInfo;
+
 import android.content.Context;
+import android.content.res.Resources;
+import android.util.Log;
 
 /**
  * json对象和文件相互操作
@@ -25,6 +32,7 @@ public class JsonFile
 	private final static String ONLINE_WALLPAPER_FILE = "online_wallpaper";
 	
 	Context context;
+    private ArrayList<WallpaperInfo> mImages = new ArrayList<WallpaperInfo>();
 	
 	public JsonFile(Context context)
 	{
@@ -107,6 +115,76 @@ public class JsonFile
 		}
 		return json;
 	}
+	
+	public void loadNativeWallpaper(JSONArray items)
+	{
+		findWallpapers();
+		if(items != null)
+		{
+			int count = mImages.size();
+			for(int i = 0; i < count; i++)
+			{
+				try
+				{
+					WallpaperInfo wi = mImages.get(i);
+					JSONObject item = new JSONObject();
+					item.put("id", wi.id);
+					item.put("size",wi.size);
+					item.put("name", wi.wallpaperName);
+					item.put("icon", wi.urls[0]);
+					item.put("preview", wi.url);
+					item.put("url", wi.urls[1]);
+					items.put(item);
+				}
+				catch(Exception e)
+				{
+					
+				}
+			}
+		}
+	}
+	
+	private void findWallpapers() {
+		mImages.clear();
+		final Resources resources = context.getResources();
+		final String packageName;
+        packageName = resources.getResourcePackageName(R.array.wallpapers);
+        int size = addWallpapers(resources, packageName, R.array.wallpapers);
+        if(size <= 0)
+        {
+        	addWallpapers(resources, packageName, R.array.extra_wallpapers);
+        }
+	}
+	
+	private int addWallpapers(Resources resources, String packageName, int list) {
+        final String[] extras = resources.getStringArray(list);
+        int size = 0;
+        for (String extra : extras) {
+        	String imageName = extra;
+        	String thumbName = extra + "_small"; 
+        	String previewbName = extra + "_preview"; 
+            int res = resources.getIdentifier(extra, "drawable", packageName);
+            if (res != 0) {
+                final int thumbRes = resources.getIdentifier(thumbName,
+                        "drawable", packageName);
+                final int previewRes = resources.getIdentifier(previewbName,
+                        "drawable", packageName);
+
+                if (thumbRes != 0 && previewRes != 0) {
+                	size ++;
+                	WallpaperInfo wi = new WallpaperInfo();
+                	wi.id = Integer.MIN_VALUE;
+                	wi.size = 0;
+                	wi.wallpaperName = imageName;
+                	wi.url = Integer.toString(previewRes);
+                	wi.urls[0] = Integer.toString(thumbRes);
+                	wi.urls[1] = Integer.toString(res);
+                    mImages.add(wi);
+                }
+            }
+        }
+        return size;
+    }
 	
 	public void saveJsonToFile(JSONObject json, String fileName, boolean isNative)
 	{
