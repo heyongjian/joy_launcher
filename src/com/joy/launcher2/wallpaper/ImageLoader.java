@@ -96,11 +96,20 @@ public class ImageLoader {
 	{
 		prepareLoadTask(image, wi.url);
 		Bitmap bm = mMemoryCache.getBitmapFromCache(wi.url);
-		if(bm != null)
+		if(bm != null || wi.id == Integer.MIN_VALUE)
 		{
 			if(image.getParent() instanceof PreviewFrameLayout)
 			{
 				((PreviewFrameLayout)image.getParent()).dismissProgressBar();
+			}
+			if(wi.id == Integer.MIN_VALUE)
+			{
+				int resId = Integer.parseInt(wi.url);
+				if(resId != 0)
+				{
+					image.setImageResource(resId);
+				}
+				return;
 			}
 			//image.setImageBitmap(bm);	
 			WallpaperDrawable d = new WallpaperDrawable(image.getResources(), bm);
@@ -192,7 +201,7 @@ public class ImageLoader {
 	
 	public boolean isApplyOrDown(WallpaperInfo wi)
 	{
-		return mDiscCache.isImageOnDiscCache(wi.urls[1]);
+		return wi.id == Integer.MIN_VALUE || mDiscCache.isImageOnDiscCache(wi.urls[1]);
 	}
 	
 	

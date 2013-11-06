@@ -175,7 +175,7 @@ public class PreviewActivity extends Activity implements ImageLoader.Callback, O
 		String currentName = currentInfo.wallpaperName;
 		int size= currentInfo.size;
 		mImageLoader.unlock();
-		imageName.setText(getTitle(currentName, size));;
+		imageName.setText(getTitle(currentInfo));;
 		if(mImageLoader.isApplyOrDown(currentInfo))
 		{
 			applyOrDownloadBtn.setText(R.string.apply_text);
@@ -195,9 +195,10 @@ public class PreviewActivity extends Activity implements ImageLoader.Callback, O
 	}
 
 
-	public String getTitle(String name, int size)
+	public String getTitle(WallpaperInfo wi)
 	{
-		return name +"("+size+"KB)";
+		if(wi.id == Integer.MIN_VALUE)return wi.wallpaperName;
+		return wi.wallpaperName +"("+wi.size+"KB)";
 	}
 
 	@Override
@@ -218,7 +219,7 @@ public class PreviewActivity extends Activity implements ImageLoader.Callback, O
 			WallpaperInfo currentInfo = ((SimplePagerAdapter)pager.getAdapter()).getWallpaperInfos().get(page);
 			String currentName = currentInfo.wallpaperName;
 			int size = currentInfo.size;
-			imageName.setText(getTitle(currentName, size));
+			imageName.setText(getTitle(currentInfo));
 			if(mImageLoader.isApplyOrDown(currentInfo))
 			{
 				applyOrDownloadBtn.setText(R.string.apply_text);
@@ -321,7 +322,7 @@ public class PreviewActivity extends Activity implements ImageLoader.Callback, O
 			
 			if(mImageLoader.isApplyOrDown(currentInfo))
 			{
-				boolean success = applyWallpaper(currentInfo.urls[1]);
+				boolean success = applyWallpaper(currentInfo.urls[1], currentInfo.id == Integer.MIN_VALUE);
 				int textId = success?R.string.apply_success:R.string.apply_error;
 				display(textId);
 				if(success && !currentInfo.isNative)
@@ -391,13 +392,26 @@ public class PreviewActivity extends Activity implements ImageLoader.Callback, O
 	
 	
 	@SuppressLint("ServiceCast")
-	private boolean  applyWallpaper(String originalUrl) {
+	private boolean  applyWallpaper(String originalUrl, boolean isNativeRes) {
 		boolean successful = false;
+		WallpaperManager wpm = (WallpaperManager)getSystemService(Context.WALLPAPER_SERVICE);
+		if(isNativeRes)
+		{
+			int resId = Integer.parseInt(originalUrl);
+            try {	        	
+            	wpm.setResource(resId);
+	            successful = true;
+	        } catch (IOException e) {
+	            Log.e("set wallpaper", "Failed to set wallpaper: " + e);
+	        } finally {
+	        }
+            return successful;
+		}
 		InputStream is = mImageLoader.getDownloadedInputStream(originalUrl);
 		if(is != null)
 		{
 			try {	        	
-	            WallpaperManager wpm = (WallpaperManager)getSystemService(Context.WALLPAPER_SERVICE);
+	            
 	            wpm.setStream(is);
 	            successful = true;
 	        } catch (IOException e) {
