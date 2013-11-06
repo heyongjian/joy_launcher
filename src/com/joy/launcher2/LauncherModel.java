@@ -1448,8 +1448,14 @@ public class LauncherModel extends BroadcastReceiver {
             final ContentResolver contentResolver = context.getContentResolver();
         	final Cursor c = contentResolver.query(
                     LauncherSettings.Favorites.CONTENT_URI, null, null, null, null);
-        	final int cellCountX = PreferencesProvider.Interface.Homescreen.getCellCountX(4);
-        	final int cellCountY = PreferencesProvider.Interface.Homescreen.getCellCountY(4);
+        	
+        	int cellCountX = PreferencesProvider.Interface.Homescreen.getCellCountX(4);
+        	int cellCountY = PreferencesProvider.Interface.Homescreen.getCellCountY(4);
+        	
+        	if(LauncherApplication.sTheme == LauncherApplication.THEME_IOS){
+        		cellCountX = context.getResources().getInteger(R.integer.default_cell_count_x);
+        		cellCountY = context.getResources().getInteger(R.integer.default_cell_count_y);
+        	}
         	
         	final int idIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites._ID);     
             final int cellXIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites.CELLX);
