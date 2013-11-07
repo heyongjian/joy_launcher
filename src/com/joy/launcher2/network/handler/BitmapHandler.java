@@ -22,7 +22,25 @@ import com.joy.launcher2.util.Util;
  */
 public class BitmapHandler {
 
+	/**
+	 * 默认是获取.png格式图片
+	 * @param in
+	 * @param url
+	 * @param option
+	 * @return
+	 */
 	public Bitmap getBitmapByUrl(InputStream in,String url,ImageOption... option){
+		return getBitmapByUrl(in, url, ".png", option);
+	}
+	/**
+	 * 从网络上根据url获取，生成指定后缀名suffix的图片
+	 * @param in
+	 * @param url
+	 * @param suffix
+	 * @param option
+	 * @return
+	 */
+	public Bitmap getBitmapByUrl(InputStream in,String url,String suffix,ImageOption... option){
 		InputStream is = in;
 		if (is == null) {
 			return null;
@@ -70,7 +88,7 @@ public class BitmapHandler {
 		// 存入SD卡
 		if (Util.hasSdcard()&&bm!=null) {
 			try {
-				String fileName = Util.getFileNameByUrl(url);
+				String fileName = Util.getFileNameByUrl(url)+suffix;
 				File file = new File(Constants.DOWNLOAD_IMAGE_DIR + "/"+ fileName);
 				if (!file.getParentFile().exists()) {
 					file.getParentFile().mkdirs();

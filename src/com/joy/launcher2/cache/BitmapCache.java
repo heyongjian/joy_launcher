@@ -101,7 +101,7 @@ public class BitmapCache {
 	 * @param imageDownLoadCallback
 	 * @param option
 	 */
-	public void getBitmap(final String key, final View view,final ImageDownLoadCallback imageDownLoadCallback,final ImageOption... option) {
+	public void getBitmap(final String key, final View view,final ImageDownLoadCallback imageDownLoadCallback,String suffix,final ImageOption... option) {
 		
 		Bitmap bm = null;
 		//从队列中取
@@ -138,7 +138,7 @@ public class BitmapCache {
 		}
 		
 		//从SD卡中取
-		String imageName = Util.getFileNameByUrl(key);
+		String imageName = Util.getFileNameByUrl(key)+ suffix;
 		try {
 			bm = BitmapFactory.decodeStream(new FileInputStream(Constants.DOWNLOAD_IMAGE_DIR + "/" + imageName));
 		}catch(OutOfMemoryError e){
@@ -185,7 +185,16 @@ public class BitmapCache {
 		});
 
 	}
-
+	/**
+	 * 默认获取图片为.png格式的（若想获取其他格式的 请用上面的方法）
+	 * @param key
+	 * @param view
+	 * @param imageDownLoadCallback
+	 * @param option
+	 */
+	public void getBitmap(final String key, final View view,final ImageDownLoadCallback imageDownLoadCallback,final ImageOption... option){
+		getBitmap(key, view, imageDownLoadCallback, ".png", option);
+	}
 	private void cleanCache() {
 		MySoftRef ref = null;
 		while ((ref = (MySoftRef) queue.poll()) != null) {
