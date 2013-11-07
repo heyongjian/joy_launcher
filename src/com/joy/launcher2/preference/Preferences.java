@@ -17,9 +17,7 @@
 package com.joy.launcher2.preference;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -46,12 +44,12 @@ import android.widget.Toast;
 
 import com.joy.launcher2.IconStyleActivity;
 import com.joy.launcher2.LauncherApplication;
+import com.joy.launcher2.R;
 import com.joy.launcher2.network.impl.ProtocalFactory;
 import com.joy.launcher2.network.impl.Service;
+import com.joy.launcher2.network.impl.Service.CallBack;
 import com.joy.launcher2.network.util.FormFile;
 import com.joy.launcher2.network.util.HttpRequestUtil;
-import com.joy.launcher2.util.Util;
-import com.joy.launcher2.R;
 
 public class Preferences extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
@@ -269,16 +267,38 @@ public class Preferences extends PreferenceActivity
 			}
 			else if(mHeaderId == R.id.preferences_recover_section)
 			{
-                boolean success = PreferencesProvider.setRecoverMode(this);
-        		
-        		if(success)
-        		{
-        			display(R.string.recover_success);
-        		}
-        		else
-        		{
-        			display(R.string.recover_failed);
-        		}
+				try {
+					Service.getInstance().GotoNetwork(new CallBack() {
+						
+						boolean success = false;
+						@Override
+						public void onPreExecute() {
+							showProgressDialog(R.string.backup_desktop);
+						}
+						
+						@Override
+						public void onPostExecute() {
+							if(success)
+							{
+								display(R.string.recover_success);
+							}
+							else
+							{
+								display(R.string.recover_failed);
+							}
+							dismissProgressDialog();
+						}
+						@Override
+						public void doInBackground() {
+							success = PreferencesProvider.setRecoverMode(Preferences.this);
+						}
+					});
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					dismissProgressDialog();
+					display(R.string.backup_failed);
+				}
 			}
 		}
 	}
