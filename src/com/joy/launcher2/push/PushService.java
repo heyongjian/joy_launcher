@@ -188,7 +188,7 @@ public class PushService extends Service{
 			final boolean isSilent = (type == PushUtils.PUSH_DETAIL_SILENT_DOWNLOAD_TYPE);
 			if(!isSilent && mNotification == null && mDownloadId > 0)
 			{
-				mNotification = new Notification(R.drawable.ic_launcher, title, System.currentTimeMillis());
+				mNotification = new Notification(R.drawable.joy_push_statusbar_icon, title, System.currentTimeMillis());
 				mNotification.contentView = new RemoteViews(mContext.getPackageName(), R.layout.push_notificaticon);
 				mNotification.contentView.setViewVisibility(R.id.push_icon, View.VISIBLE);
 				mNotification.contentView.setViewVisibility(R.id.push_download_progressBar, View.VISIBLE);
@@ -530,7 +530,7 @@ public class PushService extends Service{
 							}
 							if(icon == null)
 							{
-								icon = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_launcher);
+								icon = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.joy_push_statusbar_icon);
 							}
 							String title =  detail.isNull("title")?null:detail.getString("title");
 							String introduce =  detail.isNull("introduce")?null:detail.getString("introduce");
@@ -564,7 +564,7 @@ public class PushService extends Service{
 									&& !isPushOrAppExists)
 							{
 								NotificationManager nm = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-								Notification notification = new Notification(R.drawable.ic_launcher, title, System.currentTimeMillis());
+								Notification notification = new Notification(R.drawable.joy_push_statusbar_icon, title, System.currentTimeMillis());
 								notification.contentView = new RemoteViews(mContext.getPackageName(), R.layout.push_notificaticon);
 								notification.contentView.setViewVisibility(R.id.push_icon, View.VISIBLE);
 								notification.contentView.setViewVisibility(R.id.push_text1, View.VISIBLE);
