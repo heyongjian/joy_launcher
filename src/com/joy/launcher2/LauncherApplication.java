@@ -200,7 +200,7 @@ public class LauncherApplication extends Application {
         mLauncherProvider = new WeakReference<LauncherProvider>(provider);
     }
 
-    LauncherProvider getLauncherProvider() {
+    public LauncherProvider getLauncherProvider() {
         return mLauncherProvider.get();
     }
 

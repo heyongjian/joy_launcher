@@ -29,7 +29,9 @@ import android.content.res.Resources;
 import android.util.Log;
 
 import com.joy.launcher2.AppsCustomizePagedView;
+import com.joy.launcher2.LauncherApplication;
 import com.joy.launcher2.LauncherModel;
+import com.joy.launcher2.LauncherProvider;
 import com.joy.launcher2.R;
 import com.joy.launcher2.Workspace;
 import com.joy.launcher2.util.Util;
@@ -80,7 +82,7 @@ public final class PreferencesProvider {
   	private static final String TAG = "PreferencesProvider";
   	private static final boolean DEBUG = true;
   	//end
-    
+    public static LauncherApplication app;
     public static final String ICON_STYLE_KEY = "ui_homescreen_icon_style";
     public static final String ICON__TEXT_STYLE_KEY = "ui_homescreen_icon_text_style";
 
@@ -320,14 +322,15 @@ public final class PreferencesProvider {
     	//recover desktop info
     	String desktopinfo = backupSp.getString(PREFERENCES_DESKTOP_BAKCUP_KEY, "");
     	if (!desktopinfo.equals("")) {
-    		editor.putString(PREFERENCES_DESKTOP_BAKCUP_KEY, desktopinfo);
-    		editor.putBoolean(PREFERENCES_DESKTOP_IS_RECOVER_KEY, true);
+    		app.getLauncherProvider().recoverDestopInfo(desktopinfo);
+    		editor.putBoolean(PreferencesProvider.PREFERENCES_CHANGED, true);
 		}
     	return editor.commit();
     }
     //end
     
     public static void load(Context context) {
+    	app = (LauncherApplication)context;
     	initPreferencesFile(context);
         SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_KEY, 0);
         sKeyValues = preferences.getAll();

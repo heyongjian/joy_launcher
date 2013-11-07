@@ -212,29 +212,24 @@ public class LauncherProvider extends ContentProvider {
     }
 
     /**
+     * 删除数据库里的数据，重新写入
+     * @param desktopinfo
+     */
+    synchronized public void recoverDestopInfo(String desktopinfo){
+    	mOpenHelper.getWritableDatabase().delete("favorites", null, null);
+		LauncherModel.saveDataBase(getContext(), desktopinfo);
+		
+		String spKey = LauncherApplication.getSharedPreferencesKey();
+        SharedPreferences sp = getContext().getSharedPreferences(spKey, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = sp.edit();
+        editor2.remove(DB_CREATED_BUT_DEFAULT_WORKSPACE_NOT_LOADED);
+        editor2.commit();
+    }
+    /**
      * @param workspaceResId that can be 0 to use default or non-zero for specific resource
      */
     synchronized public void loadDefaultFavoritesIfNecessary(int origWorkspaceResId) {
-    	final SharedPreferences backupSp = getContext().getSharedPreferences(
-				PreferencesProvider.PREFERENCES_KEY, 0);
-    	boolean isRecover = backupSp.getBoolean(PreferencesProvider.PREFERENCES_DESKTOP_IS_RECOVER_KEY, false);
-    	if(isRecover){
-    		SharedPreferences.Editor editor = backupSp.edit();
-    		editor.putBoolean(PreferencesProvider.PREFERENCES_DESKTOP_IS_RECOVER_KEY, false);
-    		editor.commit();
-    		String desktopinfo = backupSp.getString(PreferencesProvider.PREFERENCES_DESKTOP_BAKCUP_KEY, "");
-    		if (!desktopinfo.equals("")) {
-    			mOpenHelper.getWritableDatabase().delete("favorites", null, null);
-    			LauncherModel.saveDataBase(getContext(), desktopinfo);
-    			
-    			String spKey = LauncherApplication.getSharedPreferencesKey();
-    	        SharedPreferences sp = getContext().getSharedPreferences(spKey, Context.MODE_PRIVATE);
-    	        SharedPreferences.Editor editor2 = sp.edit();
-    	        editor2.remove(DB_CREATED_BUT_DEFAULT_WORKSPACE_NOT_LOADED);
-    	        editor2.commit();
-    			return;
-    		}
-    	}
+
         String spKey = LauncherApplication.getSharedPreferencesKey();
         SharedPreferences sp = getContext().getSharedPreferences(spKey, Context.MODE_PRIVATE);
         if (sp.getBoolean(DB_CREATED_BUT_DEFAULT_WORKSPACE_NOT_LOADED, false)) {
