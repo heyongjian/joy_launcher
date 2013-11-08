@@ -82,7 +82,7 @@ public class DownloadManager {
 		//completesize == 0是新建下载
 		if (dInfo.getCompletesize() == 0) {
 			// 检查本地是否有重名了的文件
-			File localfile = new File(Constants.DOWNLOAD_APK_DIR + "/"+ dInfo.getFilename());
+			File localfile = new File(Constants.DOWNLOAD_APK_DIR + "/" + dInfo.getFilename() + ".apk");
 			localfile = Util.getCleverFileName(localfile);
 			dInfo.setLocalname(localfile.getName());
 		}
