@@ -546,4 +546,6 @@ s -->
     
 	<string name="already_have_joyfolder">already have the folder</string>
 	<string name="all_apps_are_hidden">all apps are hidden,click the menu key to display</string>
+	<string name="loading_wallpaper_category">Loading wallpaper category!</string>
+    <string name="load_wallpaper_category_fail">Load wallpaper category fail!</string>
 </resources>

@@ -94,7 +94,7 @@ public class RecommendsView extends ViewGroup{
             if(child.getLayoutParams() instanceof LayoutParams)
             {
                 LayoutParams lp = (LayoutParams)child.getLayoutParams();
-                child.layout(lp.x, lp.y, lp.x + lp.width, lp.y + lp.height);
+                if(child.getVisibility() == View.VISIBLE)child.layout(lp.x, lp.y, lp.x + lp.width, lp.y + lp.height);
             }
 		}
 	}
@@ -129,9 +129,33 @@ public class RecommendsView extends ViewGroup{
             }
 
         }
-        
         setMeasuredDimension(widthSpecSize, heightSpecSize);
     }
+	
+	public int getActualHeight()
+	{
+		int actualHeight = 0;
+		
+		int count = getVisibleChildCount();
+		if(count > 0)
+		{
+			int cellY = (count + 1) /2;
+			actualHeight = (height - heightGap) / countY * cellY + heightGap;
+			
+		}
+		return actualHeight;
+	}
+	
+	public int getVisibleChildCount()
+	{
+		int count = 0;
+		for(int i = 0; i < getChildCount(); i++)
+		{
+			View child = getChildAt(i);
+			if(child != null && child.getVisibility() == View.VISIBLE)count++;
+		}
+		return count;
+	}
 
 	static class LayoutParams extends ViewGroup.LayoutParams
 	{
