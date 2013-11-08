@@ -97,6 +97,9 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
     int previousPageIndex = 0;
     private boolean isLoaded = false;
     private boolean isLoading = false;
+    private boolean isRecommandLoaded = false;
+    private boolean isRecommandLoading = false;
+    
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -517,6 +520,12 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 		if(page == 1 && !isLoaded && !isLoading)
 		{
 			isLoading = true;
+			if(DEBUG)Log.e(TAG, "load the " +previousPageIndex + " page");
+			mImageLoader.parseJSON(ACTIVITY_TYPE, 2, previousPageIndex);
+		}
+		if(page == 1 && !isRecommandLoaded && !isRecommandLoading)
+		{
+			isRecommandLoading = true;
 			mImageLoader.recommendJson(ACTIVITY_TYPE);
 		}
 		//加载完成，移除进度条
@@ -650,10 +659,19 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 			setTabTextColor();
 			break;
 		case R.id.select_rl:
-			if(!isLoaded)break;
+			if(isRecommandLoading)
+			{
+				display(R.string.loading_wallpaper_category);
+				break;
+			}
+			if(!isRecommandLoaded)
+			{
+				display(R.string.load_wallpaper_category_fail);
+				break;
+			}
 			int visible = recommend.getVisibility();
-			int recommendHeight = getResources().getDimensionPixelSize(R.dimen.recommend_height);
-			if(visible == View.GONE)
+			int recommendHeight = recommend.getActualHeight();
+			if(visible == View.GONE && recommendHeight > 0)
 			{
 				recommend.setVisibility(View.VISIBLE);
 				ImageView downOrUp = (ImageView)v.findViewById(R.id.down_or_up);
@@ -677,7 +695,7 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 				
 			}
 			
-			if(visible == View.VISIBLE)
+			if(visible == View.VISIBLE && recommendHeight > 0)
 			{
 				ImageView downOrUp = (ImageView)v.findViewById(R.id.down_or_up);
 				downOrUp.setImageResource(R.drawable.joy_wallpaper_arrow_down);
@@ -769,31 +787,27 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 	public void setRecommend(List<CategoryInfo> cis) {
 		// TODO Auto-generated method stub
 		if(DEBUG)Log.e(TAG, "recommend size:" + cis.size());
-		for(int i = 0; i< cis.size() && i < recommend.getChildCount(); i++)
+		isRecommandLoaded = true;
+		isRecommandLoading = false;
+		for(int i = 0; i < recommend.getChildCount(); i++)
 		{
 			ImageView child = (ImageView)recommend.getChildAt(i);
-			if(cis.get(i).bm != null)
+			if(i < cis.size())
 			{
 				child.setImageBitmap(cis.get(i).bm);
+				child.setTag(cis.get(i));
+				child.setVisibility(View.VISIBLE);
 			}
 			else
 			{
-				child.setImageResource(R.drawable.joy_wallpaper_resource_preview_bg);
+				child.setVisibility(View.GONE);
 			}
-			child.setTag(cis.get(i));
 		}
 		if(cis.size() <=0)
 		{
-			isLoading = false;
-			dismissProgressBar();
-			display(R.string.network_error);
+			isRecommandLoaded = false;
+			display(R.string.load_wallpaper_category_fail);
 		}
-		else
-		{
-			if(DEBUG)Log.e(TAG, "load the " +previousPageIndex + " page");
-			mImageLoader.parseJSON(ACTIVITY_TYPE, 2, previousPageIndex);
-		}
-		
 	}
 
 

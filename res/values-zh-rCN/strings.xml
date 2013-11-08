@@ -361,4 +361,6 @@
     
     <string name="already_have_joyfolder">已经有这个在线文件夹了</string>
     <string name="all_apps_are_hidden">应用被全部隐藏,点击menu键显示应用程序</string>
+    <string name="loading_wallpaper_category">正在加载壁纸类别!</string>
+    <string name="load_wallpaper_category_fail">加载壁纸类别失败</string>
 </resources>
