@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,7 @@ import com.joy.launcher2.network.util.ClientHttp;
 import com.joy.launcher2.util.Constants;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -66,10 +70,12 @@ public class ImageLoader {
 
 	private Map<Integer, ArrayList<WallpaperInfo>> mAllInfos;
 	private List<CategoryInfo> mCategoryInfos;
+	private Context mContext;
 	
 
 	private ImageLoader(Context context)
 	{
+		mContext = context;
 		mAllInfos =  Collections.synchronizedMap(new HashMap<Integer, ArrayList<WallpaperInfo>>());
 		mJsonFile = new JsonFile(context);
 		mCategoryInfos = Collections.synchronizedList(new ArrayList<CategoryInfo>());
@@ -452,7 +458,25 @@ public class ImageLoader {
 				if(DEBUG)Log.e(TAG, "recommend 1 : get json.");
 				JSONObject json = null;;
 				try {
-					json = Service.getInstance().getWallpaperCategoryJson();
+					boolean isDateChanged = isDateChanged();
+					File listDirFile = mDiscCache.getListFile();
+					String fileName = "category_list";
+					json = mJsonFile.getJsonFromFile(
+							fileName, 
+							listDirFile);
+					if(isDateChanged || json == null)
+					{
+						json = Service.getInstance().getWallpaperCategoryJson();
+						//保存类别列表json
+						if(json != null)mJsonFile.saveJsonToFile(json, fileName, listDirFile);
+					}
+					if(json == null)
+					{
+						//从本地获得列表json
+						json = mJsonFile.getJsonFromFile(
+								fileName, 
+								listDirFile);
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -463,17 +487,34 @@ public class ImageLoader {
 				
 				if(DEBUG)Log.e(TAG, "recommend 3 : get the bitmaps.");
 				final List<CategoryInfo> cis = mCategoryInfos;
+				File categoryDirFile = mDiscCache.getOrMakeFileDir("category");
 				for(int i = 0; i < cis.size(); i++)
 				{
 					CategoryInfo ci = cis.get(i);
 					try {
-						ci.bm = Service.getInstance().getWallpaperBitmap(ci.url);
+						ci.bm = mDiscCache.getBitmapFromFileCache(categoryDirFile, ci.url);
+						if(ci.bm == null)
+						{
+							ci.bm = Service.getInstance().getWallpaperBitmap(ci.url);
+							mDiscCache.saveBitmapToFile(ci.bm, categoryDirFile, ci.url);
+						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-				
+				int j = 0;
+				while(j < cis.size())
+				{
+					if(cis.get(j).bm == null)
+					{
+						cis.remove(j);
+					}
+					else
+					{
+						j++;
+					}
+				}
 				if(DEBUG)Log.e(TAG, "recommend 4 : load the view on main thread.");
 				mHandler.post(new Runnable() {
 					
@@ -493,6 +534,25 @@ public class ImageLoader {
 		});
 		
 		
+	}
+	
+	boolean isDateChanged()
+	{
+		boolean isDateChanged = false;
+		SharedPreferences sp = mContext.getSharedPreferences("wallpaper_preferences", 0);
+		String date = sp.getString("date", "");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		long currentSystemTime = System.currentTimeMillis();
+		String currentDay = sdf.format(new Date(currentSystemTime));
+		if(!date.equals(currentDay))
+		{
+			isDateChanged = true;
+			SharedPreferences.Editor editor = sp.edit();
+			editor.putString("date", currentDay);
+			editor.commit();
+			
+		}
+		return isDateChanged;
 	}
 	
 	public boolean isCategoryloaded(final int category)
@@ -580,7 +640,16 @@ public class ImageLoader {
 						if(category > 1)
 						{
 							try {
-								json = Service.getInstance().getWallPaperListJson(category-2, previousPage);
+								String fileName = "category="+(category-2)+"&page="+(previousPage+1);
+								File listDirFile = mDiscCache.getListFile();
+								json = mJsonFile.getJsonFromFile(
+										fileName, 
+										listDirFile);
+								if(json == null)
+								{
+									json = Service.getInstance().getWallPaperListJson(category-2, previousPage);
+									if(json != null)mJsonFile.saveJsonToFile(json, fileName, listDirFile);
+								}
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
