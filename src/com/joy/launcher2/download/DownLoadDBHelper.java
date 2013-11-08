@@ -15,6 +15,10 @@ import com.joy.launcher2.LauncherApplication;
  * @author wanghao
  */
 public class DownLoadDBHelper {
+	
+	private final boolean isDebug = true;
+	private final String TAG = "DownLoadDBHelper";
+	
 	// 数据库名
 	private static final String DATABASE_NAME = "download44.db";
 
@@ -107,7 +111,9 @@ public class DownLoadDBHelper {
 	 * 关闭数据库
 	 */
 	public synchronized void close() throws SQLException {
-		mDBHelper.close();
+		if(isDebug) Log.i(TAG, "-----db = "+db);
+		if(isDebug) Log.i(TAG, "-----mDBHelper = "+mDBHelper);
+		if(db != null) db.close();
 	}
 
 	/**
@@ -191,8 +197,8 @@ public class DownLoadDBHelper {
 			info.setUrl(cur.getString(3));
 			info.setFilesize(cur.getInt(4));
 			info.setCompletesize(cur.getInt(5));
-
-			Log.i("DownloadService", "-----dbHelper---> "+666);
+			cur.close();
+			if(isDebug) Log.i(TAG, "-----dbHelper---getCount = "+cur.getCount());
 		}
 		close();
 
