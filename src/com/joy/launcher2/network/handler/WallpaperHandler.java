@@ -34,6 +34,10 @@ public class WallpaperHandler {
 			final boolean isNative)
 	{
 		JSONObject json = jsonFile.getJsonFromFile("native_json_item", isNative);
+		if(json == null)
+		{
+			json = new JSONObject();
+		}
 		if(json.isNull("state"))
 		{
 			

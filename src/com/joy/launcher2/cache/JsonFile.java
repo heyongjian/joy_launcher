@@ -73,9 +73,14 @@ public class JsonFile
 	
 	public JSONObject getJsonFromFile(String fileName ,boolean isNative)
 	{
+		return getJsonFromFile(fileName, getDirectoryFile(isNative));
+	}
+	
+	public JSONObject getJsonFromFile(String fileName ,File dirFile)
+	{
 		InputStream fis = null;
 		JSONObject json = null;
-		File dirFile = getDirectoryFile(isNative);
+		//File dirFile = getDirectoryFile(isNative);
 		File jsonFile = new File(dirFile, fileName);
 		if(jsonFile.exists() && jsonFile.isFile())
 		{
@@ -109,10 +114,6 @@ public class JsonFile
 		}
 		
 		
-		if(json == null)
-		{
-			json = new JSONObject();
-		}
 		return json;
 	}
 	
@@ -188,11 +189,16 @@ public class JsonFile
 	
 	public void saveJsonToFile(JSONObject json, String fileName, boolean isNative)
 	{
+		saveJsonToFile(json, fileName, getDirectoryFile(isNative));
+	}
+	
+	public void saveJsonToFile(JSONObject json, String fileName, File dirFile)
+	{
 		
 		byte[] bytes = json.toString().getBytes();
 		BufferedOutputStream bos = null;
 		FileOutputStream fos = null;
-		File dirFile = getDirectoryFile(isNative);
+		//File dirFile = getDirectoryFile(isNative);
 		File jsonFile = new File(dirFile, fileName);
 		try {
 			jsonFile.createNewFile();
