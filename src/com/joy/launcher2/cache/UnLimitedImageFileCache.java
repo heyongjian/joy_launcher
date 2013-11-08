@@ -158,6 +158,11 @@ public class UnLimitedImageFileCache
 		return getOrMakeFileDir(ONLINE_THUMBNAIL_FILE);
 	}
 	
+	public File getListFile()
+	{
+		return getOrMakeFileDir("list");
+	}
+	
 	public boolean saveBitmapToFile(Bitmap bm, File dirFile, String url)
 	{
 		boolean saveSuccessful = false;
