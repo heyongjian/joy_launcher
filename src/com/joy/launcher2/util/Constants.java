@@ -31,7 +31,7 @@ public class Constants {
 		public static final int SOFT_TYPE_SECRETLY = 2;
 		
 		//每次获取apk列表个数
-		public static final int APK_LIST_NUM = 20;
+		public static final int APK_LIST_NUM = 8;
 		
 		//add by huangming for online wallpaper.
 		public final static String ONLINE = "online";

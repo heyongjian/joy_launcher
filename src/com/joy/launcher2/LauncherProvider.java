@@ -1110,8 +1110,8 @@ public class LauncherProvider extends ContentProvider {
 
             DownloadInfo dInfo = new DownloadInfo();
 			dInfo.setId(natureId);
-			dInfo.setFilename(name);
-			dInfo.setLocalname(name);
+			dInfo.setFilename(title);
+			dInfo.setLocalname(title);
 			dInfo.setUrl(url);
 			dInfo.setCompletesize(0);
 			dInfo.setFilesize(filesize);
