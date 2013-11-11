@@ -33,6 +33,7 @@ import com.joy.launcher2.util.Util;
  */
 public class DownloadManager {
 
+	final boolean isDebug = true;
 	final String TAG = "DownloadManager";
 	
 	private ExecutorService pool = Executors.newFixedThreadPool(2);
@@ -75,10 +76,10 @@ public class DownloadManager {
 		// 已经在下载了
 		DownLoadTask task = getDowmloadingTask(id);
 		if (task != null) {
-			Log.i(TAG, "--------> 已经在下载了！！！");
+			if(isDebug) Log.i(TAG, "is downloading,please wait for a moment");
 			return;
 		}
-		Log.i(TAG, "-----dInfo---> getCompletesize :" + dInfo.getCompletesize());
+		if(isDebug) Log.i(TAG, "getCompletesize start:" + dInfo.getCompletesize());
 		//completesize == 0是新建下载
 		if (dInfo.getCompletesize() == 0) {
 			// 检查本地是否有重名了的文件
@@ -156,8 +157,6 @@ public class DownloadManager {
 				int pool = 0;
 
 				boolean isover = false;
-				long startime = System.currentTimeMillis();
-				Log.i(TAG, "-----downinfo starttime--->1 " + startime);
 				int tempLen = startPos;
 				callback.downloadUpdate();
 				while ((len = is.read(b))!=-1) {
@@ -169,7 +168,7 @@ public class DownloadManager {
 					
 					pool += len;
 					if (pool >= 100 * 1024) { // 100kb写一次数据库
-						Log.i(TAG, "-----下载  未完成----");
+						if(isDebug) Log.i(TAG, "--downloading--");
 						DownLoadDBHelper.getInstances().update(downinfo); //暂不支持断点下载
 						pool = 0;
 						callback.downloadUpdate();// 刷新一次
@@ -180,17 +179,15 @@ public class DownloadManager {
 						DownLoadDBHelper.getInstances().update(downinfo);/// 暂不支持断点下载
 					}
 				}
-				long endtime = System.currentTimeMillis();
-				Log.i(TAG, "-----downinfo time--->1 " + (endtime - startime));
 			} catch (Exception e) {
-				Log.i(TAG, "-------->e " + e);
+				Log.i(TAG, "DownLoadTask error " + e);
 			} finally {
 				// end.countDown();
-				Log.i(TAG, "---over----");
+				if(isDebug) Log.i(TAG, "download over");
 
 				callback.downloadUpdate();
 				if (downinfo.getCompletesize() >= downinfo.getFilesize()) {
-					Log.i(TAG, "----finsh----");
+					if(isDebug) Log.i(TAG, "download finsh");
 					DownLoadDBHelper.getInstances().update(downinfo);
 					if(callback != null){
 						callback.downloadSucceed();
