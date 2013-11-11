@@ -134,6 +134,7 @@
 
         <activity android:name="com.joy.launcher2.preference.Preferences"
             android:label="@string/preferences_title"
+            android:screenOrientation="portrait"
             android:theme="@style/joy_prefrences_type">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -203,6 +204,7 @@
         <activity
             android:name=".IconStyleActivity"
             android:label="@string/icon_style_activity_title"
+            android:screenOrientation="portrait"
             android:theme="@style/joy_prefrences_icon_style" >
         </activity>
         

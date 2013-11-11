@@ -2374,6 +2374,7 @@ public class Workspace extends PagedView
                     (i == mCurrentPage)) ? 1f : 0f;
             float initialAlpha = cl.getShortcutsAndWidgets().getAlpha();
 
+            if(isAnimated){
             // Tablet effect
             if (mTransitionEffect == TransitionEffect.Tablet || stateIsSmall || stateIsSpringLoaded) {
                 translationX = getOffsetXForRotation(rotationY, cl.getMeasuredWidth(), cl.getMeasuredHeight());
@@ -2481,7 +2482,7 @@ public class Workspace extends PagedView
                     finalAlpha = 0f;
                 }
             }
-
+            }
             mOldAlphas[i] = initialAlpha;
             mNewAlphas[i] = finalAlpha;
             if (isAnimated) {
@@ -2515,6 +2516,13 @@ public class Workspace extends PagedView
         if (animated) {
             for (int index = 0; index < getChildCount(); index++) {
                 final int i = index;
+               //BEGIN:by wanghao on 20131111 issue-18
+                if (state == State.NORMAL) {
+                	if (getCurrentPage() != i) {
+                		continue;
+    				}
+    			}
+                //END
                 final CellLayout cl = (CellLayout) getChildAt(i);
                 float currentAlpha = cl.getShortcutsAndWidgets().getAlpha();
                 if (mOldAlphas[i] == 0 && mNewAlphas[i] == 0) {
