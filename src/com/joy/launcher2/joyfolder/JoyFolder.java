@@ -325,6 +325,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 							if (view != null) {
 								view.setDownloadInfo(null);
 								view.showProgressBar(false);
+								view.postInvalidate();
 							}
 						}
 						@Override
@@ -338,6 +339,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 										Toast.makeText(mContext, mContext.getText(R.string.download_error), Toast.LENGTH_LONG).show();
 									}
 								});
+								view.postInvalidate();
 							}
 						}
 						@Override
