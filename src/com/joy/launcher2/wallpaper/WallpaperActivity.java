@@ -39,7 +39,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -766,6 +769,32 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 			{
 				progressBar = getLayoutInflater().inflate(R.layout.joy_wallpaper_progressbar_bottom, (ViewGroup) parent);
 			}
+			
+			if(progressBar != null)
+			{
+				final View p = progressBar;
+				p.setVisibility(View.VISIBLE);
+				Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_in_fast);
+				animation.setAnimationListener(new AnimationListener() {
+					
+					@Override
+					public void onAnimationStart(Animation arg0) {
+						// TODO Auto-generated method stub
+					}
+					
+					@Override
+					public void onAnimationRepeat(Animation arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onAnimationEnd(Animation arg0) {
+						// TODO Auto-generated method stub
+					}
+				});
+				p.startAnimation(animation);
+			}
 		}
 		
 	}
@@ -775,14 +804,36 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 		if(mPager != null)
 		{
 			View parent = (View)mPager.getParent();
-			View progressBar = parent.findViewById(R.id.progress_bar_bottom);
-			if(parent instanceof ViewGroup && progressBar != null)
+			final View progressBar = parent.findViewById(R.id.progress_bar_bottom);
+			if(progressBar != null)
 			{
-				((ViewGroup)parent).removeView(progressBar);
+				final View p = progressBar;
+				Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_out_fast);
+				animation.setAnimationListener(new AnimationListener() {
+					
+					@Override
+					public void onAnimationStart(Animation arg0) {
+						// TODO Auto-generated method stub
+					}
+					
+					@Override
+					public void onAnimationRepeat(Animation arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					
+					@Override
+					public void onAnimationEnd(Animation arg0) {
+						// TODO Auto-generated method stub
+						p.setVisibility(View.GONE);
+					}
+				});
+				p.startAnimation(animation);
 			}
 		}
 	}
-
+	
 	@Override
 	public void setRecommend(List<CategoryInfo> cis) {
 		// TODO Auto-generated method stub
