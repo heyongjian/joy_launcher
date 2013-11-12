@@ -55,6 +55,7 @@
         android:label="@string/permlab_write_settings"
         android:description="@string/permdesc_write_settings" />
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS" />
@@ -267,6 +268,14 @@
             android:name="com.joy.launcher2.wallpaper.PreviewActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+         <receiver android:name="com.joy.launcher2.push.PushBootOrUserBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
         
     </application>
 </manifest>
