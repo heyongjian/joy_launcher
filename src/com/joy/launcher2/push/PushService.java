@@ -332,8 +332,8 @@ public class PushService extends Service{
 			
 			long currentSystemTime = System.currentTimeMillis();
 			
-			long nextTime = -1;
-			int nextPushType = PushUtils.PUSH_NONE_TYPE;
+			long nextTime = sp.getLong("next_time", -1);
+			int nextPushType = sp.getInt("push_type", PushUtils.PUSH_NONE_TYPE);
 			boolean canNext = false;
 			boolean isNetworkOK = Util.isNetworkConnected();
 			if(isNetworkOK && !activate)
@@ -739,6 +739,8 @@ public class PushService extends Service{
 			editor.putInt(PushUtils.PUSH_CURRENT_DAY_NUM, pushCurrentDayNum);
 			editor.putInt(PushUtils.PUSH_CURRENT_DAY_NUM_MAX, pushCurrentDayNumMax);
 			editor.putBoolean(PushUtils.ACTIVATE, activate);
+			editor.putLong("next_time", nextTime);
+			editor.putInt("push_type", nextPushType);
 			editor.commit();
 			
 			calendar.setTimeInMillis(nextTime);
