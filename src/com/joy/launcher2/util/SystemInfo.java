@@ -163,7 +163,7 @@ public class SystemInfo {
 	public void initSystemInfo() {
 
 		channel = "1001";
-		vcode = Integer.valueOf(0);
+		vcode = Util.getVersionCode(LauncherApplication.mContext);
 		vname = "my_launcher";
 
 		brand = Build.BRAND;
