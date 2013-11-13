@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -767,4 +768,22 @@ public class Util {
 		}
 		return ret;
 	}
+	
+	/**
+	 * 获取版本号(内部识别号)
+	 * @param context
+	 * @return
+	 */
+	public static int getVersionCode(Context context)  
+	{  
+	    try {  
+	        PackageInfo pi=context.getPackageManager().getPackageInfo(context.getPackageName(), 0);  
+	        return pi.versionCode;  
+	    } catch (NameNotFoundException e) {  
+	        // TODO Auto-generated catch block  
+	        e.printStackTrace();  
+	        return 0;  
+	    }  
+	}  
+
 }
