@@ -1976,6 +1976,7 @@ public final class Launcher extends Activity
 		{
 			return false;
 		}
+		Log.d(TAG, "----onMenuOpened: animationFinished=" +menuView.isAnimationFinished());
 	    if(menuView != null)
     	{
 				int visible = menuView.getVisibility();
@@ -2009,6 +2010,7 @@ public final class Launcher extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	//modify by xiong.chen for bug WXY-67 at 2013-06-14
+    	Log.d(TAG, "----onCreateOptionsMenu: mWaitingForResult=" + mWaitingForResult + "  mWorkspaceLoading=" + mWorkspaceLoading);
         if (isWorkspaceLocked() && !isAllAppsVisible()) {
             return false;
         }
@@ -2060,6 +2062,7 @@ public final class Launcher extends Activity
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
+        Log.d(TAG, "----onPrepareOptionsMenu: isTransitioning=" + mAppsCustomizeTabHost.isTransitioning());
         if (mAppsCustomizeTabHost.isTransitioning()) {
             return false;
         }
