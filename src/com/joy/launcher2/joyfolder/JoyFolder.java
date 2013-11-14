@@ -202,8 +202,6 @@ public class JoyFolder extends Folder implements OnItemClickListener{
     
     private void initJoyFolder(){
     	
-    	initJoyFolderGridView();
-
     	recommend = (RelativeLayout)findViewById(R.id.recommend);
     	recommend.setOnClickListener(new OnClickListener() {
 			
