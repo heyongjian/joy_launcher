@@ -425,6 +425,11 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 			
 		}
 	}
+	
+	public boolean isAnimationFinished()
+	{
+		return animationFinished;
+	}
 
 	@Override
 	public boolean onInterceptHoverEvent(MotionEvent event) {
