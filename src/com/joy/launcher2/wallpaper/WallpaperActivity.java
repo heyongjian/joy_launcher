@@ -529,6 +529,7 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 		if(page == 1 && !isRecommandLoaded && !isRecommandLoading)
 		{
 			isRecommandLoading = true;
+			showRecommendProgressBar();
 			mImageLoader.recommendJson(ACTIVITY_TYPE);
 		}
 		//加载完成，移除进度条
@@ -609,7 +610,7 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 				mImageLoader.unlock();
 			}
 			
-			dismissProgressBar();
+			dismissProgressBar(true);
 		}
 			
 		
@@ -758,6 +759,28 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 		// TODO Auto-generated method stub
 		
 	}
+	
+	private void showRecommendProgressBar()
+	{
+		if(mSelectRL != null)
+		{
+			View downOrUp = mSelectRL.findViewById(R.id.down_or_up);
+			View progressBar = mSelectRL.findViewById(R.id.recommend_progressbar);
+			if(downOrUp != null)downOrUp.setVisibility(View.GONE);
+			if(progressBar != null)progressBar.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	private void dismissRecommendProgressBar()
+	{
+		if(mSelectRL != null)
+		{
+			View downOrUp = mSelectRL.findViewById(R.id.down_or_up);
+			View progressBar = mSelectRL.findViewById(R.id.recommend_progressbar);
+			if(downOrUp != null)downOrUp.setVisibility(View.VISIBLE);
+			if(progressBar != null)progressBar.setVisibility(View.GONE);
+		}
+	}
 
 	private void showProgressBar()
 	{
@@ -801,12 +824,22 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 	
 	private void dismissProgressBar()
 	{
+		dismissProgressBar(false);
+	}
+	
+	private void dismissProgressBar(boolean animate)
+	{
 		if(mPager != null)
 		{
 			View parent = (View)mPager.getParent();
 			final View progressBar = parent.findViewById(R.id.progress_bar_bottom);
 			if(progressBar != null)
 			{
+				if(!animate)
+				{
+					progressBar.setVisibility(View.GONE);
+					return;
+				}
 				final View p = progressBar;
 				Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade_out_fast);
 				animation.setAnimationListener(new AnimationListener() {
@@ -840,6 +873,7 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 		if(DEBUG)Log.e(TAG, "recommend size:" + cis.size());
 		isRecommandLoaded = true;
 		isRecommandLoading = false;
+		dismissRecommendProgressBar();
 		for(int i = 0; i < recommend.getChildCount(); i++)
 		{
 			ImageView child = (ImageView)recommend.getChildAt(i);
