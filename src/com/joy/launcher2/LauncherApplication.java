@@ -67,7 +67,7 @@ public class LauncherApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        mContext = this;
         // set sIsScreenXLarge and sScreenDensity *before* creating icon cache
         sIsScreenLarge = getResources().getBoolean(R.bool.is_large_screen);
         sScreenDensity = getResources().getDisplayMetrics().density;
@@ -123,7 +123,6 @@ public class LauncherApplication extends Application {
     }
     
     public void initLauncher(){
-		mContext = this;
 		mBcache = BitmapCache.getInstance();
 		try {
 			mService = Service.getInstance();

@@ -151,7 +151,7 @@ public class DownloadManager {
 				// 从断点处 继续下载（初始为0）
 				randomAccessFile.seek(startPos);
 				
-				final int length = 1024;
+				final int length = 1024*8;
 				byte[] b = new byte[length];
 				int len = -1;
 				int pool = 0;
@@ -167,7 +167,7 @@ public class DownloadManager {
 					randomAccessFile.write(b, 0, len);
 					
 					pool += len;
-					if (pool >= 100 * 1024) { // 100kb写一次数据库
+					if (pool >= 50 * 1024) { // 50kb写一次数据库
 						if(isDebug) Log.i(TAG, "--downloading--");
 						DownLoadDBHelper.getInstances().update(downinfo); //暂不支持断点下载
 						pool = 0;
