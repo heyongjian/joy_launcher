@@ -16,7 +16,7 @@ import com.joy.launcher2.LauncherApplication;
  */
 public class DownLoadDBHelper {
 	
-	private final boolean isDebug = true;
+	private final boolean isDebug = false;
 	private final String TAG = "DownLoadDBHelper";
 	
 	// 数据库名
