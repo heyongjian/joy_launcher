@@ -161,11 +161,14 @@ public class JoyFolderIcon extends FolderIcon implements Refreshable {
 	
 	@Override
 	public void refresher() {
-		
+
+		if (!PreferencesProvider.getIsOrdinaryUser()) {
+			return;
+		}
 		SharedPreferences preferences = mContext.getSharedPreferences("first_time_open_network", 0);
 		String key = "date"+this.mInfo.natureId;
-		String preDate = preferences.getString(key, "0000-00-00 00:00:00");
 		String curDate = Util.getCurrentDate();
+		String preDate = preferences.getString(key, curDate);
 		long differ = Util.dateCompare(curDate, preDate);
 		Log.i("NetWorkStatusChangeReceiver", "curDate -- : "+curDate+" preDate : "+preDate+" differ : "+differ);
 		if (differ>=1) {

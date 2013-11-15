@@ -53,6 +53,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -63,6 +64,9 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.joy.launcher2.LauncherSettings.Favorites;
+import com.joy.launcher2.download.DownLoadDBHelper;
+import com.joy.launcher2.download.DownloadInfo;
+import com.joy.launcher2.network.handler.BuiltInHandler;
 import com.joy.launcher2.preference.PreferencesProvider;
 import com.joy.launcher2.util.Util;
 
@@ -643,6 +647,8 @@ public class LauncherModel extends BroadcastReceiver {
 			}
 			list.add(map);
 		}
+		BuiltInHandler handler = new BuiltInHandler();
+		List<Map<String, Object>> builtInShortcutList = handler.getBuiltInShortcutList();
 		for (int i = 0; i < list.size(); i++) {
 			
 			final ContentValues values = new ContentValues();
@@ -698,6 +704,43 @@ public class LauncherModel extends BroadcastReceiver {
 //			}
     		values.put(LauncherSettings.Favorites.ICON_PATH, iconPath);
     		cr.insert(LauncherSettings.Favorites.CONTENT_URI,values);
+    		
+    		//save DownloadInfo db
+    		if (natureId != null) {
+    			int id = Integer.parseInt(natureId);
+        		saveDownloadInfo(builtInShortcutList, id);
+			}
+		}
+	}
+	/**
+	 * recover download info
+	 * @param builtInShortcutList
+	 * @param natureId
+	 */
+	private static void saveDownloadInfo(List<Map<String, Object>> builtInShortcutList,int natureId){
+		if (natureId != ItemInfo.LOCAL) {
+			if(DownLoadDBHelper.getInstances().get(natureId) == null){
+    			if (builtInShortcutList != null) {
+    	    	 	for (int j = 0; j < builtInShortcutList.size(); j++) {
+    	    	 		Map<String, Object> shortcutList = builtInShortcutList.get(j);
+    	    	 		int id = (Integer)shortcutList.get("id");
+    	    	 		String name = (String)shortcutList.get("name");
+    	    	 		int filesize = (Integer)shortcutList.get("filesize");
+    	    	 		String url = (String)shortcutList.get("url");
+    	    	 		if (natureId == id) {
+    	    				DownloadInfo dInfo = new DownloadInfo();
+    	        			dInfo.setId(id);
+    	        			dInfo.setFilename(name);
+    	        			dInfo.setLocalname(name);
+    	        			dInfo.setCompletesize(0);
+    	        			dInfo.setUrl(url);
+    	        			dInfo.setFilesize(filesize);
+    	                    DownLoadDBHelper.getInstances().insert(dInfo);
+    	                    return;
+    					}
+    				}
+    			}
+			}
 		}
 	}
 
