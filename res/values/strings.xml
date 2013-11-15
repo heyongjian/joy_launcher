@@ -392,6 +392,7 @@ s -->
     <string name="recover_success">Recover success</string>
     <string name="recover_failed">Recover failed</string>
     <string name="backup_desktop">Backup desktop...</string>
+    <string name="recover_desktop">Recover desktop...</string>
     
     <!-- Drawer -->
     <string name="preferences_interface_drawer_title">Drawer</string>
