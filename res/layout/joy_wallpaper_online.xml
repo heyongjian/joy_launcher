@@ -27,13 +27,20 @@
            android:layout_alignParentLeft="true"           
            android:gravity="center_vertical"/>
        <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/recommend_select_height"
             android:layout_height="match_parent"
             android:id="@+id/down_or_up"
-            android:paddingRight="@dimen/recommend_select_image_padding_right"
-            android:layout_alignParentRight="true"           
-            android:gravity="center_vertical"
+            android:layout_alignParentRight="true"
+            android:scaleType="center"           
             android:src="@drawable/joy_wallpaper_arrow_down"/>
+       <ProgressBar
+                android:id="@+id/recommend_progressbar"
+                android:layout_width="@dimen/recommend_select_height"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dip"
+                android:layout_marginBottom="5dip"
+                android:layout_alignParentRight="true"
+                android:visibility="gone"/>
        
    </RelativeLayout>
    
