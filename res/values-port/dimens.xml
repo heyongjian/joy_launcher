@@ -46,8 +46,8 @@
     <dimen name="apps_customize_pageLayoutHeightGap">-1dp</dimen>
     <dimen name="apps_customize_pageLayoutPaddingTop">10dp</dimen>
     <dimen name="apps_customize_pageLayoutPaddingBottom">10dp</dimen>
-    <dimen name="apps_customize_pageLayoutPaddingLeft">5dp</dimen>
-    <dimen name="apps_customize_pageLayoutPaddingRight">5dp</dimen>
+    <dimen name="apps_customize_pageLayoutPaddingLeft">8dp</dimen>
+    <dimen name="apps_customize_pageLayoutPaddingRight">8dp</dimen>
     <integer name="apps_customize_cling_focused_x">1</integer>
     <integer name="apps_customize_cling_focused_y">1</integer>
 
