@@ -273,7 +273,7 @@ public class Preferences extends PreferenceActivity
 						boolean success = false;
 						@Override
 						public void onPreExecute() {
-							showProgressDialog(R.string.backup_desktop);
+							showProgressDialog(R.string.recover_desktop);
 						}
 						
 						@Override
