@@ -193,22 +193,10 @@ public class JoyFolderIcon extends FolderIcon implements Refreshable {
 	@Override
 	public void refresher() {
 
-		if (!PreferencesProvider.getIsOrdinaryUser()) {
-			return;
-		}
-		SharedPreferences preferences = mContext.getSharedPreferences("first_time_open_network", 0);
-		String key = "date"+this.mInfo.natureId;
-		String curDate = Util.getCurrentDate();
-		String preDate = preferences.getString(key, curDate);
-		long differ = Util.dateCompare(curDate, preDate);
-		Log.i("NetWorkStatusChangeReceiver", "curDate -- : "+curDate+" preDate : "+preDate+" differ : "+differ);
-		if (differ>=1) {
-			Editor editor = preferences.edit();
-			editor.putString(key, curDate);
-			editor.commit();
-			if (mFolder!= null && mFolder instanceof JoyFolder) {
-				((JoyFolder)mFolder).updateShortcutInFolder();
-				((JoyFolder)mFolder).initJoyFolderGridView();
+		if (mFolder != null && mFolder instanceof JoyFolder) {
+			if (((JoyFolder) mFolder).canUpdate()) {
+				((JoyFolder) mFolder).updateShortcutInFolder();
+				((JoyFolder) mFolder).initJoyFolderGridView();
 			}
 		}
 	}
