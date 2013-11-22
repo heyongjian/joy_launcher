@@ -204,14 +204,14 @@
         <item>com.android.stk</item> -->
     </string-array>
     <string-array name="system_icons_filter">
-        <item>browser_browser</item>
+        <item>.browser_browser</item>
         <item>calculator_calculator</item>
         <item>camera_camera</item>
         <item>email_email</item>
         <item>gallery_gallery</item>
         <item>mms_mms</item>
         <item>downloads_downloads</item>
-        <item>file_file</item>
+        <item>.file_file</item>
         <item>quicksearchbox_quicksearchbox</item>
         <item>soundrecorder_soundrecorder</item>
         <item>calendar_calendar</item>
