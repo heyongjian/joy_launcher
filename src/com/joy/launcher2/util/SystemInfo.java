@@ -192,8 +192,8 @@ public class SystemInfo {
 		
 //		sms = msmCenter.getSmsCenter();
 		
-		province = "unknow";
-		city = "unknow";
+		province = "";
+		city = "";
 		
 		
 		if (SystemInfo.imei == null||SystemInfo.imei.equals("")) {
