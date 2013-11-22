@@ -3075,18 +3075,21 @@ public final class Launcher extends Activity
 		if (shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL) {
     		 OpenVirtualShortcut(v);
 		 }else {
-			 String  packageName = intent.getComponent().getPackageName();
-			if (shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL
-					 &&!Util.isInstallApplication(this, packageName)) {
-				if (info.natureId != ItemInfo.LOCAL) {
-					DownloadInfo downloadInfo = DownLoadDBHelper.getInstances().get(info.natureId);
-					if (downloadInfo != null) {
-						String name = downloadInfo.getLocalname();
-						Util.installAPK(Constants.DOWNLOAD_APK_DIR, name,false);
-						return;
+			 if (intent.getComponent() != null) {
+				 String  packageName = intent.getComponent().getPackageName();
+					if (shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL
+							 &&!Util.isInstallApplication(this, packageName)) {
+						if (info.natureId != ItemInfo.LOCAL) {
+							DownloadInfo downloadInfo = DownLoadDBHelper.getInstances().get(info.natureId);
+							if (downloadInfo != null) {
+								String name = downloadInfo.getLocalname();
+								Util.installAPK(Constants.DOWNLOAD_APK_DIR, name,false);
+								return;
+							}
+						}
 					}
-				}
 			}
+			
 			 int[] pos = new int[2];
 	         v.getLocationOnScreen(pos);
 	         intent.setSourceBounds(new Rect(pos[0], pos[1],
