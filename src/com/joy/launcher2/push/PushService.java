@@ -404,20 +404,23 @@ public class PushService extends Service{
 								
 							}
 							JSONObject item = settingsJson.getJSONObject("item");
-							pushTimeInterval = 
-									item.isNull("unit")? 1800 : item.getInt("unit") * 60 ;
+							int timeIntervalType = item.isNull("unittp")?0:item.getInt("unittp");
+							int timeInterval = item.isNull("unit")? 30 : item.getInt("unit");
+							pushTimeInterval = getPushInterval(timeInterval, timeIntervalType);
 							pushListTimeInterval = 
 									item.isNull("heartbeat")? 1800 : item.getInt("heartbeat");
 							pushCurrentDayNumMax = 
 									item.isNull("maxnum")? 5 : item.getInt("maxnum");
-							
-							pushFirstInterval = 
-									item.isNull("recunit")? 60 * 1000 : item.getInt("recunit")  * 60 * 1000;
+							int firstIntervalType = item.isNull("recunittp")?0:item.getInt("recunittp");
+							int firstInterval = item.isNull("recunit")? 1 : item.getInt("recunit");
+							pushFirstInterval = getPushInterval(firstInterval, firstIntervalType) * 1000;
 							
 							if(item.isNull("unit")
 									|| item.isNull("heartbeat")
 									|| item.isNull("maxnum") 
-									|| item.isNull("recunit"))
+									|| item.isNull("recunit")
+									|| item.isNull("recunittp")
+									|| item.isNull("unittp"))
 							{
 								pushCurrentDay = PushUtils.PUSH_DEFAULT_STR;
 								canNext = false;
@@ -651,6 +654,11 @@ public class PushService extends Service{
 				if(DEBUG)Log.e(TAG, "canNext = " + canNext + "   pushFirst = " + pushFirst);
 				
 			}
+			else if(mPushType == PushUtils.PUSH_SETTINGS_TYPE)
+			{
+				nextTime = pushNextTime;
+				nextPushType = PushUtils.PUSH_LIST_TYPE;
+			}
 			else
 			{
 				boolean isPushListFull = false;
@@ -757,6 +765,24 @@ public class PushService extends Service{
 		
 	}
 	
+	public static int getPushInterval(int interval, int type)
+	{
+		int pushInterval = 0;
+		//1:day,2:hour,other:minute
+		if(type == 1)
+		{
+			pushInterval = interval * 24 * 60 * 60;
+		}
+		else if(type == 2)
+		{
+			pushInterval = interval * 60 * 60;
+		}
+		else
+		{
+			pushInterval = interval * 60 ;
+		}
+		return pushInterval;
+	}
 	
 	public static long getNetworkTime()
 	{
