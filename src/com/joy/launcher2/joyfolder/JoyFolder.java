@@ -10,6 +10,8 @@ import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -47,6 +49,7 @@ import com.joy.launcher2.download.DownloadInfo;
 import com.joy.launcher2.download.DownloadManager;
 import com.joy.launcher2.network.handler.AppListHandler;
 import com.joy.launcher2.network.impl.Service.CallBack;
+import com.joy.launcher2.preference.PreferencesProvider;
 import com.joy.launcher2.util.Constants;
 import com.joy.launcher2.util.Util;
 
@@ -73,6 +76,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 	int size = 16;
 	final int mVirtualShoutcutDefaultNum = 16;
 	private final long MIN_UPDATE_TIME = 2000L;
+	private final String FIRST_TIME_OPEN_NETWORK = "first_time_open_network";
     private DeferredHandler mHandler = new DeferredHandler();
 	public JoyFolder(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -164,6 +168,10 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		// TODO Auto-generated method stub
 		super.animateClosedDefault();
 		stopRecommendAnim();
+		
+		if (canUpdate()) {
+			updateShortcutInFolder();
+		}
 	}
 	protected void setFolderLayoutParams(int left, int top, int width,int height) {
 
@@ -253,6 +261,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
     }
     public void initJoyFolderGridView(){
     	
+    	
     	if (!Util.isNetworkConnected()) {
 			CharSequence errorStrings =  this.getResources().getText(R.string.network_not_connected);
 			Toast.makeText(mContext, errorStrings, Toast.LENGTH_LONG).show();
@@ -298,6 +307,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
     }
 
     private void updateJoyFolderGridView(){
+
     	if (gridView.isShowOver()) {
 			initJoyFolderGridView();
 		}else {
@@ -348,6 +358,38 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 						}
 					},isSecretly);
     }
+    
+
+    public boolean canUpdate(){
+    	
+		if (!PreferencesProvider.getIsOrdinaryUser()) {
+			return false;
+		}
+		
+    	if (!Util.isNetworkConnected()) {
+			return false;
+		}
+    	SharedPreferences preferences = mContext.getSharedPreferences(FIRST_TIME_OPEN_NETWORK, 0);
+		String key = "date"+this.mInfo.natureId;
+		String preDate = preferences.getString(key, "0000-00-00 00:00:00");
+		String curDate = Util.getCurrentDate();
+		long differ = Util.dateCompare(curDate, preDate);
+		Log.i("NetWorkStatusChangeReceiver", "curDate -- : "+curDate+" preDate : "+preDate+" differ : "+differ);
+		if (differ>=1) {
+			return true;
+		}
+		return false;
+    }
+    
+    private void saveCurrentDate(){
+    	SharedPreferences preferences = mContext.getSharedPreferences(FIRST_TIME_OPEN_NETWORK, 0);
+		String key = "date"+this.mInfo.natureId;
+		String curDate = Util.getCurrentDate();
+    	Editor editor = preferences.edit();
+		editor.putString(key, curDate);
+		editor.commit();
+    }
+    
     public void updateShortcutInFolder(){
     	
     	LauncherApplication.mService.GotoNetwork(new CallBack() {
@@ -359,6 +401,7 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 				if (list != null && !list.isEmpty()) {
 					deleteShortcutInFolder();
 					getVirtualShoutcutIcon(list);
+					saveCurrentDate();
 				}
 			}
 			@Override
