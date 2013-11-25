@@ -61,5 +61,13 @@ public interface ClientInterface {
 		 */
     public Bitmap getBitmap(Protocal protocal);
     //end
+    
+    /**
+     * 通过网络协议获得bitmap
+     * @param protocal
+     * @param width
+     * @return
+     */
+    public Bitmap getBitmap(Protocal protocal,  int width);
 	
 }
