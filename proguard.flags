@@ -56,3 +56,36 @@
   public void setHorizontalWallpaperOffset(float);
   public float getHorizontalWallpaperOffset();
 }
+-ignorewarnings
+-keep class com.baidu.** {*;}
+-keep class android.content.** {*;}
+-keep class com.joy.launcher2.preference.**{*;}
+-libraryjars libs/locSDK_3.3.jar
+-dontwarn com.baidu.**
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-verbose
+-dontoptimize
+-dontpreverify
+-keepattributes *Annotation*
+-keep public class com.google.vending.licensing.ILicensingService
+-keep public class com.android.vending.licensing.ILicensingService
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+-keepclassmembers public class * extends android.view.View {
+   void set*(***);
+   *** get*();
+}
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+   public *;
+}
+
+-keepclassmembers class * extends android.app.Activity {
+public void *(android.view.View);
+}
