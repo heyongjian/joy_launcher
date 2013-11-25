@@ -3079,14 +3079,18 @@ public final class Launcher extends Activity
 				 String  packageName = intent.getComponent().getPackageName();
 					if (shortcutType == ShortcutInfo.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL
 							 &&!Util.isInstallApplication(this, packageName)) {
-						if (info.natureId != ItemInfo.LOCAL) {
-							DownloadInfo downloadInfo = DownLoadDBHelper.getInstances().get(info.natureId);
-							if (downloadInfo != null) {
+					if (info.natureId != ItemInfo.LOCAL) {
+						DownloadInfo downloadInfo = DownLoadDBHelper.getInstances().get(info.natureId);
+						if (downloadInfo != null) {
+							if (DownloadManager.getInstances().isCompleted(info.natureId)) {
 								String name = downloadInfo.getLocalname();
-								Util.installAPK(Constants.DOWNLOAD_APK_DIR, name,false);
-								return;
+								Util.installAPK(Constants.DOWNLOAD_APK_DIR, name, false);
+							} else {
+								startDownLoadShortcut(v);
 							}
+							return;
 						}
+					}
 					}
 			}
 			
@@ -3103,17 +3107,7 @@ public final class Launcher extends Activity
 		}
     }
 	private void OpenVirtualShortcut(final View view) {
-		
-		if (!Util.isNetworkConnected()) {
-			CharSequence errorStrings =  this.getResources().getText(R.string.network_not_connected);
-			Toast.makeText(this, errorStrings, Toast.LENGTH_LONG).show();
-			return;
-		}
-		final ShortcutInfo shortcutInfo = (ShortcutInfo)view.getTag();
-		DownloadInfo downinfo = shortcutInfo.getDownLoadInfo();
-		if(downinfo != null){
-			return;
-		}
+
 		DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
 
 			@Override
@@ -3122,52 +3116,12 @@ public final class Launcher extends Activity
 					CharSequence errorStrings =  getResources().getText(R.string.insert_sd_card);
 					Toast.makeText(Launcher.this, errorStrings, Toast.LENGTH_SHORT).show();
 					return;
+				}else if (!Util.isNetworkConnected()) {
+					CharSequence errorStrings = getResources().getText(R.string.network_not_connected);
+					Toast.makeText(Launcher.this, errorStrings, Toast.LENGTH_LONG).show();
+					return;
 				}
-				DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
-				if (dInfo == null) {
-					dInfo = DownLoadDBHelper.getInstances().get(shortcutInfo.natureId);
-				}
-				((JoyIconView) view).setDownloadInfo(dInfo);
-
-				DownloadManager.getInstances().createTask((JoyIconView) view,
-						dInfo, new CallBack() {
-							@Override
-							public void downloadSucceed() {
-								shortcutInfo.setShortcutType(ShortcutInfo.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL);
-								DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
-								final String localname = dInfo.getLocalname();
-								final int id = dInfo.getId();
-								shortcutInfo.natureId = id;
-								Launcher.this.updateVirtualShortcut(shortcutInfo);
-								mWorkspace.postDelayed(new Runnable() {
-									@Override
-									public void run() {
-										Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname,true);
-									}
-								}, 2000);
-								shortcutInfo.setDownLoadInfo(null);
-							}
-							@Override
-							public void downloadFailed() {
-								shortcutInfo.setDownLoadInfo(null);
-								view.post(new Runnable() {
-
-									@Override
-									public void run() {
-										Toast.makeText(Launcher.this,
-												getText(R.string.download_error),
-												Toast.LENGTH_LONG).show();
-									}
-								});
-							}
-							@Override
-							public void downloadUpdate() {
-								DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
-								if (dInfo != null && dInfo.getView() != null) {
-									dInfo.getView().postInvalidateDelayed(200L);
-								}
-							}
-						}, false);
+				startDownLoadShortcut(view);
 			}
 		};
 		final Dialog alertDialog = new AlertDialog.Builder(this)
@@ -3181,6 +3135,55 @@ public final class Launcher extends Activity
 
 	}
 
+	private void startDownLoadShortcut(final View view) {
+
+		final ShortcutInfo shortcutInfo = (ShortcutInfo) view.getTag();
+
+		DownloadInfo dInfo = DownLoadDBHelper.getInstances().get(shortcutInfo.natureId);
+		if (dInfo == null) {
+			return;
+		}
+		((JoyIconView) view).setDownloadInfo(dInfo);
+
+		DownloadManager.getInstances().createTask((JoyIconView) view, dInfo, new CallBack() {
+			@Override
+			public void downloadSucceed() {
+				shortcutInfo.setShortcutType(ShortcutInfo.SHORTCUT_TYPE_VIRTUAL_TO_NORMAL);
+				DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
+				final String localname = dInfo.getLocalname();
+				final int id = dInfo.getId();
+				shortcutInfo.natureId = id;
+				Launcher.this.updateVirtualShortcut(shortcutInfo);
+				mWorkspace.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						Util.installAPK(Constants.DOWNLOAD_APK_DIR, localname, true);
+					}
+				}, 2000);
+				shortcutInfo.setDownLoadInfo(null);
+			}
+
+			@Override
+			public void downloadFailed() {
+				shortcutInfo.setDownLoadInfo(null);
+				view.post(new Runnable() {
+
+					@Override
+					public void run() {
+						Toast.makeText(Launcher.this, getText(R.string.download_error), Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+
+			@Override
+			public void downloadUpdate() {
+				DownloadInfo dInfo = shortcutInfo.getDownLoadInfo();
+				if (dInfo != null && dInfo.getView() != null) {
+					dInfo.getView().postInvalidateDelayed(200L);
+				}
+			}
+		}, false);
+	}
     /**
      * Opens the user folder described by the specified tag. The opening of the folder
      * is animated relative to the specified View. If the View is null, no animation
