@@ -164,9 +164,9 @@ public class ImageLoader {
 				boolean successful = false;
 				String originalUrl = wi.urls[1];
 				try {
-					InputStream is = Service.getInstance().getWallpaperInputStream(originalUrl);
-					successful = saveDownloadFile(is, originalUrl);
-					
+					//InputStream is = Service.getInstance().getWallpaperInputStream(originalUrl);
+					Bitmap bm = Service.getInstance().getWallpaperBitmap(originalUrl, screenWidth * 2);
+					successful = mDiscCache.saveBitmapToFile(bm, mDiscCache.getNativeOriginFile(), originalUrl);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -341,7 +341,7 @@ public class ImageLoader {
 				if(!checkTaskIsRunning())
 				{
 					try {
-						bm = Service.getInstance().getWallpaperBitmap(url);
+						bm = Service.getInstance().getWallpaperBitmap(url, getActualWith(wi));
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -394,6 +394,15 @@ public class ImageLoader {
 		
 	}
 	
+	private int getActualWith(WallpaperInfo wi) {
+		int width = -1;
+		if(wi.isThumbnail) {
+			width = screenWidth / 2;
+		} else  {
+			width = screenWidth;
+		}
+		return width;
+	}
 	
 	
 	private String getLoadingUri(ImageView image)
@@ -495,7 +504,7 @@ public class ImageLoader {
 						ci.bm = mDiscCache.getBitmapFromFileCache(categoryDirFile, ci.url);
 						if(ci.bm == null)
 						{
-							ci.bm = Service.getInstance().getWallpaperBitmap(ci.url);
+							ci.bm = Service.getInstance().getWallpaperBitmap(ci.url, ImageLoader.screenWidth / 2);
 							mDiscCache.saveBitmapToFile(ci.bm, categoryDirFile, ci.url);
 						}
 					} catch (Exception e) {
