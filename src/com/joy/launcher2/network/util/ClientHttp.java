@@ -30,6 +30,8 @@ import org.json.JSONObject;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
 import com.joy.launcher2.network.impl.ProtocalFactory;
@@ -284,6 +286,48 @@ public class ClientHttp implements ClientInterface {
 	            try {
 	            	if (is != null)is.close();
 	            	if(fit!= null)fit.close();
+				} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+				}
+	            is = null;
+	           
+	    }
+		return bm;
+	}
+	
+	@Override
+	public Bitmap getBitmap(Protocal protocal, int width) {
+		Bitmap bm = null;
+		Bitmap originBm = null;
+		InputStream is = getInputStream(protocal);
+		FilterInputStream fit = null;
+		try {
+			fit = new FlushedInputStream(is);
+			originBm = BitmapFactory.decodeStream(fit);
+			if (originBm != null) {
+				int originWidth = originBm.getWidth();
+				if(originWidth == width) {
+					bm = originBm;
+				} else {
+					int originHeight = originBm.getHeight();
+					float ratio = ((float) width) / originWidth;
+					Matrix matrix = new Matrix();
+					matrix.postScale(ratio, ratio);
+					bm = Bitmap.createBitmap(originBm, 0, 0, originWidth, originHeight, matrix, true);
+					if(!originBm.isRecycled())originBm.recycle();
+					originBm = null;
+				}
+			}
+	    } 
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally {      
+	            try {
+	            	if (is != null)is.close();
+	            	if(fit != null)fit.close();
 				} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

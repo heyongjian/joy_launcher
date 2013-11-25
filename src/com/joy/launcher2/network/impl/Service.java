@@ -23,6 +23,7 @@ import com.joy.launcher2.network.util.ClientHttp;
 import com.joy.launcher2.network.util.ClientInterface;
 import com.joy.launcher2.network.util.Protocal;
 import com.joy.launcher2.util.SystemInfo;
+import com.joy.launcher2.wallpaper.ImageLoader;
 
 /**
  * 联网接口的具体实现
@@ -320,10 +321,10 @@ public class Service {
 	 * @param data
 	 * @return Bitmap
 	 */
-	public Bitmap getWallpaperBitmap(String data)
+	public Bitmap getWallpaperBitmap(String data, int width)
 	{
 		Protocal protocal = pfactory.wallpaperBitmapProtocal(data);
-		Bitmap bm = cs.getBitmap(protocal);
+		Bitmap bm = cs.getBitmap(protocal, width);
 		return bm;
 	}
 	
