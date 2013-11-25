@@ -163,6 +163,11 @@ public class UnLimitedImageFileCache
 		return getOrMakeFileDir("list");
 	}
 	
+	public File getNativeOriginFile()
+	{
+		return getOrMakeFileDir(NATIVE_ORIGIN_FILE);
+	}
+	
 	public boolean saveBitmapToFile(Bitmap bm, File dirFile, String url)
 	{
 		boolean saveSuccessful = false;
