@@ -67,6 +67,9 @@ public class FolderInfo extends ItemInfo {
         itemsChanged();
     }
 
+    public int getChildCount(){
+    	return contents.size();
+    }
     public void setTitle(CharSequence title) {
         this.title = title;
         for (FolderListener listener : listeners) {
