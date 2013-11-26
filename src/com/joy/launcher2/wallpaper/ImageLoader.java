@@ -657,7 +657,12 @@ public class ImageLoader {
 								if(json == null)
 								{
 									json = Service.getInstance().getWallPaperListJson(category-2, previousPage);
-									if(json != null)mJsonFile.saveJsonToFile(json, fileName, listDirFile);
+									if(json != null 
+											&& json.getInt("state") == 1
+											&& json.getJSONArray("item").length() > 0)
+									{
+										mJsonFile.saveJsonToFile(json, fileName, listDirFile);
+									}
 								}
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
