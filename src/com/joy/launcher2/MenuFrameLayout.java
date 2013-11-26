@@ -61,7 +61,7 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	//private final static int MENU_MAINMENU_SETTINGS = MENU_HIDE_APPS + 1;
 	private final static int MENU_SYSTEM_SETTINGS = MENU_HIDE_APPS + 1;
 	
-	private boolean animationFinished = false;
+	private Animation currentAnimation;
 	
 	ArrayList<Integer> itemPositions;	
 	ArrayList<MenuItemInfo> itemsAll;
@@ -340,8 +340,9 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 			{
 				if(menuContent != null)
 				{
-					if(!animationFinished)
+					if(!isAnimationRunning())
 					{
+						cancelAnimation();
 						bringToFront();
 						setVisibility(View.VISIBLE);
 					
@@ -351,7 +352,6 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 							@Override
 							public void onAnimationStart(Animation arg0) {
 								// TODO Auto-generated method stub
-								animationFinished = true;
 							}
 							
 							@Override
@@ -363,9 +363,9 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 							@Override
 							public void onAnimationEnd(Animation arg0) {
 								// TODO Auto-generated method stub
-								animationFinished = false;
 							}
 						});
+						currentAnimation = animation;
 						menuContent.startAnimation(animation);
 					}
 					
@@ -382,22 +382,22 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 	
 	public void dismiss(boolean animate)
 	{
-		if(getVisibility() != View.GONE)
+		if(getVisibility() == View.VISIBLE)
 		{
 			if(animate)
 			{
 				//setVisibility(View.GONE);
 				if(menuContent != null)
 				{
-					if(!animationFinished)
+					if(!isAnimationRunning())
 					{
+						cancelAnimation();
 						Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.menu_exit);
 						animation.setAnimationListener(new AnimationListener() {
 							
 							@Override
 							public void onAnimationStart(Animation animation) {
 								// TODO Auto-generated method stub
-								animationFinished = true;
 							}
 							
 							@Override
@@ -410,9 +410,9 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 							public void onAnimationEnd(Animation animation) {
 								// TODO Auto-generated method stub
 								MenuFrameLayout.this.setVisibility(View.GONE);
-								animationFinished = false;
 							}
 						});
+						currentAnimation = animation;
 						menuContent.startAnimation(animation);
 					}
 					
@@ -426,11 +426,26 @@ public class MenuFrameLayout extends FrameLayout implements OnItemClickListener{
 		}
 	}
 	
-	public boolean isAnimationFinished()
+	public boolean isAnimationRunning()
 	{
-		return animationFinished;
+		boolean isRunning = false;
+		final Animation a = currentAnimation;
+		if(a != null)
+		{
+			isRunning = a.hasStarted() && !a.hasEnded();
+		}
+		return isRunning;
 	}
-
+	
+	public void cancelAnimation()
+	{
+		if(currentAnimation != null)
+		{
+			currentAnimation.cancel();
+			currentAnimation = null;
+		}
+	}
+	
 	@Override
 	public boolean onInterceptHoverEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
