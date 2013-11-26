@@ -200,7 +200,6 @@ public class DownLoadDBHelper {
 			cur.close();
 			if(isDebug) Log.i(TAG, "-----dbHelper---getCount = "+cur.getCount());
 		}
-		close();
 
 		return info;
 	}
