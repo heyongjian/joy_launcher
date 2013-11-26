@@ -60,6 +60,7 @@
 -keep class com.baidu.** {*;}
 -keep class android.content.** {*;}
 -keep class com.joy.launcher2.preference.**{*;}
+-keep class com.joy.launcher2.install.**{*;}
 -libraryjars libs/locSDK_3.3.jar
 -dontwarn com.baidu.**
 -dontusemixedcaseclassnames
