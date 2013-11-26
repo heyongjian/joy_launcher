@@ -1966,6 +1966,7 @@ public final class Launcher extends Activity
 				}
 				else
 				{
+					menuView.clearAnimation();
 					menuView.show(true, isAllAppsVisible());
 				}
 				
