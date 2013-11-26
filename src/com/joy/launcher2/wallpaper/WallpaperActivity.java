@@ -595,8 +595,9 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 			if(!loadSuccess)
 			{
 				previousPageIndex--;
+				previousPageIndex = Math.max(previousPageIndex, 0);
 			}
-			isLoaded = true;
+			isLoaded = loadSuccess;
 			isLoading = false;
 			SimpleAdapter adapter = null;
 			if(mOnlineGridView.getAdapter() instanceof SimpleAdapter)
