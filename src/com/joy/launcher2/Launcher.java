@@ -1956,17 +1956,17 @@ public final class Launcher extends Activity
 		{
 			return false;
 		}
-		Log.d(TAG, "----onMenuOpened: animationFinished=" +menuView.isAnimationFinished());
+		Log.d(TAG, "----onMenuOpened: isAnimationRunning=" +menuView.isAnimationRunning());
 	    if(menuView != null)
     	{
 				int visible = menuView.getVisibility();
-				if(visible == View.GONE)
-				{
-					menuView.show(true, isAllAppsVisible());
-				}
-				else if(visible == View.VISIBLE)
+				if(visible == View.VISIBLE)
 				{
 					menuView.dismiss(true);
+				}
+				else
+				{
+					menuView.show(true, isAllAppsVisible());
 				}
 				
 		}
