@@ -458,14 +458,19 @@ public class DragController {
                 break;
             case MotionEvent.ACTION_UP:
                 mLastTouchUpTime = System.currentTimeMillis();
-                if (mDragging) {
-                    PointF vec = isFlingingToDelete(mDragObject.dragSource);
-                    if (vec != null) {
-                        dropOnFlingToDeleteTarget(vec);
-                    } else {
-                        drop(dragLayerX, dragLayerY);
-                    }
-                }
+			if (mDragging) {
+				PointF vec = null;
+				if (!supportsToDelete(mDragObject)) {
+					vec = null;
+				} else {
+					vec = isFlingingToDelete(mDragObject.dragSource);
+				}
+				if (vec != null) {
+					dropOnFlingToDeleteTarget(vec);
+				} else {
+					drop(dragLayerX, dragLayerY);
+				}
+			}
                 endDrag();
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -600,14 +605,19 @@ public class DragController {
             handleMoveEvent(dragLayerX, dragLayerY);
             mHandler.removeCallbacks(mScrollRunnable);
 
-            if (mDragging) {
-                PointF vec = isFlingingToDelete(mDragObject.dragSource);
-                if (vec != null) {
-                    dropOnFlingToDeleteTarget(vec);
-                } else {
-                    drop(dragLayerX, dragLayerY);
-                }
-            }
+			if (mDragging) {
+				PointF vec = null;
+				if (!supportsToDelete(mDragObject)) {
+					vec = null;
+				} else {
+					vec = isFlingingToDelete(mDragObject.dragSource);
+				}
+				if (vec != null) {
+					dropOnFlingToDeleteTarget(vec);
+				} else {
+					drop(dragLayerX, dragLayerY);
+				}
+			}
             endDrag();
             break;
         case MotionEvent.ACTION_CANCEL:
@@ -619,6 +629,13 @@ public class DragController {
         return true;
     }
 
+    private boolean supportsToDelete(DropTarget.DragObject dragObject){
+        ItemInfo dragInfo = (ItemInfo)dragObject.dragInfo;
+        if (!dragInfo.supportsToDelete()) return false;
+        
+        return true;
+    }
+    
     /**
      * Determines whether the user flung the current item to delete it.
      *
