@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
 
 public class NetWorkStatusChangeReceiver extends BroadcastReceiver {
@@ -16,10 +17,19 @@ public class NetWorkStatusChangeReceiver extends BroadcastReceiver {
 	
 	public void onReceive(Context context, Intent intent) {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		State wifiState = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-		State mobileState = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
+		State wifiState = null;
+		State mobileState = null;
+		NetworkInfo wifiNetworkInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		NetworkInfo mobileNetworkInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		if (wifiNetworkInfo != null) {
+			wifiState = wifiNetworkInfo.getState();
+		}
+		if (mobileNetworkInfo != null) {
+			mobileState = mobileNetworkInfo.getState();
+		}
 		//有网络连接了
-		if(wifiState != null && mobileState != null && (wifiState == State.CONNECTED || mobileState == State.CONNECTED)){
+		if ((wifiState != null && wifiState == State.CONNECTED)
+				|| (mobileState != null && mobileState == State.CONNECTED)) {
 			if(refreshable!=null){
 				try {
 					refreshable.refresher();
