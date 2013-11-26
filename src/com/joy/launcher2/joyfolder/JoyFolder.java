@@ -419,7 +419,14 @@ public class JoyFolder extends Folder implements OnItemClickListener{
 		for (int i = 0; i < infos.size(); i++) {
 			ShortcutInfo tempInfo = infos.get(i);
 			int type = tempInfo.getShortcutType();
+			boolean isDelete = false;
+			
 			if (tempInfo.natureId != ItemInfo.LOCAL) {
+				isDelete = true;
+			}else if(JoyFolder.this.mInfo.getChildCount() >= size){
+				isDelete = true;
+			}
+			if (isDelete) {
 				JoyFolder.this.mInfo.remove(tempInfo);
 				LauncherModel.deleteItemFromDatabase(mLauncher, tempInfo);
 			}
