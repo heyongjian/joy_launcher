@@ -251,7 +251,7 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 			@Override
 			public Object instantiateItem(View container, int position) {
 				// TODO Auto-generated method stub
-				((ViewPager)container).addView(viewList.get(position), position);
+				((ViewPager)container).addView(viewList.get(position));
 				return viewList.get(position);
 			}
 
