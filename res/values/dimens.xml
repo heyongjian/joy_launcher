@@ -219,7 +219,6 @@
     <dimen name="joyfolder_gridview_horizontalSpacing">10dp</dimen>
     <dimen name="joyfolder_layout_title">30dp</dimen>
     <dimen name="joyfolder_title_icon_size">40dp</dimen>
-    <integer name="joyfolder_content_size">16</integer>
     
     <!-- add by huangming for icon size -->
     <dimen name="cell_h_margin_new">8dp</dimen>

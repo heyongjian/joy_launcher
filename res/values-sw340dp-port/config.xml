@@ -1,0 +1,6 @@
+<resources>
+    <integer name="folder_max_count_x">4</integer>
+    <integer name="folder_max_count_y">4</integer>
+    <integer name="folder_max_num_items">16</integer>
+    <integer name="joyfolder_content_size">16</integer>
+</resources>
