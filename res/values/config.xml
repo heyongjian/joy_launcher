@@ -98,9 +98,9 @@
     <!-- Folder max bounds and max number of items. Note: folder_max_count_x * folder_max_count_y
          >= folder_max_num_items. When these are set to -1, they are automatically determined. -->
     <integer name="folder_max_count_x">4</integer>
-    <integer name="folder_max_count_y">4</integer>
-    <integer name="folder_max_num_items">16</integer>
-
+    <integer name="folder_max_count_y">3</integer>
+    <integer name="folder_max_num_items">12</integer>
+    <integer name="joyfolder_content_size">12</integer>
     <!-- Actual cell count -->
     <integer name="target_cell_count_x">@integer/default_cell_count_x</integer>
     <integer name="target_cell_count_y">@integer/default_cell_count_y</integer>
