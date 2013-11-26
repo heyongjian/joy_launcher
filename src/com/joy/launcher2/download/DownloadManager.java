@@ -96,7 +96,7 @@ public class DownloadManager {
 		RandomAccessFile rf = null;
 		try {
 			rf = new RandomAccessFile(file, "rwd");
-			rf.setLength(dInfo.getFilesize());
+			rf.setLength(dInfo.getFilesize()*1024);
 			rf.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

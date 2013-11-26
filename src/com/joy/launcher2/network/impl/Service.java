@@ -122,7 +122,7 @@ public class Service {
 		
 		Protocal protocal = pfactory.downloadApkProtocal(url);
 		InputStream iStream = cs.getInputStream(protocal);
-		
+		protocals.put(url, protocal);
 		return iStream;
 	}
 	public InputStream getDownLoadInputStream(String url,int startPos,int endPos){
@@ -131,7 +131,7 @@ public class Service {
 		protocal.setStartPos(startPos);
 		protocal.setEndPos(endPos);
 		InputStream iStream = cs.getInputStream(protocal);
-		
+		protocals.put(url, protocal);
 		return iStream;
 	}
 	
