@@ -11,6 +11,7 @@
         android:layout_height="wrap_content" 
         android:clickable="true"
         android:background="@drawable/joy_button_selector"
+        android:visibility="gone"
         android:orientation="horizontal">
 
         <ImageView
