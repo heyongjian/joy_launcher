@@ -180,7 +180,13 @@ public class DeleteDropTarget extends ButtonDropTarget {
             } else {
                 isVisible = false;
             }
-        }
+		} else if (isWorkspaceFolder(source, info)) {
+			ItemInfo itemInfo = (ItemInfo) info;
+			if (!itemInfo.supportsToDelete()) {
+				isVisible = false;
+				isUninstall = false;
+			}
+		}
 
         setCompoundDrawablesWithIntrinsicBounds(mRemoveNormalDrawable, null, null, null);
         mCurrentDrawable = getCompoundDrawables()[0];
