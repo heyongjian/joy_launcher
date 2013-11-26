@@ -251,7 +251,7 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 			@Override
 			public Object instantiateItem(View container, int position) {
 				// TODO Auto-generated method stub
-				((ViewPager)container).addView(viewList.get(position), position);
+				((ViewPager)container).addView(viewList.get(position));
 				return viewList.get(position);
 			}
 
@@ -595,8 +595,9 @@ public class WallpaperActivity extends Activity implements ImageLoader.Callback,
 			if(!loadSuccess)
 			{
 				previousPageIndex--;
+				previousPageIndex = Math.max(previousPageIndex, 0);
 			}
-			isLoaded = true;
+			isLoaded = loadSuccess;
 			isLoading = false;
 			SimpleAdapter adapter = null;
 			if(mOnlineGridView.getAdapter() instanceof SimpleAdapter)
