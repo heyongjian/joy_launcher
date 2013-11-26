@@ -181,6 +181,13 @@ public class ItemInfo {
             values.put(LauncherSettings.Favorites.ICON, data);
         }
     }
+    
+	public boolean supportsToDelete() {
+		if (itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER && natureId != ItemInfo.LOCAL) {
+			return false;
+		}
+		return true;
+	}
 
     /**
      * It is very important that sub-classes implement this if they contain any references
