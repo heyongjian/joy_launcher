@@ -171,9 +171,9 @@ public class PushDownloadManager {
 				// end.countDown();
 				Log.e(TAG, "---over----");
 
+				PushDownLoadDBHelper.getInstances().update(downinfo);
 				if (downinfo.getCompletesize() >= downinfo.getFilesize()) {
 					Log.i(TAG, "----finsh----");
-					PushDownLoadDBHelper.getInstances().update(downinfo);
 					if(callback != null){
 						callback.downloadSucceed();
 					}
