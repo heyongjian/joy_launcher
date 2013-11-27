@@ -1,11 +1,12 @@
 package com.joy.launcher2.install;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
-import android.R.integer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.joy.launcher2.LauncherApplication;
+import com.joy.launcher2.util.Constants;
 import com.joy.launcher2.util.Util;
 
 /**
@@ -63,27 +65,37 @@ public class SecretlyInstallReceiver extends BroadcastReceiver {
 
 	}
 
-	public static void SecretlyInstall(String apkPatch, String apkName) throws Exception{
-
-			if (apkName != null&&apkPatch != null) {
-				if (apkPatch.equals("assets")) {
-					 
-					String toPath = "/data/data/" + LauncherApplication.mContext.getPackageName();
-
+	public static void SecretlyInstall(String apkPatch, String apkName) throws Exception {
+		if (apkName != null && apkPatch != null) {
+			String filePath = null;
+			if (apkPatch.equals("assets")) {
+				String toPath = null;
+				boolean delete = false;
+				if (Util.hasSdcard()) {
+					toPath = Constants.DOWNLOAD_APK_DIR;
+					filePath = toPath + "/" + apkName;
 					CopyApkFromAssets(toPath, apkName);
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					toPath = toPath + "/files/";
-					install(toPath + apkName, apkName,true);
 				} else {
-					install(apkPatch + "/" + apkName, apkName,false);
+					toPath = "/data/data/" + LauncherApplication.mContext.getPackageName() + "/files";
+					filePath = toPath + "/" + apkName;
+					delete = true;
+					CopyApkFromAssets(toPath, apkName);
+					openPermission(toPath, apkName);
 				}
-			}else {
-				Log.i(TAG, "SecretlyInstall----apkName:"+apkName+"  apkPatch:"+apkPatch);
+
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				install(filePath, apkName, delete);
+			} else {
+				filePath = apkPatch + "/" + apkName;
+				install(filePath, apkName, false);
 			}
+		} else {
+			Log.i(TAG, "SecretlyInstall----apkName:" + apkName + "  apkPatch:" + apkPatch);
+		}
 	}
 
 	/**
@@ -91,53 +103,43 @@ public class SecretlyInstallReceiver extends BroadcastReceiver {
 	 * add by wanghao
 	 * @param apkName
 	 */
-	private static void CopyApkFromAssets(String toPath,String apkName) {
-
-		File file = new File(toPath, apkName);
+	private static void CopyApkFromAssets(String toPath, String apkName) {
 		try {
-			InputStream is = LauncherApplication.mContext.getAssets().open(apkName);
-			if (is==null) {
-				return;
-			}
+			int bytesum = 0;
+			int byteread = 0;
+			File file = new File(toPath, apkName);
 			if (!file.exists()) {
-				{
-					File folder = new File(toPath);
-					if (!folder.exists())
-						folder.mkdirs();
-				}
+				File folder = new File(toPath);
+				if (!folder.exists())
+					folder.mkdirs();
 
-				file.createNewFile();
-				FileOutputStream os = LauncherApplication.mContext.openFileOutput(
-						file.getName(), Context.MODE_WORLD_WRITEABLE);
-				byte[] bytes = new byte[512];
-				int i = -1;
-				while ((i = is.read(bytes)) > 0) {
-					os.write(bytes);
+				InputStream inStream = LauncherApplication.mContext.getAssets().open(apkName);
+				OutputStream fs = new BufferedOutputStream(new FileOutputStream(toPath + "/" + apkName));
+				byte[] buffer = new byte[8192];
+				while ((byteread = inStream.read(buffer)) != -1) {
+					bytesum += byteread;
+					fs.write(buffer, 0, byteread);
 				}
-
-				os.close();
-				is.close();
+				inStream.close();
+				fs.close();
 				Log.i(TAG, "----copy succeed");
-			} else {
-				Log.i(TAG, "----exist");
 			}
-			String permission = "666";
-
-			try {
-				String command = "chmod " + permission + " " + toPath
-						+ "/files/" + apkName;
-				Runtime runtime = Runtime.getRuntime();
-				runtime.exec(command);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+			
 		} catch (Exception e) {
 			Log.e(TAG, e.toString());
 		}
-
 	}
 
+	private static void openPermission(String toPath, String apkName) {
+		String permission = "666";
+		try {
+			String command = "chmod " + permission + " " + toPath + "/" + apkName;
+			Runtime runtime = Runtime.getRuntime();
+			runtime.exec(command);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * 
 	 * @param apkPath
